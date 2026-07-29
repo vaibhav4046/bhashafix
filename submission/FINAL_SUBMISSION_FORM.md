@@ -47,7 +47,7 @@ ADD_PUBLIC_GITHUB_URL_AFTER_PUBLISHING
 
 ## Live demo URL
 
-ADD_SITES_PRODUCTION_URL_AFTER_DEPLOYMENT
+https://bhashafix.vercel.app
 
 ## Video URL
 
