@@ -1,0 +1,23 @@
+{
+  "name": "@bhashafix/cli",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "bhashafix": "./dist/cli.js"
+  },
+  "exports": {
+    ".": "./src/cli.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit --moduleResolution bundler --module esnext --target es2022 src/cli.ts"
+  },
+  "dependencies": {
+    "@bhashafix/core": "workspace:*",
+    "@bhashafix/crawler": "workspace:*",
+    "@bhashafix/extractor": "workspace:*",
+    "@bhashafix/repair-engine": "workspace:*",
+    "@bhashafix/report": "workspace:*",
+    "@bhashafix/verifier": "workspace:*"
+  }
+}

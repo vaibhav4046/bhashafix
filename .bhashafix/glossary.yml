@@ -1,0 +1,12 @@
+entries:
+  - source: Checkout
+    approved:
+      es-MX: Pagar
+    forbidden:
+      es-MX:
+        - Finalizar compra
+    exactMatch: true
+    caseSensitive: false
+    domain: payments
+    notes: Use the short action label throughout AtlasPay.
+    doNotTranslate: false

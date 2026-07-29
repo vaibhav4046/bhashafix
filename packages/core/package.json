@@ -1,0 +1,18 @@
+{
+  "name": "@bhashafix/core",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit --moduleResolution bundler --module esnext --target es2022 src/index.ts"
+  },
+  "dependencies": {
+    "@bhashafix/locale-engine": "workspace:*",
+    "@bhashafix/shared": "workspace:*",
+    "@bhashafix/visual-engine": "workspace:*",
+    "zod": "3.25.76"
+  }
+}

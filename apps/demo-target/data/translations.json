@@ -1,0 +1,33 @@
+{
+  "en-GB": {
+    "checkout.pay_now": "Pay {amount}",
+    "checkout.term": "Checkout"
+  },
+  "hi-IN": {
+    "home.hero": "सीमाओं के पार भुगतान"
+  },
+  "de-DE": {
+    "pricing.start": "Kostenloses Geschäftskonto eröffnen"
+  },
+  "ar-SA": {
+    "dashboard.balance": "الرصيد المتاح"
+  },
+  "he-IL": {
+    "settings.back": "חזרה להגדרות"
+  },
+  "ja-JP": {
+    "checkout.pay_now": "checkout.pay_now"
+  },
+  "zh-Hans-CN": {
+    "dashboard.activity": "近期交易"
+  },
+  "th-TH": {
+    "pricing.description": "โอนเงินระหว่างประเทศได้รวดเร็วและปลอดภัยสำหรับทุกธุรกิจ"
+  },
+  "fr-FR": {
+    "checkout.pay_now": "Payer le montant"
+  },
+  "es-MX": {
+    "checkout.term": "Finalizar compra"
+  }
+}

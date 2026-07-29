@@ -1,0 +1,27 @@
+{
+  "name": "@bhashafix/mcp",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "bhashafix-mcp": "./dist/server.js"
+  },
+  "exports": {
+    ".": "./src/server.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit --moduleResolution bundler --module esnext --target es2022 src/server.ts"
+  },
+  "dependencies": {
+    "@bhashafix/core": "workspace:*",
+    "@bhashafix/crawler": "workspace:*",
+    "@bhashafix/extractor": "workspace:*",
+    "@bhashafix/linguistic-engine": "workspace:*",
+    "@bhashafix/locale-engine": "workspace:*",
+    "@bhashafix/repair-engine": "workspace:*",
+    "@bhashafix/report": "workspace:*",
+    "@bhashafix/verifier": "workspace:*",
+    "@modelcontextprotocol/sdk": "1.17.5",
+    "zod": "3.25.76"
+  }
+}

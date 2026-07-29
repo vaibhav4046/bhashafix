@@ -1,0 +1,12 @@
+{
+  "name": "@bhashafix/linguistic-engine",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit --moduleResolution bundler --module esnext --target es2022 src/index.ts"
+  }
+}

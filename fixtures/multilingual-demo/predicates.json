@@ -1,0 +1,182 @@
+[
+  {
+    "issueId": "BF-VIS-HI-001",
+    "category": "vertical-clipping",
+    "locale": "hi-IN",
+    "route": "/",
+    "selector": "[data-testid=hero-title]",
+    "sourceHint": "apps/demo-target/data/layout.json",
+    "description": "Devanagari glyph bounds exceed the available line box.",
+    "recommendedAction": "Use a script-safe line-height derived from content height.",
+    "predicate": "numeric-gte",
+    "actual": ["layout", "hi-IN", "heroLineHeight"],
+    "expected": ["layout", "hi-IN", "measuredGlyphHeight"],
+    "repair": {
+      "file": "apps/demo-target/data/layout.json",
+      "pointer": ["hi-IN", "heroLineHeight"],
+      "after": 40
+    }
+  },
+  {
+    "issueId": "BF-VIS-DE-002",
+    "category": "cta-overflow",
+    "locale": "de-DE",
+    "route": "/pricing",
+    "selector": "[data-testid=primary-cta]",
+    "sourceHint": "apps/demo-target/data/layout.json",
+    "description": "The German CTA scroll width exceeds its fixed client width.",
+    "recommendedAction": "Allow the CTA to size to content and wrap safely.",
+    "predicate": "numeric-gte",
+    "actual": ["layout", "de-DE", "ctaClientWidth"],
+    "expected": ["layout", "de-DE", "ctaScrollWidth"],
+    "repair": {
+      "file": "apps/demo-target/data/layout.json",
+      "pointer": ["de-DE", "ctaClientWidth"],
+      "after": 232
+    }
+  },
+  {
+    "issueId": "BF-LOC-AR-003",
+    "category": "wrong-direction",
+    "locale": "ar-SA",
+    "route": "/dashboard",
+    "selector": "html",
+    "sourceHint": "apps/demo-target/data/locale-state.json",
+    "description": "The Arabic route is rendered left-to-right.",
+    "recommendedAction": "Set direction from the locale profile.",
+    "predicate": "equals",
+    "actual": ["localeState", "directions", "ar-SA"],
+    "value": "rtl",
+    "repair": {
+      "file": "apps/demo-target/data/locale-state.json",
+      "pointer": ["directions", "ar-SA"],
+      "after": "rtl"
+    }
+  },
+  {
+    "issueId": "BF-RTL-HE-004",
+    "category": "rtl-icon-order",
+    "locale": "he-IL",
+    "route": "/settings",
+    "selector": "[data-testid=back-link]",
+    "sourceHint": "apps/demo-target/data/layout.json",
+    "description": "The directional icon remains after the label in RTL.",
+    "recommendedAction": "Use logical ordering for directional controls.",
+    "predicate": "equals",
+    "actual": ["layout", "he-IL", "iconOrder"],
+    "value": "before",
+    "repair": {
+      "file": "apps/demo-target/data/layout.json",
+      "pointer": ["he-IL", "iconOrder"],
+      "after": "before"
+    }
+  },
+  {
+    "issueId": "BF-I18N-JA-005",
+    "category": "raw-translation-key",
+    "locale": "ja-JP",
+    "route": "/checkout",
+    "selector": "[data-testid=pay-button]",
+    "sourceHint": "apps/demo-target/data/translations.json",
+    "description": "A raw translation key is visible in the checkout action.",
+    "recommendedAction": "Insert the missing Japanese translation.",
+    "predicate": "not-equals",
+    "actual": ["translations", "ja-JP", "checkout.pay_now"],
+    "value": "checkout.pay_now",
+    "repair": {
+      "file": "apps/demo-target/data/translations.json",
+      "pointer": ["ja-JP", "checkout.pay_now"],
+      "after": "{amount}を支払う"
+    }
+  },
+  {
+    "issueId": "BF-FONT-ZH-006",
+    "category": "font-coverage",
+    "locale": "zh-Hans-CN",
+    "route": "/dashboard",
+    "selector": "[data-testid=activity-title]",
+    "sourceHint": "apps/demo-target/data/layout.json",
+    "description": "The configured font stack does not cover the Simplified Chinese specimen.",
+    "recommendedAction": "Adopt the locale engine font fallback stack.",
+    "predicate": "equals",
+    "actual": ["layout", "zh-Hans-CN", "fontCoverage"],
+    "value": true,
+    "repair": {
+      "file": "apps/demo-target/data/layout.json",
+      "pointer": ["zh-Hans-CN", "fontCoverage"],
+      "after": true
+    }
+  },
+  {
+    "issueId": "BF-VIS-TH-007",
+    "category": "line-breaking",
+    "locale": "th-TH",
+    "route": "/pricing",
+    "selector": "[data-testid=plan-description]",
+    "sourceHint": "apps/demo-target/data/layout.json",
+    "description": "Thai content is forced onto one line and overflows its container.",
+    "recommendedAction": "Enable normal wrapping and dictionary line breaking.",
+    "predicate": "equals",
+    "actual": ["layout", "th-TH", "whiteSpace"],
+    "value": "normal",
+    "repair": {
+      "file": "apps/demo-target/data/layout.json",
+      "pointer": ["th-TH", "whiteSpace"],
+      "after": "normal"
+    }
+  },
+  {
+    "issueId": "BF-I18N-FR-008",
+    "category": "placeholder-mismatch",
+    "locale": "fr-FR",
+    "route": "/checkout",
+    "selector": "[data-testid=pay-button]",
+    "sourceHint": "apps/demo-target/data/translations.json",
+    "description": "The {amount} runtime placeholder was removed from the French translation.",
+    "recommendedAction": "Restore the protected placeholder without changing its token.",
+    "predicate": "placeholder-parity",
+    "source": ["translations", "en-GB", "checkout.pay_now"],
+    "target": ["translations", "fr-FR", "checkout.pay_now"],
+    "repair": {
+      "file": "apps/demo-target/data/translations.json",
+      "pointer": ["fr-FR", "checkout.pay_now"],
+      "after": "Payer {amount}"
+    }
+  },
+  {
+    "issueId": "BF-LING-ES-009",
+    "category": "glossary-violation",
+    "locale": "es-MX",
+    "route": "/checkout",
+    "selector": "[data-testid=checkout-title]",
+    "sourceHint": "apps/demo-target/data/glossary.json",
+    "description": "The checkout term conflicts with the project-approved Mexican Spanish glossary.",
+    "recommendedAction": "Use the approved glossary term.",
+    "predicate": "equals-path",
+    "actual": ["translations", "es-MX", "checkout.term"],
+    "expected": ["glossary", "Checkout", "es-MX"],
+    "repair": {
+      "file": "apps/demo-target/data/translations.json",
+      "pointer": ["es-MX", "checkout.term"],
+      "after": "Pagar"
+    }
+  },
+  {
+    "issueId": "BF-META-EN-010",
+    "category": "wrong-page-lang",
+    "locale": "en-GB",
+    "route": "/",
+    "selector": "html",
+    "sourceHint": "apps/demo-target/data/locale-state.json",
+    "description": "The source page declares a generic language instead of the configured source locale.",
+    "recommendedAction": "Set the canonical BCP 47 source locale on the document root.",
+    "predicate": "equals",
+    "actual": ["localeState", "pageLang"],
+    "value": "en-GB",
+    "repair": {
+      "file": "apps/demo-target/data/locale-state.json",
+      "pointer": ["pageLang"],
+      "after": "en-GB"
+    }
+  }
+]

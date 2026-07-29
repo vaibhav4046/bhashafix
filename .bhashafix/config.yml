@@ -1,0 +1,32 @@
+sourceLocale: en-GB
+locales:
+  - hi-IN
+  - de-DE
+  - ar-SA
+  - he-IL
+  - ja-JP
+  - zh-Hans-CN
+  - th-TH
+  - fr-FR
+  - es-MX
+routes:
+  - /
+  - /pricing
+  - /dashboard
+  - /checkout
+  - /settings
+browsers: [chromium]
+viewports: [mobile, tablet, desktop]
+themes: [light, dark]
+severity: blocking
+noAi: true
+crawl:
+  maxPages: 20
+  maxDepth: 2
+  rateLimitPerSecond: 2
+  respectRobots: true
+repair:
+  allowlist:
+    - apps/demo-target/data/layout.json
+    - apps/demo-target/data/locale-state.json
+    - apps/demo-target/data/translations.json

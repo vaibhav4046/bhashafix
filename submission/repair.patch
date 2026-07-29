@@ -1,42 +1,50 @@
-diff --git a/demo/zariya.css b/demo/zariya.css
---- a/demo/zariya.css
-+++ b/demo/zariya.css
-@@ -1,11 +1,12 @@
- .zariya-title {
--  height: 58px;
--  line-height: 0.82;
--  overflow: hidden;
-+  min-height: 58px;
-+  line-height: 1.17;
-+  overflow: visible;
- }
- 
- .zariya-cta {
--  width: 152px;
--  white-space: nowrap;
--  overflow: hidden;
-+  min-width: 152px;
-+  width: auto;
-+  white-space: normal;
-+  overflow: visible;
- }
-diff --git a/demo/translations.ta.json b/demo/translations.ta.json
---- a/demo/translations.ta.json
-+++ b/demo/translations.ta.json
-@@ -1,3 +1,3 @@
- {
--  "trial": "dashboard.start_trial"
-+  "trial": "இலவசமாகத் தொடங்குங்கள்"
- }
-diff --git a/demo/zariya-runtime.json b/demo/zariya-runtime.json
---- a/demo/zariya-runtime.json
-+++ b/demo/zariya-runtime.json
-@@ -1,5 +1,5 @@
- {
--  "htmlLang": "en",
--  "urduDirection": "ltr",
--  "localeSwitcherLabel": null
-+  "htmlLang": "hi",
-+  "urduDirection": "rtl",
-+  "localeSwitcherLabel": "Change language"
- }
+--- a/apps/demo-target/data/layout.json
++++ b/apps/demo-target/data/layout.json
+@@ hi-IN.heroLineHeight @@
+-28
++40
+--- a/apps/demo-target/data/layout.json
++++ b/apps/demo-target/data/layout.json
+@@ de-DE.ctaClientWidth @@
+-160
++232
+--- a/apps/demo-target/data/locale-state.json
++++ b/apps/demo-target/data/locale-state.json
+@@ directions.ar-SA @@
+-"ltr"
++"rtl"
+--- a/apps/demo-target/data/layout.json
++++ b/apps/demo-target/data/layout.json
+@@ he-IL.iconOrder @@
+-"after"
++"before"
+--- a/apps/demo-target/data/translations.json
++++ b/apps/demo-target/data/translations.json
+@@ ja-JP.checkout.pay_now @@
+-"checkout.pay_now"
++"{amount}を支払う"
+--- a/apps/demo-target/data/layout.json
++++ b/apps/demo-target/data/layout.json
+@@ zh-Hans-CN.fontCoverage @@
+-false
++true
+--- a/apps/demo-target/data/layout.json
++++ b/apps/demo-target/data/layout.json
+@@ th-TH.whiteSpace @@
+-"nowrap"
++"normal"
+--- a/apps/demo-target/data/translations.json
++++ b/apps/demo-target/data/translations.json
+@@ fr-FR.checkout.pay_now @@
+-"Payer le montant"
++"Payer {amount}"
+--- a/apps/demo-target/data/translations.json
++++ b/apps/demo-target/data/translations.json
+@@ es-MX.checkout.term @@
+-"Finalizar compra"
++"Pagar"
+--- a/apps/demo-target/data/locale-state.json
++++ b/apps/demo-target/data/locale-state.json
+@@ pageLang @@
+-"en"
++"en-GB"

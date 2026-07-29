@@ -1,7 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
+**/node_modules/
 /.pnp
 .pnp.*
 .yarn/*
@@ -42,3 +42,11 @@ next-env.d.ts
 /.wrangler/
 /outputs/
 /work/
+/.bhashafix/audit.log
+/.bhashafix/baseline-scan.json
+/.bhashafix/prepared-plan.json
+/.bhashafix/rollback/
+/.bhashafix/scans/
+/artifacts/
+/test-results/
+/playwright-report/

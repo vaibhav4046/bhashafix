@@ -1,0 +1,11 @@
+[
+  {
+    "source": "Checkout",
+    "target": "Pagar",
+    "locale": "es-MX",
+    "context": "Primary checkout heading",
+    "provider": "human",
+    "humanApproved": true,
+    "updatedAt": "2026-07-29T00:00:00.000Z"
+  }
+]

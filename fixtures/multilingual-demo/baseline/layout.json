@@ -1,0 +1,21 @@
+{
+  "hi-IN": {
+    "heroLineHeight": 28,
+    "measuredGlyphHeight": 36
+  },
+  "de-DE": {
+    "ctaClientWidth": 160,
+    "ctaScrollWidth": 212
+  },
+  "he-IL": {
+    "iconOrder": "after"
+  },
+  "zh-Hans-CN": {
+    "fontCoverage": false
+  },
+  "th-TH": {
+    "whiteSpace": "nowrap",
+    "clientWidth": 220,
+    "scrollWidth": 316
+  }
+}

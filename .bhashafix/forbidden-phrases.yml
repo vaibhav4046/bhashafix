@@ -1,0 +1,4 @@
+phrases:
+  - locale: "*"
+    phrase: guaranteed instant transfer
+    reason: Transfer time cannot be guaranteed.
