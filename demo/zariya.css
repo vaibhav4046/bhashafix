@@ -1,0 +1,11 @@
+.zariya-title {
+  height: 58px;
+  line-height: 0.82;
+  overflow: hidden;
+}
+
+.zariya-cta {
+  width: 152px;
+  white-space: nowrap;
+  overflow: hidden;
+}

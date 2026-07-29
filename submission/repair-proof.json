@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "runId": "BF-0729",
+  "target": "Zariya",
+  "mode": "deterministic replay",
+  "baseline": {
+    "canonicalDefects": 5
+  },
+  "final": {
+    "canonicalDefects": 0
+  },
+  "englishRegression": "PASS",
+  "browserConsoleErrors": 0,
+  "viewports": [
+    "390x844",
+    "1440x900"
+  ],
+  "locales": [
+    "en",
+    "hi",
+    "ta",
+    "ur"
+  ],
+  "changedFiles": [
+    "demo/zariya.css",
+    "demo/translations.ta.json",
+    "demo/zariya-runtime.json"
+  ],
+  "allowlist": "PASS",
+  "patch": "submission/repair.patch"
+}

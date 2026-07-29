@@ -1,0 +1,42 @@
+diff --git a/demo/zariya.css b/demo/zariya.css
+--- a/demo/zariya.css
++++ b/demo/zariya.css
+@@ -1,11 +1,12 @@
+ .zariya-title {
+-  height: 58px;
+-  line-height: 0.82;
+-  overflow: hidden;
++  min-height: 58px;
++  line-height: 1.17;
++  overflow: visible;
+ }
+ 
+ .zariya-cta {
+-  width: 152px;
+-  white-space: nowrap;
+-  overflow: hidden;
++  min-width: 152px;
++  width: auto;
++  white-space: normal;
++  overflow: visible;
+ }
+diff --git a/demo/translations.ta.json b/demo/translations.ta.json
+--- a/demo/translations.ta.json
++++ b/demo/translations.ta.json
+@@ -1,3 +1,3 @@
+ {
+-  "trial": "dashboard.start_trial"
++  "trial": "இலவசமாகத் தொடங்குங்கள்"
+ }
+diff --git a/demo/zariya-runtime.json b/demo/zariya-runtime.json
+--- a/demo/zariya-runtime.json
++++ b/demo/zariya-runtime.json
+@@ -1,5 +1,5 @@
+ {
+-  "htmlLang": "en",
+-  "urduDirection": "ltr",
+-  "localeSwitcherLabel": null
++  "htmlLang": "hi",
++  "urduDirection": "rtl",
++  "localeSwitcherLabel": "Change language"
+ }

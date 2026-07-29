@@ -1,0 +1,1 @@
+BhashaFix repairs the multilingual UI failures translation tools miss—and proves every fix in the rendered product.
