@@ -9,13 +9,38 @@ const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
 const server = createMcpServer(root);
 const client = new Client({ name: "bhashafix-inspector", version: "0.2.0" });
 
+async function resetDemo() {
+  for (const file of [
+    "layout.json",
+    "locale-state.json",
+    "translations.json",
+    "glossary.json",
+  ]) {
+    await copyFile(
+      path.join(root, "fixtures/multilingual-demo/baseline", file),
+      path.join(root, "apps/demo-target/data", file),
+    );
+  }
+}
+
 function parseText(result: Awaited<ReturnType<Client["callTool"]>>) {
-  const block = result.content.find((item) => item.type === "text");
-  if (!block || block.type !== "text") throw new Error("MCP result omitted text.");
+  const content = (result as { content?: unknown }).content;
+  if (!Array.isArray(content)) throw new Error("MCP result omitted content.");
+  const block = content.find(
+    (item): item is { type: "text"; text: string } =>
+      Boolean(
+        item &&
+          typeof item === "object" &&
+          (item as { type?: unknown }).type === "text" &&
+          typeof (item as { text?: unknown }).text === "string",
+      ),
+  );
+  if (!block) throw new Error("MCP result omitted text.");
   return JSON.parse(block.text);
 }
 
 try {
+  await resetDemo();
   await server.connect(serverTransport);
   await client.connect(clientTransport);
   const tools = await client.listTools();
@@ -63,15 +88,5 @@ try {
 } finally {
   await client.close().catch(() => undefined);
   await server.close().catch(() => undefined);
-  for (const file of [
-    "layout.json",
-    "locale-state.json",
-    "translations.json",
-    "glossary.json",
-  ]) {
-    await copyFile(
-      path.join(root, "fixtures/multilingual-demo/baseline", file),
-      path.join(root, "apps/demo-target/data", file),
-    );
-  }
+  await resetDemo();
 }

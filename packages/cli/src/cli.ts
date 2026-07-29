@@ -3,6 +3,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { inspectProject, scanDemoProject } from "@bhashafix/core";
+import { loadProjectConfig } from "@bhashafix/config";
 import { fetchWithPolicy } from "@bhashafix/crawler";
 import { extractTextFromHtml, redactSecrets } from "@bhashafix/extractor";
 import { applyRepair, prepareRepair } from "@bhashafix/repair-engine";
@@ -33,6 +34,8 @@ type Options = {
   output?: string;
   project: string;
   url?: string;
+  configPath?: string;
+  failOn: "blocking" | "warning" | "advisory";
   apply: boolean;
 };
 
@@ -58,6 +61,7 @@ Commands:
 Options:
   --json --quiet --verbose --output <path> --changed-only --no-ai
   --dry-run --apply --project <path> --url <url>
+  --config <path> --fail-on <blocking|warning|advisory>
 
 Exit codes: 0 passed · 1 blocking issues · 2 invalid config ·
             3 target unavailable · 4 runtime failure · 5 provider failure`;
@@ -72,6 +76,7 @@ function parseArgs(args: string[]) {
     noAi: args.includes("--no-ai"),
     changedOnly: args.includes("--changed-only"),
     apply: args.includes("--apply"),
+    failOn: "blocking",
     project: process.cwd(),
   };
   for (let index = 1; index < args.length; index += 1) {
@@ -79,6 +84,13 @@ function parseArgs(args: string[]) {
     if (args[index] === "--output" && value) options.output = value;
     if (args[index] === "--project" && value) options.project = path.resolve(value);
     if (args[index] === "--url" && value) options.url = value;
+    if (args[index] === "--config" && value) options.configPath = value;
+    if (args[index] === "--fail-on" && value) {
+      if (!["blocking", "warning", "advisory"].includes(value)) {
+        throw new Error(`Invalid --fail-on severity "${value}".`);
+      }
+      options.failOn = value as Options["failOn"];
+    }
   }
   return { command, options };
 }
@@ -149,8 +161,8 @@ export async function runCli(
     error: (message) => console.error(message),
   },
 ) {
-  const { command, options } = parseArgs(args);
   try {
+    const { command, options } = parseArgs(args);
     if (command === "help" || command === "--help" || command === "-h") {
       io.out(HELP);
       return EXIT.passed;
@@ -159,6 +171,9 @@ export async function runCli(
       const files = await initialise(options.project);
       emit(io, options, { status: "initialised", files }, `Initialised ${files.length} project files.`);
       return EXIT.passed;
+    }
+    if (options.configPath) {
+      await loadProjectConfig(options.project, options.configPath);
     }
     if (command === "inspect") {
       const inspection = await inspectProject(options.project);
@@ -264,13 +279,28 @@ export async function runCli(
     }
     if (command === "ci") {
       const scan = await scanDemoProject(options.project);
+      const severityRank = { blocking: 0, warning: 1, advisory: 2 } as const;
+      const failingIssues = scan.issues.filter(
+        (issue) => severityRank[issue.severity] <= severityRank[options.failOn],
+      );
+      const ciResult = {
+        scanId: scan.scanId,
+        failOn: options.failOn,
+        failing: failingIssues.length,
+        issues: scan.issues.length,
+      };
+      if (options.output) {
+        const output = path.resolve(options.output);
+        await mkdir(path.dirname(output), { recursive: true });
+        await writeFile(output, `${JSON.stringify(ciResult, null, 2)}\n`);
+      }
       emit(
         io,
         options,
-        { scanId: scan.scanId, blocking: scan.issues.length },
-        `CI gate: ${scan.issues.length ? "FAIL" : "PASS"} (${scan.issues.length} blocking).`,
+        ciResult,
+        `CI gate: ${failingIssues.length ? "FAIL" : "PASS"} (${failingIssues.length} at or above ${options.failOn}).`,
       );
-      return scan.issues.length ? EXIT.blocking : EXIT.passed;
+      return failingIssues.length ? EXIT.blocking : EXIT.passed;
     }
     if (command === "translate") {
       io.error(

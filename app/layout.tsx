@@ -13,15 +13,15 @@ export const metadata: Metadata = {
     template: "%s — BhashaFix",
   },
   description:
-    "The open-source localization repair agent that renders, repairs, verifies, and proves multilingual UI fixes.",
+    "The open-source verification harness between AI-generated translations and production software.",
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",
   },
   openGraph: {
-    title: "BhashaFix — From broken locale to verified release",
+    title: "BhashaFix — Evidence before every global release",
     description:
-      "Five real localization failures. One bounded repair. Zero regressions.",
+      "Test, repair and prove every language before it reaches production.",
     type: "website",
     images: [
       {
@@ -34,8 +34,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "BhashaFix — From broken locale to verified release",
-    description: "5 defects → 0 defects · English PASS",
+    title: "BhashaFix — Global localisation engineering",
+    description: "10 verified failures → 0 blocking failures · source locale PASS",
     images: ["/og.png"],
   },
 };

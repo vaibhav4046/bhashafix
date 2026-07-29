@@ -1,0 +1,131 @@
+import { NextRequest, NextResponse } from "next/server";
+import { fetchWithPolicy } from "@bhashafix/crawler";
+import { extractTextFromHtml } from "@bhashafix/extractor";
+import { localeProfile } from "@bhashafix/locale-engine";
+import { z } from "zod";
+
+export const runtime = "nodejs";
+
+const InputSchema = z
+  .object({
+    url: z.string().url().max(2048),
+    sourceLocale: z.string().min(2).max(64),
+    locales: z.array(z.string().min(2).max(64)).min(1).max(20),
+  })
+  .strict();
+
+const requests = new Map<string, { count: number; resetAt: number }>();
+let activeScans = 0;
+const MAX_CONCURRENT = 2;
+const MAX_PER_MINUTE = 5;
+
+function rateLimit(identity: string) {
+  const now = Date.now();
+  const current = requests.get(identity);
+  if (!current || current.resetAt <= now) {
+    requests.set(identity, { count: 1, resetAt: now + 60_000 });
+    return true;
+  }
+  if (current.count >= MAX_PER_MINUTE) return false;
+  current.count += 1;
+  return true;
+}
+
+export async function POST(request: NextRequest) {
+  const identity =
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "anonymous";
+  if (!rateLimit(identity)) {
+    return NextResponse.json(
+      { error: "Hosted scan rate limit exceeded. Try again in one minute." },
+      { status: 429 },
+    );
+  }
+  if (activeScans >= MAX_CONCURRENT) {
+    return NextResponse.json(
+      { error: "Hosted scan concurrency limit reached. Try again shortly." },
+      { status: 429 },
+    );
+  }
+
+  let input: z.infer<typeof InputSchema>;
+  try {
+    input = InputSchema.parse(await request.json());
+    localeProfile(input.sourceLocale);
+    input.locales.forEach(localeProfile);
+  } catch (error) {
+    return NextResponse.json(
+      {
+        error:
+          error instanceof Error ? error.message : "Invalid scan configuration.",
+      },
+      { status: 400 },
+    );
+  }
+
+  activeScans += 1;
+  try {
+    const fetched = await fetchWithPolicy(input.url, {
+      hosted: true,
+      allowLocalhost: false,
+      timeoutMs: 12_000,
+      redirectLimit: 4,
+      maxBytes: 1_500_000,
+    });
+    if (fetched.status === 401 || fetched.status === 403) {
+      return NextResponse.json(
+        {
+          error:
+            "The target requires authentication or blocks automation. Use local CLI storage state when authorised.",
+        },
+        { status: 422 },
+      );
+    }
+    const route = new URL(fetched.url).pathname || "/";
+    const strings = extractTextFromHtml(fetched.body, route);
+    const declaredLang =
+      fetched.body.match(/<html[^>]*\blang=["']([^"']+)["']/i)?.[1] ?? null;
+    const issues = strings
+      .filter((item) => /^[a-z][a-z0-9_]*(?:\.[a-z0-9_]+)+$/i.test(item.text))
+      .map((item) => ({
+        category: "raw-translation-key",
+        severity: "blocking",
+        confidence: "verified",
+        route,
+        selector: item.selector,
+        text: item.text,
+      }));
+    if (declaredLang !== input.sourceLocale) {
+      issues.push({
+        category: "wrong-page-lang",
+        severity: "blocking",
+        confidence: "verified",
+        route,
+        selector: "html",
+        text: `expected ${input.sourceLocale}; received ${declaredLang ?? "missing"}`,
+      });
+    }
+    return NextResponse.json({
+      mode: "live public URL inspection",
+      url: fetched.url,
+      status: fetched.status,
+      routes: [route],
+      strings: strings.length,
+      locales: input.locales,
+      issues,
+      limitations: [
+        "This hosted quick scan inspects one public route.",
+        "Full browser, repository and authenticated coverage runs locally.",
+      ],
+    });
+  } catch (error) {
+    return NextResponse.json(
+      {
+        error:
+          error instanceof Error ? error.message : "Hosted scan runtime failure.",
+      },
+      { status: 422 },
+    );
+  } finally {
+    activeScans -= 1;
+  }
+}

@@ -1,15 +1,24 @@
 {
   "name": "@bhashafix/mcp",
   "version": "0.2.0",
-  "private": true,
+  "private": false,
+  "license": "Apache-2.0",
   "type": "module",
   "bin": {
     "bhashafix-mcp": "./dist/server.js"
   },
   "exports": {
-    ".": "./src/server.ts"
+    ".": "./dist/server.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
+    "build": "esbuild src/server.ts --bundle --platform=node --format=esm --target=node22 --outfile=dist/server.js --legal-comments=none",
     "typecheck": "tsc --noEmit --moduleResolution bundler --module esnext --target es2022 src/server.ts"
   },
   "dependencies": {

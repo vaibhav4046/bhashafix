@@ -1,820 +1,1369 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
+import baselineScan from "../public/replay/baseline-scan.json";
+import repairProof from "../public/replay/repair-proof.json";
+import { pseudoLocalise } from "@bhashafix/linguistic-engine";
 
-type Issue = {
-  id: string;
-  locale: string;
-  title: string;
-  evidence: string;
-  source: string;
+const localeSpecimens = [
+  ["en-GB", "Every language.", "Latn"],
+  ["hi-IN", "हर भाषा।", "Deva"],
+  ["ar-SA", "كل لغة.", "Arab"],
+  ["ja-JP", "すべての言語。", "Jpan"],
+  ["zh-Hant-TW", "每一種語言。", "Hant"],
+] as const;
+
+const scanNav = [
+  ["Overview", ""],
+  ["Issues", "/issues"],
+  ["Linguistic", "/linguistic"],
+  ["Visual", "/visual"],
+  ["Repairs", "/repairs"],
+  ["Report", "/report"],
+] as const;
+
+const issueTone: Record<string, string> = {
+  "vertical-clipping": "Visual",
+  "cta-overflow": "Visual",
+  "wrong-direction": "Locale",
+  "rtl-icon-order": "RTL",
+  "raw-translation-key": "Content",
+  "font-coverage": "Font",
+  "line-breaking": "Visual",
+  "placeholder-mismatch": "Integrity",
+  "glossary-violation": "Linguistic",
+  "wrong-page-lang": "Metadata",
 };
 
-const issues: Issue[] = [
-  {
-    id: "BF-HI-001",
-    locale: "HI",
-    title: "Devanagari heading clipped",
-    evidence: "scrollHeight 92px > clientHeight 58px",
-    source: "zariya.css:214",
-  },
-  {
-    id: "BF-TA-002",
-    locale: "TA",
-    title: "Tamil CTA truncates",
-    evidence: "scrollWidth 248px > clientWidth 152px",
-    source: "zariya.css:229",
-  },
-  {
-    id: "BF-UR-003",
-    locale: "UR",
-    title: "Urdu direction is LTR",
-    evidence: 'expected dir="rtl", received "ltr"',
-    source: "ZariyaPreview.tsx:88",
-  },
-  {
-    id: "BF-TA-004",
-    locale: "TA",
-    title: "Raw translation key leaked",
-    evidence: 'text contains "dashboard.start_trial"',
-    source: "translations.ts:42",
-  },
-  {
-    id: "BF-META-005",
-    locale: "A11Y",
-    title: "Locale metadata is invalid",
-    evidence: "html[lang] mismatch + unnamed switcher",
-    source: "ZariyaPreview.tsx:61",
-  },
-];
-
-const steps = ["Render", "Inspect", "Diagnose", "Repair", "Verify", "Prove"];
-const morphWords = ["Hello", "नमस्ते", "வணக்கம்", "سلام"];
-
-function Brand({ compact = false }: { compact?: boolean }) {
+export function Logo({ wordmark = true }: { wordmark?: boolean }) {
   return (
-    <Link href="/" className="brand" aria-label="BhashaFix home">
-      <span className="brand-mark" aria-hidden="true">
-        भ
+    <Link className="bf-logo" href="/" aria-label="BhashaFix home">
+      <span className="bf-mark" aria-hidden="true">
+        <i />
+        <b>✓</b>
       </span>
-      <span className="brand-word">BhashaFix</span>
-      {!compact && <span className="brand-tag">OPEN SOURCE</span>}
+      {wordmark && (
+        <span className="bf-wordmark">
+          Bhasha<span>Fix</span>
+        </span>
+      )}
     </Link>
+  );
+}
+
+function ThemeToggle() {
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
+  useEffect(() => {
+    const stored = window.localStorage.getItem("bhashafix-theme");
+    const initial = stored === "light" ? "light" : "dark";
+    document.documentElement.dataset.theme = initial;
+  }, []);
+  const toggle = () => {
+    const next =
+      document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+    setTheme(next);
+    document.documentElement.dataset.theme = next;
+    window.localStorage.setItem("bhashafix-theme", next);
+  };
+  return (
+    <button
+      className="theme-toggle"
+      onClick={toggle}
+      aria-label={`Use ${theme === "dark" ? "light" : "dark"} theme`}
+    >
+      <span>{theme === "dark" ? "☼" : "◐"}</span>
+      {theme}
+    </button>
   );
 }
 
 function Header() {
   return (
-    <header className="site-header">
-      <Brand />
-      <nav className="main-nav" aria-label="Primary navigation">
-        <Link href="/#how">How it works</Link>
-        <Link href="/lab">Live lab</Link>
-        <Link href="/report/demo-run">Proof report</Link>
+    <header className="global-header">
+      <Logo />
+      <nav aria-label="Primary">
+        <Link href="/scan">Scans</Link>
+        <Link href="/glossary">Glossary</Link>
+        <Link href="/memory">Memory</Link>
+        <Link href="/integrations">Integrations</Link>
+        <Link href="/docs">Docs</Link>
       </nav>
-      <Link className="nav-cta" href="/lab">
-        Run the proof <span aria-hidden="true">↗</span>
-      </Link>
+      <div className="header-actions">
+        <ThemeToggle />
+        <Link className="button button-small" href="/scan/new">
+          New scan
+        </Link>
+      </div>
     </header>
   );
 }
 
-function Orb() {
+function TrustClaim() {
+  return (
+    <p className="trust-claim">
+      BhashaFix supports Unicode content and user-selected BCP 47 locales
+      through a provider-independent localisation pipeline. Deterministic
+      engineering checks are authoritative. Linguistic judgements include
+      confidence levels and human-review gates.
+    </p>
+  );
+}
+
+function LanguageStream() {
   const [index, setIndex] = useState(0);
   useEffect(() => {
     const timer = window.setInterval(
-      () => setIndex((value) => (value + 1) % morphWords.length),
-      1800,
+      () => setIndex((value) => (value + 1) % localeSpecimens.length),
+      2200,
     );
     return () => window.clearInterval(timer);
   }, []);
-
   return (
-    <div className="orb-shell" aria-label={`Multilingual greeting: ${morphWords[index]}`}>
-      <div className="orb-a" />
-      <div className="orb-b" />
-      <div className="orb-core">
-        <span key={morphWords[index]}>{morphWords[index]}</span>
+    <div className="language-orbit" aria-live="polite">
+      <div className="orbit-rings" />
+      <div className="orbit-core">
+        <span>{localeSpecimens[index][0]}</span>
+        <strong key={localeSpecimens[index][0]}>
+          {localeSpecimens[index][1]}
+        </strong>
+        <small>{localeSpecimens[index][2]} · rendered specimen</small>
       </div>
-      <div className="orb-ring orb-ring-one" />
-      <div className="orb-ring orb-ring-two" />
-      <div className="orbit-label orbit-label-one">HI</div>
-      <div className="orbit-label orbit-label-two">TA</div>
-      <div className="orbit-label orbit-label-three">UR</div>
+      {localeSpecimens.map(([locale], specimenIndex) => (
+        <i
+          className={specimenIndex === index ? "active" : ""}
+          style={{ "--orbit-index": specimenIndex } as React.CSSProperties}
+          key={locale}
+        >
+          {locale}
+        </i>
+      ))}
+      <div className="scan-arc" />
     </div>
   );
 }
 
-function ProductPreview() {
+function ProofConsole() {
+  const issues = baselineScan.issues.slice(0, 5);
   return (
-    <div className="preview-window" aria-label="BhashaFix product preview">
-      <div className="preview-chrome">
-        <span />
-        <span />
-        <span />
-        <div className="preview-url">bhashafix / run / zariya-0729</div>
-        <div className="live-indicator">LIVE</div>
+    <div className="hero-console">
+      <div className="console-bar">
+        <span className="traffic-lights">● ● ●</span>
+        <code>atlaspay.local / checkout / es-MX</code>
+        <b>REPLAY</b>
       </div>
-      <div className="preview-body">
-        <div className="preview-rail">
-          <strong>RUN 0729</strong>
-          {steps.map((step, index) => (
-            <div className="preview-step" key={step}>
-              <i className={index < 5 ? "done" : "current"}>
-                {index < 5 ? "✓" : index + 1}
-              </i>
-              <span>{step}</span>
-            </div>
-          ))}
+      <div className="console-body">
+        <aside>
+          <small>PIPELINE</small>
+          {["Discover", "Render", "Stress", "Repair", "Verify"].map(
+            (step, index) => (
+              <div key={step} className={index < 4 ? "done" : "current"}>
+                <i>{index < 4 ? "✓" : "5"}</i>
+                <span>{step}</span>
+              </div>
+            ),
+          )}
+        </aside>
+        <div className="console-preview">
+          <div className="preview-nav">
+            <b>AtlasPay</b>
+            <span>es-MX · 390×844</span>
+          </div>
+          <small>PAGOS GLOBALES</small>
+          <h3>Finalizar compra</h3>
+          <p>Envía dinero a cualquier lugar con total claridad.</p>
+          <button>Pagar £1,299.50</button>
+          <div className="annotation-line" />
         </div>
-        <div className="preview-device">
-          <div className="scan-beam" />
-          <div className="device-top">
-            <span>ZARIYA</span>
-            <span>हिंदी⌄</span>
-          </div>
-          <div className="device-content">
-            <small>स्मार्ट वर्कफ़्लो</small>
-            <h3>काम आगे बढ़ाएँ, बिना रुकावट के</h3>
-            <p>एक जगह पर आपकी टीम के लिए स्पष्टता।</p>
-            <button>आज ही शुरू करें</button>
-          </div>
-        </div>
-        <div className="preview-evidence">
-          <div className="evidence-top">
-            <span>ISSUE EVIDENCE</span>
-            <b>1 / 5</b>
-          </div>
-          <div className="evidence-locale">HI</div>
-          <h4>Heading vertical clip</h4>
-          <p>Rendered glyphs exceed the fixed container.</p>
-          <code>
-            scrollHeight <em>92</em>
-            <br />
-            clientHeight <b>58</b>
-          </code>
-          <div className="evidence-source">
-            zariya.css <span>line 214</span>
-          </div>
+        <div className="console-evidence">
+          <span>VERIFIED EVIDENCE</span>
+          <b>{issues[4].issueId}</b>
+          <h4>{issues[4].category.replaceAll("-", " ")}</h4>
+          <p>{issues[4].description}</p>
+          <code>{issues[4].deterministicPredicate}</code>
+          <small>confidence · verified</small>
         </div>
       </div>
-      <div className="preview-terminal">
-        <span className="terminal-prompt">$</span>
-        <span>pnpm bhashafix verify --case BF-HI-001</span>
-        <span className="terminal-pass">PASS · 842ms</span>
+      <div className="console-command">
+        <span>$</span>
+        <code>bhashafix verify --changed-only</code>
+        <b>10 → 0 · EN-GB PASS</b>
       </div>
     </div>
   );
 }
 
 export function LandingPage() {
+  const [url, setUrl] = useState("");
   return (
-    <main className="site-shell">
-      <div className="liquid liquid-one" />
-      <div className="liquid liquid-two" />
+    <main className="landing-shell">
       <Header />
-      <section className="hero">
+      <section className="landing-hero">
         <div className="hero-copy">
-          <div className="eyebrow">
-            <span className="eyebrow-pulse" />
-            OPEN-SOURCE LOCALIZATION REPAIR
-          </div>
+          <span className="eyebrow">
+            <i /> OPEN-SOURCE LOCALISATION ENGINEERING
+          </span>
           <h1>
-            Translation is done.
+            Every language.
             <br />
-            <span>The UI is still broken.</span>
+            Every viewport.
+            <br />
+            <em>Evidence before release.</em>
           </h1>
-          <p className="hero-lede">
-            BhashaFix renders every locale, catches what translation tools miss,
-            repairs the source, and proves the product is fixed.
+          <p>
+            BhashaFix scans translated products for linguistic, visual,
+            accessibility and locale failures—then verifies the repair.
           </p>
+          <form
+            className="url-launcher"
+            onSubmit={(event) => {
+              event.preventDefault();
+              window.location.href = `/scan/new${url ? `?url=${encodeURIComponent(url)}` : ""}`;
+            }}
+          >
+            <span aria-hidden="true">⌁</span>
+            <input
+              type="url"
+              placeholder="https://your-product.com"
+              aria-label="Public website URL"
+              value={url}
+              onChange={(event) => setUrl(event.target.value)}
+            />
+            <button type="submit">Scan a website →</button>
+          </form>
           <div className="hero-actions">
-            <Link className="button button-primary" href="/lab">
-              Watch 5 defects disappear <span>↗</span>
+            <Link className="text-action" href="/docs#repository">
+              ⌘ Connect a repository
             </Link>
-            <Link className="button button-ghost" href="/report/demo-run">
-              View proof report
+            <Link className="text-action" href="/scan/atlaspay-replay">
+              ▶ Open verified replay
             </Link>
           </div>
-          <div className="hero-proof">
-            <div className="avatar-stack" aria-hidden="true">
-              <i>हि</i>
-              <i>த</i>
-              <i>ا</i>
-            </div>
-            <div>
-              <strong>Hindi · Tamil · Urdu</strong>
-              <span>Mobile + desktop · English regression protected</span>
-            </div>
+          <div className="proof-line">
+            <span>✓</span>
+            Linguistic quality + browser evidence + verified repair
           </div>
         </div>
-        <div className="hero-visual">
-          <Orb />
-          <div className="orb-caption">
-            <span>Rendered truth</span>
-            <i />
-            <b>not string confidence</b>
-          </div>
-        </div>
+        <LanguageStream />
       </section>
 
-      <section className="proof-strip" aria-label="Proof summary">
+      <section className="proof-ribbon">
         <div>
-          <small>BASELINE</small>
-          <strong className="danger-text">05</strong>
-          <span>reproducible defects</span>
+          <span>BASELINE</span>
+          <strong>10</strong>
+          <small>verified failures</small>
         </div>
-        <div className="proof-arrow">
-          <span />
-          CODEX REPAIR
-          <span />
+        <div className="ribbon-flow">
+          <i />
+          <span>IDENTICAL TESTS</span>
+          <i />
         </div>
         <div>
-          <small>VERIFIED</small>
-          <strong className="success-text">00</strong>
-          <span>open defects</span>
+          <span>FINAL</span>
+          <strong className="green">0</strong>
+          <small>blocking failures</small>
         </div>
-        <div className="proof-seal">
-          <i>✓</i>
+        <div className="regression-seal">
+          <b>✓</b>
           <span>
-            ENGLISH
-            <b>REGRESSION PASS</b>
+            SOURCE LOCALE
+            <strong>REGRESSION PASS</strong>
           </span>
         </div>
       </section>
 
-      <section className="showcase">
-        <div className="section-heading">
-          <div>
-            <span className="section-index">01 / THE MOMENT</span>
-            <h2>
-              From broken locale
-              <br />
-              to <em>verified release.</em>
-            </h2>
-          </div>
+      <section className="product-story">
+        <div className="section-intro">
+          <span>THE SPECIALISED HARNESS</span>
+          <h2>
+            AI translates the strings.
+            <br />
+            <em>BhashaFix tests the product.</em>
+          </h2>
           <p>
-            One replayable run. Every claim backed by a rendered predicate,
-            source diff, and command receipt.
+            General coding agents reason broadly. BhashaFix gives them browser
+            evidence, locale constraints, terminology, memory and pass/fail
+            verification.
           </p>
         </div>
-        <ProductPreview />
+        <ProofConsole />
       </section>
 
-      <section className="pipeline" id="how">
-        <div className="section-heading">
-          <div>
-            <span className="section-index">02 / THE LOOP</span>
-            <h2>
-              Six stages.
-              <br />
-              <em>Zero hand-waving.</em>
-            </h2>
-          </div>
-          <p>
-            A model can suggest a fix. Only the original browser predicate can
-            accept it.
-          </p>
+      <section className="workflow-section">
+        <div className="section-intro compact">
+          <span>ONE ENGINE · FOUR SURFACES</span>
+          <h2>Use the same truth everywhere.</h2>
         </div>
-        <div className="pipeline-grid">
-          {steps.map((step, index) => (
-            <article key={step}>
+        <div className="surface-grid">
+          {[
+            ["Web", "Review routes, locales, screenshots and bounded repairs.", "/scan"],
+            ["CLI", "Gate releases locally with stable exit codes and JSON.", "/docs#cli"],
+            ["MCP", "Give coding agents strict evidence and repair tools.", "/integrations"],
+            ["CI", "Upload reports, screenshots, SARIF and JUnit artifacts.", "/integrations#ci"],
+          ].map(([title, body, href], index) => (
+            <Link href={href} key={title} className="surface-card">
               <span>0{index + 1}</span>
-              <i>{["◫", "⌖", "⌁", "⌘", "✓", "⬡"][index]}</i>
-              <h3>{step}</h3>
-              <p>
-                {
-                  [
-                    "Open the real route at the exact locale and viewport.",
-                    "Measure overflow, metadata, a11y, keys, and direction.",
-                    "Bundle selector, evidence, screenshot, and source hints.",
-                    "Apply the smallest patch inside a strict path allowlist.",
-                    "Rerun the identical failing case plus English controls.",
-                    "Export before/after proof, receipts, and the unified diff.",
-                  ][index]
-                }
-              </p>
-            </article>
+              <i>{["⌁", "›_", "◇", "✓"][index]}</i>
+              <h3>{title}</h3>
+              <p>{body}</p>
+              <b>Explore →</b>
+            </Link>
           ))}
         </div>
       </section>
 
-      <section className="closing">
+      <section className="locale-matrix">
+        <div className="section-intro compact">
+          <span>LOCALE-AGNOSTIC BY DESIGN</span>
+          <h2>Standards, scripts and evidence.</h2>
+          <p>
+            The representative matrix spans Latin, Devanagari, Tamil, Arabic,
+            Hebrew, Han, Japanese, Korean, Thai, Cyrillic and Ethiopic scripts.
+          </p>
+        </div>
+        <div className="script-stream" aria-label="Representative locales">
+          {[
+            "en-GB",
+            "hi-IN",
+            "ta-IN",
+            "ar-SA",
+            "he-IL",
+            "zh-Hans-CN",
+            "zh-Hant-TW",
+            "ja-JP",
+            "ko-KR",
+            "th-TH",
+            "uk-UA",
+            "am-ET",
+          ].map((locale) => (
+            <span key={locale}>{locale}</span>
+          ))}
+        </div>
+        <TrustClaim />
+      </section>
+
+      <section className="landing-cta">
         <div>
-          <span className="section-index">SHIP THE RENDERED PRODUCT</span>
+          <span>SHIP THE RENDERED PRODUCT</span>
           <h2>
-            Every language.
+            Test. Repair.
             <br />
-            <em>Without the breakage.</em>
+            <em>Prove it.</em>
           </h2>
-          <Link className="button button-primary" href="/lab">
-            Run the 90-second proof <span>↗</span>
+        </div>
+        <div>
+          <Link className="button" href="/scan/new">
+            Start a scan →
+          </Link>
+          <Link className="button button-secondary" href="/scan/atlaspay-replay/report">
+            View 10 → 0 proof
           </Link>
         </div>
-        <Orb />
       </section>
-      <footer>
-        <Brand compact />
-        <p>Built in the open for the Codex Hackathon 2026.</p>
-        <Link href="/report/demo-run">View verified run →</Link>
-      </footer>
+      <Footer />
     </main>
   );
 }
 
-function HiddenFrames({
-  state,
-  frameRefs,
-}: {
-  state: "broken" | "fixed";
-  frameRefs: React.MutableRefObject<Record<string, HTMLIFrameElement | null>>;
-}) {
+function Footer() {
   return (
-    <div className="scan-bench" aria-hidden="true">
-      {["hi", "ta", "ur"].map((locale) => (
-        <iframe
-          key={`${locale}-${state}`}
-          ref={(element) => {
-            frameRefs.current[`${state}-${locale}`] = element;
-          }}
-          src={`/zariya/${locale}?state=${state}&bench=true`}
-          title={`${locale} ${state} scan bench`}
-        />
+    <footer className="global-footer">
+      <Logo />
+      <p>Test, repair and prove every language before production.</p>
+      <div>
+        <Link href="/docs">Documentation</Link>
+        <Link href="/docs#security">Trust centre</Link>
+        <Link href="/integrations">Open-source integrations</Link>
+      </div>
+    </footer>
+  );
+}
+
+function AppShell({ children }: { children: React.ReactNode }) {
+  return (
+    <main className="app-page">
+      <Header />
+      {children}
+    </main>
+  );
+}
+
+export function ScanIndexPage() {
+  return (
+    <AppShell>
+      <section className="page-heading">
+        <div>
+          <span>RELEASE CONTROL</span>
+          <h1>Localisation scans</h1>
+          <p>Real deterministic runs and clearly labelled replay evidence.</p>
+        </div>
+        <Link className="button" href="/scan/new">
+          New scan
+        </Link>
+      </section>
+      <section className="scan-list">
+        <Link href="/scan/atlaspay-replay" className="scan-row">
+          <div className="scan-symbol verified">✓</div>
+          <div>
+            <strong>AtlasPay global release gate</strong>
+            <span>Replay of genuine deterministic artifacts</span>
+          </div>
+          <div>
+            <small>ROUTES</small>
+            <b>5</b>
+          </div>
+          <div>
+            <small>LOCALES</small>
+            <b>10</b>
+          </div>
+          <div>
+            <small>PROOF</small>
+            <b className="green">10 → 0</b>
+          </div>
+          <time>29 Jul 2026</time>
+          <span>→</span>
+        </Link>
+        <div className="empty-scan-row">
+          <span>⌁</span>
+          <div>
+            <strong>Run your own target next</strong>
+            <p>Public URLs use hosted SSRF controls. Localhost stays in the CLI.</p>
+          </div>
+          <Link href="/scan/new">Configure scan →</Link>
+        </div>
+      </section>
+    </AppShell>
+  );
+}
+
+export function NewScanPage() {
+  const [step, setStep] = useState(0);
+  const [target, setTarget] = useState<"public" | "local" | "demo">("demo");
+  const [url, setUrl] = useState("");
+  const [sourceLocale, setSourceLocale] = useState("en-GB");
+  const [locales, setLocales] = useState([
+    "hi-IN",
+    "ar-SA",
+    "ja-JP",
+    "de-DE",
+  ]);
+  const [localeQuery, setLocaleQuery] = useState("");
+  const [customLocale, setCustomLocale] = useState("");
+  const [localeError, setLocaleError] = useState("");
+  const [running, setRunning] = useState(false);
+  const [liveResult, setLiveResult] = useState<string | null>(null);
+  const steps = ["Target", "Locales", "Coverage", "Guardrails", "Summary"];
+  const localeOptions = [
+    "hi-IN",
+    "ta-IN",
+    "ar-SA",
+    "he-IL",
+    "fa-IR",
+    "ja-JP",
+    "ko-KR",
+    "zh-Hans-CN",
+    "zh-Hant-TW",
+    "de-DE",
+    "fr-FR",
+    "es-MX",
+    "pt-BR",
+    "sw-KE",
+    "am-ET",
+    "th-TH",
+    "uk-UA",
+  ];
+  const visibleLocaleOptions = localeOptions.filter((locale) =>
+    locale.toLowerCase().includes(localeQuery.trim().toLowerCase()),
+  );
+  const addCustomLocale = () => {
+    try {
+      const canonical = new Intl.Locale(customLocale.trim()).toString();
+      setLocales((current) =>
+        current.includes(canonical) ? current : [...current, canonical],
+      );
+      setCustomLocale("");
+      setLocaleQuery("");
+      setLocaleError("");
+    } catch {
+      setLocaleError("Enter a valid BCP 47 locale such as pt-BR.");
+    }
+  };
+  const run = async () => {
+    if (target === "demo") {
+      window.location.href = "/scan/atlaspay-replay";
+      return;
+    }
+    if (target === "local") {
+      setLiveResult(
+        "Local repository scans run through the CLI so source and credentials remain on your machine.",
+      );
+      return;
+    }
+    setRunning(true);
+    setLiveResult(null);
+    try {
+      const response = await fetch("/api/scan", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ url, sourceLocale, locales }),
+      });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error ?? "Scan failed.");
+      setLiveResult(
+        `Live inspection completed: ${payload.routes.length} route, ${payload.strings} visible strings, ${payload.issues.length} deterministic content findings.`,
+      );
+    } catch (error) {
+      setLiveResult(error instanceof Error ? error.message : String(error));
+    } finally {
+      setRunning(false);
+    }
+  };
+  return (
+    <AppShell>
+      <section className="wizard-shell">
+        <aside className="wizard-steps">
+          <span>NEW SCAN</span>
+          {steps.map((label, index) => (
+            <button
+              className={index === step ? "active" : index < step ? "done" : ""}
+              onClick={() => setStep(index)}
+              key={label}
+            >
+              <i>{index < step ? "✓" : index + 1}</i>
+              <span>{label}</span>
+            </button>
+          ))}
+          <TrustClaim />
+        </aside>
+        <section className="wizard-stage">
+          <div className="wizard-title">
+            <span>
+              STEP {step + 1} / {steps.length}
+            </span>
+            <h1>{steps[step]}</h1>
+          </div>
+          {step === 0 && (
+            <div className="choice-grid">
+              {[
+                ["public", "Public URL", "Hosted crawl with SSRF, redirect and response limits.", "◎"],
+                ["local", "Local project", "Repository discovery and localhost rendering through the CLI.", "⌘"],
+                ["demo", "AtlasPay demo", "A genuine ten-failure replay with bounded repair proof.", "◇"],
+              ].map(([value, title, body, icon]) => (
+                <button
+                  className={target === value ? "active" : ""}
+                  onClick={() => setTarget(value as typeof target)}
+                  key={value}
+                >
+                  <i>{icon}</i>
+                  <strong>{title}</strong>
+                  <span>{body}</span>
+                  <b>{target === value ? "Selected ✓" : "Select"}</b>
+                </button>
+              ))}
+              {target === "public" && (
+                <label className="field wide">
+                  Public website URL
+                  <input
+                    type="url"
+                    placeholder="https://your-product.com"
+                    value={url}
+                    onChange={(event) => setUrl(event.target.value)}
+                  />
+                </label>
+              )}
+            </div>
+          )}
+          {step === 1 && (
+            <div className="locale-picker">
+              <label className="field">
+                Source locale
+                <input
+                  value={sourceLocale}
+                  onChange={(event) => setSourceLocale(event.target.value)}
+                />
+              </label>
+              <div className="field">
+                Target locales
+                <input
+                  aria-label="Search target locales"
+                  placeholder="Search locale presets"
+                  value={localeQuery}
+                  onChange={(event) => setLocaleQuery(event.target.value)}
+                />
+                <div className="locale-options">
+                  {visibleLocaleOptions.map((locale) => (
+                    <button
+                      className={locales.includes(locale) ? "active" : ""}
+                      onClick={() =>
+                        setLocales((current) =>
+                          current.includes(locale)
+                            ? current.filter((item) => item !== locale)
+                            : [...current, locale],
+                        )
+                      }
+                      key={locale}
+                    >
+                      {locale} {locales.includes(locale) && "✓"}
+                    </button>
+                  ))}
+                </div>
+                <div className="custom-locale">
+                  <input
+                    aria-label="Custom BCP 47 target locale"
+                    placeholder="Add any BCP 47 tag"
+                    value={customLocale}
+                    onChange={(event) => setCustomLocale(event.target.value)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter") {
+                        event.preventDefault();
+                        addCustomLocale();
+                      }
+                    }}
+                  />
+                  <button type="button" onClick={addCustomLocale}>
+                    Add locale
+                  </button>
+                </div>
+                {localeError && <small className="field-error">{localeError}</small>}
+              </div>
+              <p className="inline-note">
+                Valid BCP 47 tags are canonicalised through `Intl.Locale`.
+              </p>
+            </div>
+          )}
+          {step === 2 && (
+            <div className="coverage-grid">
+              {[
+                ["Routes", "Sitemap + internal links", "5 max for this run"],
+                ["Viewports", "390×844 · 768×1024 · 1440×900", "All selected"],
+                ["Browsers", "Chromium", "Firefox/WebKit optional"],
+                ["Themes", "Light · Dark", "Both selected"],
+                ["Accessibility", "Keyboard · labels · serious axe checks", "Enabled"],
+                ["Stress", "Expansion · RTL · tall glyph · no-space", "Enabled"],
+              ].map(([title, body, status]) => (
+                <label key={title} className="coverage-option">
+                  <input type="checkbox" defaultChecked />
+                  <span>
+                    <strong>{title}</strong>
+                    <small>{body}</small>
+                  </span>
+                  <b>{status}</b>
+                </label>
+              ))}
+            </div>
+          )}
+          {step === 3 && (
+            <div className="guardrail-grid">
+              <label className="field">
+                Maximum pages
+                <input type="number" defaultValue="20" min="1" max="100" />
+              </label>
+              <label className="field">
+                Crawl depth
+                <input type="number" defaultValue="2" min="0" max="5" />
+              </label>
+              <label className="field">
+                Requests per second
+                <input type="number" defaultValue="2" min="0.2" max="10" />
+              </label>
+              <label className="field">
+                Repair mode
+                <select defaultValue="prepare">
+                  <option>suggest</option>
+                  <option value="prepare">prepare</option>
+                  <option>apply</option>
+                </select>
+              </label>
+              <label className="field wide">
+                Path allowlist
+                <textarea defaultValue={"src/locales/**\nsrc/styles/**"} />
+              </label>
+              <label className="coverage-option wide">
+                <input type="checkbox" defaultChecked />
+                <span>
+                  <strong>Sensitive-data exclusion</strong>
+                  <small>Redact tokens, secrets and personal form values.</small>
+                </span>
+                <b>Required</b>
+              </label>
+            </div>
+          )}
+          {step === 4 && (
+            <div className="run-summary">
+              <div>
+                <small>TARGET</small>
+                <strong>{target === "demo" ? "AtlasPay bundled demo" : target === "public" ? url || "Public URL" : "Local repository"}</strong>
+              </div>
+              <div>
+                <small>LOCALES</small>
+                <strong>{sourceLocale} → {locales.join(", ")}</strong>
+              </div>
+              <div>
+                <small>COVERAGE</small>
+                <strong>3 viewports · 2 themes · Chromium · accessibility</strong>
+              </div>
+              <div>
+                <small>POLICY</small>
+                <strong>No-AI · prepare repairs · bounded crawl</strong>
+              </div>
+              {liveResult && <p className="run-result">{liveResult}</p>}
+            </div>
+          )}
+          <div className="wizard-footer">
+            <button
+              className="button button-secondary"
+              disabled={step === 0}
+              onClick={() => setStep((value) => Math.max(0, value - 1))}
+            >
+              Back
+            </button>
+            {step < 4 ? (
+              <button
+                className="button"
+                onClick={() => setStep((value) => Math.min(4, value + 1))}
+              >
+                Continue →
+              </button>
+            ) : (
+              <button className="button" onClick={run} disabled={running}>
+                {running ? "Inspecting target…" : "Run scan →"}
+              </button>
+            )}
+          </div>
+        </section>
+      </section>
+    </AppShell>
+  );
+}
+
+function ScanHeader({ section }: { section: string }) {
+  return (
+    <>
+      <section className="scan-header">
+        <div>
+          <Link href="/scan">← Scans</Link>
+          <span className="replay-badge">REPLAY · GENUINE ARTIFACTS</span>
+          <h1>AtlasPay global release gate</h1>
+          <p>
+            {baselineScan.scanId} · 5 routes · 10 locales · deterministic mode
+          </p>
+        </div>
+        <div className="scan-status">
+          <span>VERIFIED</span>
+          <strong>10 → 0</strong>
+          <small>source locale PASS</small>
+        </div>
+      </section>
+      <nav className="scan-tabs" aria-label="Scan views">
+        {scanNav.map(([label, suffix]) => (
+          <Link
+            className={
+              section.toLowerCase() === label.toLowerCase() ? "active" : ""
+            }
+            href={`/scan/atlaspay-replay${suffix}`}
+            key={label}
+          >
+            {label}
+            {label === "Issues" && <b>10</b>}
+          </Link>
+        ))}
+      </nav>
+    </>
+  );
+}
+
+function PipelineRail() {
+  const stages = [
+    ["Discover", "5 routes", "✓"],
+    ["Extract", "34 strings", "✓"],
+    ["Render", "30 cases", "✓"],
+    ["Stress", "8 modes", "✓"],
+    ["Diagnose", "10 issues", "✓"],
+    ["Repair", "3 files", "✓"],
+    ["Verify", "0 blocking", "✓"],
+    ["Prove", "8 artifacts", "✓"],
+  ];
+  return (
+    <aside className="pipeline-rail">
+      <span>PIPELINE</span>
+      {stages.map(([name, detail, state]) => (
+        <div key={name}>
+          <i>{state}</i>
+          <span>
+            <strong>{name}</strong>
+            <small>{detail}</small>
+          </span>
+        </div>
+      ))}
+      <section>
+        <small>MODE</small>
+        <strong>No-AI deterministic</strong>
+        <p>No provider key required.</p>
+      </section>
+    </aside>
+  );
+}
+
+function RouteLocaleMatrix() {
+  const routes = ["/", "/pricing", "/dashboard", "/checkout", "/settings"];
+  const locales = ["hi", "de", "ar", "he", "ja", "zh", "th", "fr", "es", "en"];
+  return (
+    <div className="matrix">
+      <div className="matrix-head">
+        <span>ROUTE × LOCALE</span>
+        {locales.map((locale) => (
+          <b key={locale}>{locale}</b>
+        ))}
+      </div>
+      {routes.map((route, routeIndex) => (
+        <div className="matrix-row" key={route}>
+          <strong>{route}</strong>
+          {locales.map((locale, localeIndex) => {
+            const issue = baselineScan.issues.find(
+              (item) =>
+                item.route === route &&
+                item.locale.toLowerCase().startsWith(locale),
+            );
+            return (
+              <i
+                className={issue ? "fixed" : "pass"}
+                title={issue ? `${issue.issueId} repaired` : "Passed"}
+                key={`${routeIndex}-${localeIndex}`}
+              >
+                {issue ? "●" : "✓"}
+              </i>
+            );
+          })}
+        </div>
       ))}
     </div>
   );
 }
 
-async function inspectRenderedFrames(
-  state: "broken" | "fixed",
-  refs: Record<string, HTMLIFrameElement | null>,
-) {
-  const hi = refs[`${state}-hi`]?.contentDocument;
-  const ta = refs[`${state}-ta`]?.contentDocument;
-  const ur = refs[`${state}-ur`]?.contentDocument;
-  if (!hi || !ta || !ur) return null;
-
-  const hiHeading = hi.querySelector<HTMLElement>("[data-bf='hi-heading']");
-  const taCta = ta.querySelector<HTMLElement>("[data-bf='ta-cta']");
-  const rawKey = ta.querySelector<HTMLElement>("[data-bf='trial-label']");
-  const switcher = hi.querySelector<HTMLElement>("[data-bf='locale-switcher']");
-
-  return [
-    !!hiHeading && hiHeading.scrollHeight > hiHeading.clientHeight + 4,
-    !!taCta && taCta.scrollWidth > taCta.clientWidth + 1,
-    ur.documentElement.dir !== "rtl",
-    rawKey?.textContent?.includes("dashboard.start_trial") ?? false,
-    hi.documentElement.lang !== "hi" || !switcher?.getAttribute("aria-label"),
-  ];
-}
-
-export function LabPage() {
-  const [stage, setStage] = useState(-1);
-  const [found, setFound] = useState<number[]>([]);
-  const [finalOpen, setFinalOpen] = useState<number | null>(null);
-  const [running, setRunning] = useState(false);
-  const frameRefs = useRef<Record<string, HTMLIFrameElement | null>>({});
-
-  const runProof = async () => {
-    if (running) return;
-    setRunning(true);
-    setFound([]);
-    setFinalOpen(null);
-    setStage(0);
-    await new Promise((resolve) => window.setTimeout(resolve, 700));
-    const baseline = await inspectRenderedFrames("broken", frameRefs.current);
-    setStage(1);
-    const detected = baseline
-      ? baseline.flatMap((isBroken, index) => (isBroken ? [index] : []))
-      : [0, 1, 2, 3, 4];
-    for (const item of detected) {
-      setFound((current) => [...current, item]);
-      await new Promise((resolve) => window.setTimeout(resolve, 220));
-    }
-    setStage(2);
-    await new Promise((resolve) => window.setTimeout(resolve, 850));
-    setStage(3);
-    await new Promise((resolve) => window.setTimeout(resolve, 1100));
-    setStage(4);
-    await new Promise((resolve) => window.setTimeout(resolve, 900));
-    const repaired = await inspectRenderedFrames("fixed", frameRefs.current);
-    setFinalOpen(repaired ? repaired.filter(Boolean).length : 0);
-    setStage(5);
-    setRunning(false);
-  };
-
-  const activeIssue = issues[Math.min(Math.max(found.length - 1, 0), 4)];
-  const completed = stage === 5 && finalOpen === 0;
-
+function EvidenceCard({ issueIndex = 0 }: { issueIndex?: number }) {
+  const issue = baselineScan.issues[issueIndex] ?? baselineScan.issues[0];
   return (
-    <main className="lab-shell">
-      <HiddenFrames state="broken" frameRefs={frameRefs} />
-      <HiddenFrames state="fixed" frameRefs={frameRefs} />
-      <header className="lab-header">
-        <Brand />
-        <div className="run-meta">
-          <span className="live-dot" />
-          REPLAY MODE · DETERMINISTIC
-        </div>
-        <Link href="/report/demo-run">Open proof report ↗</Link>
-      </header>
-      <section className="lab-topbar">
-        <div>
-          <Link href="/">←</Link>
-          <span>
-            RUN <b>BF-0729</b>
-          </span>
-          <strong>Zariya localization release gate</strong>
-        </div>
-        <button className="button button-primary" onClick={runProof} disabled={running}>
-          {running ? "Proof running…" : completed ? "Run proof again" : "Run 5 → 0 proof"}
-        </button>
-      </section>
-      <div className="lab-layout">
-        <aside className="lab-pipeline">
-          <span className="panel-label">PIPELINE</span>
-          {steps.map((step, index) => (
-            <div
-              className={`lab-step ${stage === index ? "active" : ""} ${
-                stage > index ? "complete" : ""
-              }`}
-              key={step}
-            >
-              <i>{stage > index ? "✓" : index + 1}</i>
-              <div>
-                <strong>{step}</strong>
-                <span>
-                  {
-                    [
-                      "6 locale routes",
-                      "DOM + metadata",
-                      "5 issue bundles",
-                      "3 source files",
-                      "same predicates",
-                      "proof artifacts",
-                    ][index]
-                  }
-                </span>
-              </div>
-            </div>
-          ))}
-          <div className="scope-card">
-            <span>REPAIR BOUNDARY</span>
-            <strong>3 allowlisted files</strong>
-            <code>app/zariya/**</code>
-            <code>lib/translations.ts</code>
-            <code>app/globals.css</code>
-          </div>
-        </aside>
-
-        <section className="lab-centre">
-          <div className="preview-toolbar">
-            <div>
-              <button className="active">390 × 844</button>
-              <button>1440 × 900</button>
-            </div>
-            <div className="locale-pills">
-              <span>EN ✓</span>
-              <span>HI</span>
-              <span>TA</span>
-              <span>UR</span>
-            </div>
-          </div>
-          <div className="device-stage">
-            <iframe
-              className="live-device"
-              src={`/zariya/${found.length >= 3 ? "ur" : found.length >= 1 ? "ta" : "hi"}?state=${
-                stage >= 4 ? "fixed" : "broken"
-              }`}
-              title="Live Zariya app preview"
-            />
-            {running && stage <= 1 && <div className="stage-scan-beam" />}
-            <div className={`status-toast ${completed ? "success" : ""}`}>
-              <i>{completed ? "✓" : found.length || "0"}</i>
-              <span>
-                <strong>{completed ? "All predicates green" : "Canonical defects"}</strong>
-                {completed ? "English regression: PASS" : `${found.length} evidence bundles captured`}
-              </span>
-            </div>
-          </div>
-        </section>
-
-        <aside className="lab-evidence-panel">
-          <div className="panel-heading">
-            <span className="panel-label">ISSUE EVIDENCE</span>
-            <b>{found.length} / 5</b>
-          </div>
-          {found.length === 0 ? (
-            <div className="empty-evidence">
-              <div className="radar">
-                <i />
-                <i />
-                <i />
-              </div>
-              <h3>Waiting for rendered truth</h3>
-              <p>Start the proof to measure the bundled Zariya app.</p>
-            </div>
-          ) : (
-            <div className="active-evidence">
-              <div className="issue-id">
-                <span>{activeIssue.locale}</span>
-                {activeIssue.id}
-              </div>
-              <h3>{activeIssue.title}</h3>
-              <p>
-                Browser measurement reproduced the failure at 390 × 844.
-              </p>
-              <code>{activeIssue.evidence}</code>
-              <div className="source-link">
-                <span>Source hint</span>
-                <b>{activeIssue.source}</b>
-              </div>
-              <div className="issue-stack">
-                {issues.map((issue, index) => (
-                  <div className={found.includes(index) ? "visible" : ""} key={issue.id}>
-                    <i>{found.includes(index) ? "!" : "·"}</i>
-                    <span>{issue.id}</span>
-                    <b>{issue.locale}</b>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </aside>
+    <aside className="evidence-card">
+      <div>
+        <span>{issueTone[issue.category] ?? "Issue"}</span>
+        <b>{issue.issueId}</b>
       </div>
-      <section className="command-console">
-        <div className="console-title">
-          <span>GENUINE COMMAND EVENTS</span>
-          <i />
-          <b>{completed ? "8 receipts · 0 failures" : "receipts stream"}</b>
+      <h2>{issue.category.replaceAll("-", " ")}</h2>
+      <p>{issue.description}</p>
+      <dl>
+        <div>
+          <dt>Locale</dt>
+          <dd>{issue.locale}</dd>
         </div>
-        <div className="console-lines">
-          <div className={stage >= 0 ? "shown" : ""}>
-            <span>10:42:08</span>
-            <code>$ bhashafix render --locales hi,ta,ur --viewport mobile</code>
-            <b>exit 0</b>
-          </div>
-          <div className={stage >= 1 ? "shown" : ""}>
-            <span>10:42:11</span>
-            <code>$ bhashafix inspect --run BF-0729</code>
-            <b className="warn">5 found</b>
-          </div>
-          <div className={stage >= 3 ? "shown" : ""}>
-            <span>10:42:15</span>
-            <code>$ codex repair --allow app/zariya/** --max-diff 80</code>
-            <b>3 files</b>
-          </div>
-          <div className={stage >= 4 ? "shown" : ""}>
-            <span>10:42:21</span>
-            <code>$ bhashafix verify --same-cases --english-control</code>
-            <b className="pass">PASS</b>
-          </div>
+        <div>
+          <dt>Route</dt>
+          <dd>{issue.route}</dd>
         </div>
+        <div>
+          <dt>Viewport</dt>
+          <dd>{issue.viewport.width} × {issue.viewport.height}</dd>
+        </div>
+        <div>
+          <dt>Confidence</dt>
+          <dd className="green">{issue.confidence}</dd>
+        </div>
+      </dl>
+      <section>
+        <small>MEASURED EVIDENCE</small>
+        <code>{JSON.stringify(issue.measuredEvidence, null, 2)}</code>
       </section>
-    </main>
+      <section>
+        <small>DETERMINISTIC PREDICATE</small>
+        <code>{issue.deterministicPredicate}</code>
+      </section>
+      <section>
+        <small>SOURCE HINT</small>
+        <code>{issue.sourceHint}</code>
+      </section>
+      <Link href="/scan/atlaspay-replay/repairs">Inspect bounded repair →</Link>
+    </aside>
   );
 }
 
-function downloadArtifact(filename: string, content: string, type: string) {
-  const blob = new Blob([content], { type });
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement("a");
-  anchor.href = url;
-  anchor.download = filename;
-  anchor.click();
-  URL.revokeObjectURL(url);
-}
-
-export function ReportPage() {
-  const [locale, setLocale] = useState<"hi" | "ta" | "ur">("hi");
-  const [reveal, setReveal] = useState(50);
-  const reportJson = JSON.stringify(
-    {
-      run: "BF-0729",
-      target: "Zariya",
-      baselineDefects: 5,
-      finalDefects: 0,
-      englishRegression: "PASS",
-      locales: ["hi", "ta", "ur"],
-      viewports: ["390x844", "1440x900"],
-      changedFiles: [
-        "app/zariya/ZariyaPreview.tsx",
-        "lib/translations.ts",
-        "app/globals.css",
-      ],
-      verification: "deterministic rendered predicates",
-    },
-    null,
-    2,
-  );
-  const patch = `diff --git a/app/globals.css b/app/globals.css
---- a/app/globals.css
-+++ b/app/globals.css
-@@ -214,4 +214,4 @@
--.zariya-title { height: 58px; line-height: .9; overflow: hidden; }
-+.zariya-title { min-height: 58px; line-height: 1.22; overflow: visible; }
-@@ -229,3 +229,3 @@
--.zariya-cta { width: 152px; white-space: nowrap; overflow: hidden; }
-+.zariya-cta { width: auto; min-width: 152px; white-space: normal; }
-diff --git a/lib/translations.ts b/lib/translations.ts
-@@ -42 +42 @@
--trial: "dashboard.start_trial"
-+trial: "இலவசமாகத் தொடங்குங்கள்"`;
-
+export function ScanWorkspace({ section = "Overview" }: { section?: string }) {
+  const [selectedIssue, setSelectedIssue] = useState(0);
+  const [locale, setLocale] = useState("ar-SA");
+  const [device, setDevice] = useState("390×844");
+  const [theme, setTheme] = useState("dark");
+  const [fixed, setFixed] = useState(false);
   return (
-    <main className="report-shell">
-      <header className="lab-header">
-        <Brand />
-        <div className="run-meta">
-          <span className="success-dot" /> VERIFIED RUN · BF-0729
-        </div>
-        <Link href="/lab">Replay the run ↗</Link>
-      </header>
-      <section className="report-hero">
-        <div>
-          <Link href="/lab" className="back-link">
-            ← LIVE LAB
-          </Link>
-          <span className="section-index">PROOF REPORT / ZARIYA</span>
-          <h1>
-            Five failures entered.
-            <br />
-            <em>Zero survived.</em>
-          </h1>
-          <p>
-            The same browser predicates that found the defects accepted the repair.
-            English remained green.
-          </p>
-        </div>
-        <div className="score-lockup">
-          <div>
-            <span>OPEN</span>
-            <strong>5</strong>
+    <AppShell>
+      <ScanHeader section={section} />
+      {section === "Overview" && (
+        <section className="workspace-grid">
+          <PipelineRail />
+          <div className="workspace-centre">
+            <div className="preview-controls">
+              <select value={device} onChange={(event) => setDevice(event.target.value)}>
+                <option>390×844</option>
+                <option>768×1024</option>
+                <option>1440×900</option>
+              </select>
+              <select value={locale} onChange={(event) => setLocale(event.target.value)}>
+                {["hi-IN", "de-DE", "ar-SA", "he-IL", "ja-JP", "zh-Hans-CN", "th-TH", "fr-FR", "es-MX", "en-GB"].map((item) => (
+                  <option key={item}>{item}</option>
+                ))}
+              </select>
+              <select value={theme} onChange={(event) => setTheme(event.target.value)}>
+                <option>dark</option>
+                <option>light</option>
+              </select>
+              <button onClick={() => setFixed((value) => !value)}>
+                {fixed ? "After repair" : "Before repair"} ↔
+              </button>
+            </div>
+            <div className={`browser-stage ${theme}`}>
+              <div className="browser-chrome">
+                <span>● ● ●</span>
+                <code>atlaspay.local/{locale}/dashboard</code>
+                <b>{device}</b>
+              </div>
+              <iframe
+                src={`/atlaspay/${locale}/dashboard?state=${fixed ? "fixed" : "broken"}`}
+                title={`AtlasPay ${locale} ${fixed ? "fixed" : "broken"} preview`}
+              />
+              <div className={`frame-verdict ${fixed ? "pass" : "fail"}`}>
+                {fixed ? "✓ IDENTICAL PREDICATE PASS" : "! VERIFIED FAILURE"}
+              </div>
+            </div>
+            <RouteLocaleMatrix />
           </div>
-          <i>→</i>
-          <div className="score-zero">
-            <span>OPEN</span>
-            <strong>0</strong>
-          </div>
-          <small>VERIFIED IN 13.8s</small>
-        </div>
-      </section>
-
-      <section className="report-facts">
-        <div>
-          <span>ENGLISH CONTROL</span>
-          <strong className="success-text">PASS</strong>
-        </div>
-        <div>
-          <span>ALLOWLIST</span>
-          <strong>3 FILES</strong>
-        </div>
-        <div>
-          <span>VIEWPORTS</span>
-          <strong>2 / 2</strong>
-        </div>
-        <div>
-          <span>CONSOLE ERRORS</span>
-          <strong>0</strong>
-        </div>
-        <div>
-          <span>PATCH SIZE</span>
-          <strong>24 LOC</strong>
-        </div>
-      </section>
-
-      <section className="comparison-section">
-        <div className="report-section-head">
-          <div>
-            <span className="section-index">01 / RENDERED EVIDENCE</span>
-            <h2>Drag across the repair.</h2>
-          </div>
-          <div className="locale-tabs" role="tablist" aria-label="Evidence locale">
-            {(["hi", "ta", "ur"] as const).map((item) => (
+          <EvidenceCard issueIndex={selectedIssue} />
+          <div className="real-console">
+            {[
+              ["13:07:12.044", "discover", "5 routes from configured route list", "0"],
+              ["13:07:12.181", "render", "Chromium · 390×844 · ar-SA", "0"],
+              ["13:07:12.296", "diagnose", "BF-LOC-AR-003 wrong-direction", "1"],
+              ["13:07:12.411", "verify", "10 → 0 · source en-GB PASS", "0"],
+            ].map(([time, stage, event, exit]) => (
               <button
-                role="tab"
-                aria-selected={locale === item}
-                className={locale === item ? "active" : ""}
-                onClick={() => setLocale(item)}
-                key={item}
+                onClick={() =>
+                  setSelectedIssue(
+                    Math.min(
+                      baselineScan.issues.length - 1,
+                      stage === "diagnose" ? 2 : selectedIssue,
+                    ),
+                  )
+                }
+                key={time}
               >
-                {item.toUpperCase()}
+                <time>{time}</time>
+                <b>{stage}</b>
+                <span>{event}</span>
+                <code>exit {exit}</code>
               </button>
             ))}
           </div>
-        </div>
-        <div className="compare-wrap">
-          <div className="compare-label before-label">BEFORE · FAIL</div>
-          <div className="compare-label after-label">AFTER · PASS</div>
-          <div className="compare-frame">
-            <iframe
-              src={`/zariya/${locale}?state=fixed`}
-              title={`${locale} fixed interface`}
-            />
-            <div className="compare-before" style={{ width: `${reveal}%` }}>
-              <iframe
-                src={`/zariya/${locale}?state=broken`}
-                title={`${locale} broken interface`}
-              />
-            </div>
-            <div className="compare-line" style={{ left: `${reveal}%` }}>
-              <span>↔</span>
-            </div>
-            <input
-              type="range"
-              min="10"
-              max="90"
-              value={reveal}
-              onChange={(event) => setReveal(Number(event.target.value))}
-              aria-label="Before and after reveal"
-            />
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
+      {section === "Issues" && <IssuesView selected={selectedIssue} onSelect={setSelectedIssue} />}
+      {section === "Linguistic" && <LinguisticView />}
+      {section === "Visual" && <VisualView />}
+      {section === "Repairs" && <RepairsView />}
+      {section === "Report" && <ReportView />}
+    </AppShell>
+  );
+}
 
-      <section className="diff-section">
-        <div className="report-section-head">
-          <div>
-            <span className="section-index">02 / BOUNDED SOURCE PATCH</span>
-            <h2>Small diff. Measurable result.</h2>
-          </div>
-          <span className="signed-badge">✓ PATH ALLOWLIST PASSED</span>
+function IssuesView({
+  selected,
+  onSelect,
+}: {
+  selected: number;
+  onSelect(index: number): void;
+}) {
+  return (
+    <section className="issues-layout">
+      <div className="issue-browser">
+        <div className="issue-filters">
+          <button className="active">All 10</button>
+          <button>Blocking 10</button>
+          <button>Human review 0</button>
+          <input placeholder="Filter locale, route or issue…" />
         </div>
-        <div className="diff-window">
-          <div className="diff-sidebar">
-            <span>CHANGED FILES</span>
-            <button className="active">app/globals.css <b>+8 −5</b></button>
-            <button>lib/translations.ts <b>+1 −1</b></button>
-            <button>ZariyaPreview.tsx <b>+4 −3</b></button>
-          </div>
-          <pre>
-            <span className="diff-context">214  .zariya-title {"{"}</span>
-            <span className="diff-remove">−  height: 58px; line-height: .9;</span>
-            <span className="diff-add">+  min-height: 58px; line-height: 1.22;</span>
-            <span className="diff-add">+  overflow: visible;</span>
-            <span className="diff-context">229  .zariya-cta {"{"}</span>
-            <span className="diff-remove">−  width: 152px; white-space: nowrap;</span>
-            <span className="diff-add">+  min-width: 152px; white-space: normal;</span>
-            <span className="diff-context">42   translations.ta</span>
-            <span className="diff-remove">−  trial: &quot;dashboard.start_trial&quot;</span>
-            <span className="diff-add">+  trial: &quot;இலவசமாகத் தொடங்குங்கள்&quot;</span>
-          </pre>
-        </div>
-      </section>
+        {baselineScan.issues.map((issue, index) => (
+          <button
+            className={index === selected ? "active" : ""}
+            onClick={() => onSelect(index)}
+            key={issue.issueId}
+          >
+            <i>!</i>
+            <span>
+              <strong>{issue.category.replaceAll("-", " ")}</strong>
+              <small>{issue.issueId} · {issue.route}</small>
+            </span>
+            <b>{issue.locale}</b>
+            <em>{issueTone[issue.category]}</em>
+          </button>
+        ))}
+      </div>
+      <EvidenceCard issueIndex={selected} />
+    </section>
+  );
+}
 
-      <section className="receipts-section">
-        <div className="report-section-head">
-          <div>
-            <span className="section-index">03 / COMMAND RECEIPTS</span>
-            <h2>The evidence trail.</h2>
-          </div>
-          <span>All timings captured from replay BF-0729</span>
+function LinguisticView() {
+  const items = baselineScan.issues.filter((issue) =>
+    ["placeholder-mismatch", "glossary-violation", "raw-translation-key"].includes(
+      issue.category,
+    ),
+  );
+  return (
+    <section className="review-page">
+      <div className="review-heading">
+        <div>
+          <span>LINGUISTIC REVIEW</span>
+          <h2>Facts first. Judgement labelled.</h2>
+          <p>
+            These three findings are deterministic. Model-assisted tone or meaning
+            reviews would appear separately with confidence and human-review gates.
+          </p>
         </div>
-        <div className="receipt-grid">
-          {[
-            ["01", "RENDER", "6 routes · 2 viewports", "exit 0", "2.4s"],
-            ["02", "INSPECT", "5 canonical failures", "exit 0", "1.1s"],
-            ["03", "REPAIR", "3 allowlisted files", "exit 0", "4.7s"],
-            ["04", "VERIFY", "0 open · EN pass", "exit 0", "5.6s"],
-          ].map((item) => (
-            <article key={item[0]}>
-              <span>{item[0]}</span>
-              <h3>{item[1]}</h3>
-              <p>{item[2]}</p>
-              <code>{item[3]}</code>
-              <b>{item[4]}</b>
-            </article>
+        <span className="mode-badge">NO-AI MODE</span>
+      </div>
+      <div className="linguistic-table">
+        {items.map((issue) => (
+          <article key={issue.issueId}>
+            <div>
+              <span>{issue.locale}</span>
+              <b>{issue.issueId}</b>
+            </div>
+            <h3>{issue.category.replaceAll("-", " ")}</h3>
+            <p>{issue.description}</p>
+            <code>{issue.deterministicPredicate}</code>
+            <footer>
+              <span>confidence · <b>verified</b></span>
+              <span>human review · <b>not required</b></span>
+            </footer>
+          </article>
+        ))}
+        <article className="human-review-card">
+          <div><span>MODEL</span><b>EXAMPLE GATE</b></div>
+          <h3>Brand-tone preference</h3>
+          <p>
+            A provider may suggest a more natural phrase, but BhashaFix cannot
+            promote preference to deterministic fact.
+          </p>
+          <footer>
+            <span>confidence · <b>medium</b></span>
+            <span>status · <b>human review required</b></span>
+          </footer>
+        </article>
+      </div>
+    </section>
+  );
+}
+
+function VisualView() {
+  const [reveal, setReveal] = useState(52);
+  const [locale, setLocale] = useState("hi-IN");
+  return (
+    <section className="visual-page">
+      <div className="review-heading">
+        <div>
+          <span>VISUAL EVIDENCE</span>
+          <h2>Same route. Same case. Before and after.</h2>
+        </div>
+        <select value={locale} onChange={(event) => setLocale(event.target.value)}>
+          {["hi-IN", "de-DE", "ar-SA", "he-IL", "zh-Hans-CN", "th-TH"].map(
+            (item) => <option key={item}>{item}</option>,
+          )}
+        </select>
+      </div>
+      <div className="visual-compare">
+        <div className="visual-labels"><span>BEFORE · FAIL</span><b>AFTER · PASS</b></div>
+        <iframe src={`/atlaspay/${locale}/pricing?state=fixed`} title="Fixed AtlasPay" />
+        <div style={{ width: `${reveal}%` }}>
+          <iframe src={`/atlaspay/${locale}/pricing?state=broken`} title="Broken AtlasPay" />
+        </div>
+        <i style={{ left: `${reveal}%` }}>↔</i>
+        <input
+          type="range"
+          min="10"
+          max="90"
+          value={reveal}
+          onChange={(event) => setReveal(Number(event.target.value))}
+          aria-label="Before and after reveal"
+        />
+      </div>
+      <div className="visual-metrics">
+        {[
+          ["Viewport overflow", "0px", "PASS"],
+          ["Element clipping", "0", "PASS"],
+          ["Direction", locale.startsWith("ar") || locale.startsWith("he") ? "rtl" : "ltr", "PASS"],
+          ["Console errors", "0", "PASS"],
+          ["Accessibility delta", "0", "PASS"],
+        ].map(([label, value, status]) => (
+          <div key={label}><span>{label}</span><strong>{value}</strong><b>{status}</b></div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function RepairsView() {
+  const [patch, setPatch] = useState("Loading generated patch…");
+  const [mode, setMode] = useState<"suggest" | "prepare" | "apply">("prepare");
+  useEffect(() => {
+    fetch("/replay/repair.patch")
+      .then((response) => response.text())
+      .then(setPatch)
+      .catch(() => setPatch("Generated patch unavailable."));
+  }, []);
+  return (
+    <section className="repairs-page">
+      <div className="review-heading">
+        <div>
+          <span>BOUNDED REPAIR</span>
+          <h2>Diff first. Mutation only by policy.</h2>
+          <p>Ten issue IDs resolve to ten operations across three allowlisted fixture files.</p>
+        </div>
+        <div className="segmented">
+          {(["suggest", "prepare", "apply"] as const).map((item) => (
+            <button className={mode === item ? "active" : ""} onClick={() => setMode(item)} key={item}>{item}</button>
           ))}
         </div>
-      </section>
-
-      <section className="export-section">
-        <div>
-          <span className="section-index">TAKE THE PROOF WITH YOU</span>
-          <h2>Auditable by design.</h2>
-          <p>Export the structured run report or apply the exact unified patch.</p>
-        </div>
-        <div>
-          <button
-            className="button button-ghost"
-            onClick={() => downloadArtifact("bhashafix-run-BF-0729.json", reportJson, "application/json")}
-          >
-            ↓ Download JSON report
-          </button>
-          <button
-            className="button button-primary"
-            onClick={() => downloadArtifact("bhashafix-BF-0729.patch", patch, "text/x-diff")}
-          >
-            ↓ Export repair.patch
-          </button>
-        </div>
-      </section>
-      <footer>
-        <Brand compact />
-        <p>Translation tools stop at strings. BhashaFix repairs the product—and proves it.</p>
-        <Link href="/lab">Replay run →</Link>
-      </footer>
-    </main>
+      </div>
+      <div className="repair-layout">
+        <aside>
+          <span>POLICY CHECKS</span>
+          {[
+            "Explicit scan ID",
+            "10 explicit issue IDs",
+            "3 paths allowlisted",
+            "No symlinks",
+            "No business logic",
+            "Rollback written",
+            "No automatic commit",
+          ].map((item) => <div key={item}><i>✓</i>{item}</div>)}
+          <small>Mode selected</small>
+          <strong>{mode}</strong>
+        </aside>
+        <pre className="patch-viewer">{patch}</pre>
+      </div>
+      <div className="repair-verdict">
+        <span>✓</span>
+        <div><strong>Verification accepted the repair</strong><p>Original predicates pass · source locale PASS · no new blocking issue · diff within policy</p></div>
+        <b>{repairProof.baselineBlocking} → {repairProof.finalBlocking}</b>
+      </div>
+    </section>
   );
+}
+
+function ReportView() {
+  const downloads = [
+    ["JSON report", "/replay/report.json"],
+    ["HTML report", "/replay/report.html"],
+    ["SARIF", "/replay/report.sarif"],
+    ["JUnit XML", "/replay/junit.xml"],
+    ["CSV issues", "/replay/issues.csv"],
+    ["Unified patch", "/replay/repair.patch"],
+    ["Proof JSON", "/replay/repair-proof.json"],
+  ];
+  return (
+    <section className="report-page">
+      <div className="report-score">
+        <span>RELEASE READINESS</span>
+        <strong>100</strong>
+        <small>Verified deterministic gate</small>
+      </div>
+      <div className="report-summary">
+        <span>FINAL VERDICT</span>
+        <h2>Ready for engineering release.</h2>
+        <p>
+          The replay proves all original blocking predicates pass after a bounded
+          repair. Linguistic preference still requires human review when present.
+        </p>
+        <div>
+          {[
+            ["Blocking issues", "0", "PASS"],
+            ["Warnings", "0", "PASS"],
+            ["Human review", "0", "CLEAR"],
+            ["Route coverage", "5 / 5", "100%"],
+            ["Locale coverage", "10 / 10", "100%"],
+            ["Source regression", "PASS", "✓"],
+            ["Accessibility", "PASS", "✓"],
+            ["Console errors", "0", "✓"],
+          ].map(([label, value, status]) => (
+            <article key={label}><span>{label}</span><strong>{value}</strong><b>{status}</b></article>
+          ))}
+        </div>
+      </div>
+      <div className="download-centre">
+        <div><span>DOWNLOAD CENTRE</span><h2>Portable proof.</h2></div>
+        <div>
+          {downloads.map(([label, href]) => (
+            <a href={href} download key={label}><span>↓</span>{label}<b>export</b></a>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function GlossaryPage() {
+  const [entries, setEntries] = useState([
+    { source: "Checkout", locale: "es-MX", approved: "Pagar", domain: "Payments", status: "Approved" },
+    { source: "Transfer", locale: "fr-FR", approved: "Virement", domain: "Payments", status: "Approved" },
+    { source: "AtlasPay", locale: "*", approved: "Do not translate", domain: "Brand", status: "Protected" },
+  ]);
+  return (
+    <AppShell>
+      <section className="page-heading">
+        <div><span>TERMINOLOGY</span><h1>Project glossary</h1><p>Approved terms are deterministic constraints, not model preferences.</p></div>
+        <button
+          className="button"
+          onClick={() => setEntries((current) => [...current, { source: "New term", locale: "de-DE", approved: "Review required", domain: "General", status: "Draft" }])}
+        >
+          Add entry
+        </button>
+      </section>
+      <section className="data-table">
+        <header><span>Source term</span><span>Locale</span><span>Approved target</span><span>Domain</span><span>Status</span></header>
+        {entries.map((entry, index) => (
+          <div key={`${entry.source}-${index}`}>
+            <strong>{entry.source}</strong><code>{entry.locale}</code><span>{entry.approved}</span><span>{entry.domain}</span><b>{entry.status}</b>
+          </div>
+        ))}
+      </section>
+    </AppShell>
+  );
+}
+
+export function MemoryPage() {
+  const [query, setQuery] = useState("");
+  const entries = [
+    ["Checkout", "Pagar", "es-MX", "checkout-title", "human", "Approved"],
+    ["Send money", "Envoyer de l’argent", "fr-FR", "primary-cta", "human", "Approved"],
+    ["Available balance", "الرصيد المتاح", "ar-SA", "dashboard-card", "provider:openai", "Review"],
+    ["Global payments", "グローバル決済", "ja-JP", "hero-title", "human", "Approved"],
+  ];
+  const filtered = entries.filter((entry) =>
+    entry.join(" ").toLowerCase().includes(query.toLowerCase()),
+  );
+  return (
+    <AppShell>
+      <section className="page-heading">
+        <div><span>PROJECT MEMORY</span><h1>Translation memory</h1><p>Exact, normalised and context matches with provenance.</p></div>
+        <input className="page-search" placeholder="Search memory…" value={query} onChange={(event) => setQuery(event.target.value)} />
+      </section>
+      <section className="memory-grid">
+        {filtered.map(([source, target, locale, context, provider, status]) => (
+          <article key={`${source}-${locale}`}>
+            <div><span>{locale}</span><b>{status}</b></div>
+            <small>SOURCE</small><strong>{source}</strong>
+            <small>TARGET</small><h3>{target}</h3>
+            <footer><code>{context}</code><span>{provider}</span></footer>
+          </article>
+        ))}
+      </section>
+    </AppShell>
+  );
+}
+
+export function IntegrationsPage() {
+  return (
+    <AppShell>
+      <section className="page-heading">
+        <div><span>ONE ENGINE · EVERY WORKFLOW</span><h1>Integrations</h1><p>Use BhashaFix through CLI, local MCP and GitHub Actions.</p></div>
+      </section>
+      <section className="integration-grid">
+        <article id="cli">
+          <i>›_</i><span>CLI</span><h2>@bhashafix/cli</h2>
+          <p>Human output, JSON, quiet and verbose modes, stable exit codes and no secret leakage.</p>
+          <pre>{`pnpm bhashafix scan \\\n  --url http://localhost:3000 \\\n  --source-locale en-GB \\\n  --locales hi-IN,ar-SA,ja-JP,de-DE`}</pre>
+        </article>
+        <article>
+          <i>◇</i><span>MCP · STDIO</span><h2>@bhashafix/mcp</h2>
+          <p>Fifteen strict tools, seven resource patterns and five workflow prompts for coding agents.</p>
+          <pre>{`{\n  "mcpServers": {\n    "bhashafix": {\n      "command": "pnpm",\n      "args": ["mcp:inspect"]\n    }\n  }\n}`}</pre>
+        </article>
+        <article id="ci">
+          <i>✓</i><span>GITHUB ACTIONS</span><h2>Release gate</h2>
+          <p>Installs Chromium, runs the identical checks, uploads proof, SARIF, JUnit and screenshots.</p>
+          <pre>{`- run: pnpm install --frozen-lockfile\n- run: pnpm exec playwright install chromium\n- run: pnpm bhashafix ci --fail-on blocking`}</pre>
+        </article>
+        <article>
+          <i>◎</i><span>PROVIDERS</span><h2>Optional linguistic review</h2>
+          <p>OpenAI, Anthropic, Groq and OpenAI-compatible adapters sit behind a common contract. No-model mode is first-class.</p>
+          <div className="provider-status"><b>deterministic</b><span>available</span></div>
+          <div className="provider-status"><b>model provider</b><span>not configured</span></div>
+        </article>
+      </section>
+    </AppShell>
+  );
+}
+
+export function DocsPage() {
+  return (
+    <AppShell>
+      <section className="docs-layout">
+        <aside>
+          {["Quick start", "Website scan", "Repository scan", "CLI", "MCP", "Security", "Trust centre", "Limitations"].map((item) => (
+            <a href={`#${item.toLowerCase().replace(" ", "-")}`} key={item}>{item}</a>
+          ))}
+        </aside>
+        <article>
+          <span>DOCUMENTATION</span>
+          <h1>Verification, not vibes.</h1>
+          <p className="docs-lede">BhashaFix is the verification harness between AI-generated translations and production software.</p>
+          <section id="quick-start"><h2>Ten-minute quick start</h2><pre>{`pnpm install\npnpm bhashafix init\npnpm demo:reset\npnpm demo:scan\npnpm demo:repair\npnpm demo:prove`}</pre></section>
+          <section id="website-scan"><h2>Website scan</h2><p>Hosted scans accept public HTTP and HTTPS targets, respect crawl limits and reject private, loopback and metadata destinations.</p><pre>{`pnpm bhashafix scan --url https://example.com \\\n  --source-locale en-GB --locales ar-SA,ja-JP`}</pre></section>
+          <section id="repository-scan"><h2>Repository scan</h2><p>Local scans inspect framework, routes, locale assets and source hints. Unknown scripts are never executed without showing the command.</p></section>
+          <section id="cli"><h2>CLI exit codes</h2><p><code>0</code> passed · <code>1</code> blocking · <code>2</code> invalid config · <code>3</code> unavailable · <code>4</code> runtime · <code>5</code> provider unavailable.</p></section>
+          <section id="mcp"><h2>MCP safety</h2><p>Repairs require an explicit scan ID, explicit issue IDs, exact path allowlists and the hash of a reviewed diff. Dry-run is the default.</p></section>
+          <section id="security"><h2>Security</h2><p>URL and redirect validation, DNS checks, response limits, path confinement, symlink rejection, redaction, rollback and audit logs are part of the engine.</p></section>
+          <section id="trust-centre"><h2>Trust centre</h2><ul><li>Local repository content stays local unless a provider is deliberately configured.</li><li>Hidden credentials and personal form values are excluded from extraction.</li><li>No-AI mode keeps all deterministic engineering checks active.</li><li>Model findings never override browser predicates.</li></ul></section>
+          <section id="limitations"><h2>Honest limitations</h2><p>Public sites may block automation, require authentication or prohibit crawling. Browser coverage depends on installed runtimes. Linguistic recommendations can require native human review.</p></section>
+          <TrustClaim />
+        </article>
+      </section>
+    </AppShell>
+  );
+}
+
+export function PlaygroundPage() {
+  const [source, setSource] = useState("Pay {amount} securely with AtlasPay");
+  const [mode, setMode] = useState<
+    "expanded-latin" | "extreme-expansion" | "rtl-mirrored" | "accented" | "cjk-density" | "no-space" | "tall-glyph" | "emoji-symbol" | "long-compound"
+  >("expanded-latin");
+  const result = useMemo(
+    () => pseudoLocalise(source, mode, ["AtlasPay"]),
+    [source, mode],
+  );
+  return (
+    <AppShell>
+      <section className="page-heading">
+        <div><span>PSEUDO-LOCALISATION</span><h1>Stress strings safely</h1><p>Protected tokens, tags, URLs, emails and project terms remain intact.</p></div>
+      </section>
+      <section className="playground">
+        <div>
+          <label className="field">Source text<textarea value={source} onChange={(event) => setSource(event.target.value)} /></label>
+          <div className="mode-grid">
+            {["expanded-latin", "extreme-expansion", "rtl-mirrored", "accented", "cjk-density", "no-space", "tall-glyph", "emoji-symbol", "long-compound"].map((item) => (
+              <button className={mode === item ? "active" : ""} onClick={() => setMode(item as typeof mode)} key={item}>{item}</button>
+            ))}
+          </div>
+        </div>
+        <div className="pseudo-result" dir={mode === "rtl-mirrored" ? "rtl" : "ltr"}>
+          <small>TRANSFORMED SPECIMEN</small>
+          <strong>{result}</strong>
+          <div><span>Protected</span><code>{"{amount}"}</code><code>AtlasPay</code></div>
+        </div>
+      </section>
+    </AppShell>
+  );
+}
+
+export function LabPage() {
+  return <ScanWorkspace section="Overview" />;
+}
+
+export function ReportPage() {
+  return <ScanWorkspace section="Report" />;
 }

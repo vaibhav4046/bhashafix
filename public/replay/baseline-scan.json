@@ -1,0 +1,353 @@
+{
+  "scanId": "atlaspay-83210b0daea2",
+  "startedAt": "2026-07-29T12:28:32.619Z",
+  "completedAt": "2026-07-29T12:28:32.756Z",
+  "config": {
+    "projectRoot": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix",
+    "sourceLocale": "en-GB",
+    "locales": [
+      "hi-IN",
+      "de-DE",
+      "ar-SA",
+      "he-IL",
+      "ja-JP",
+      "zh-Hans-CN",
+      "th-TH",
+      "fr-FR",
+      "es-MX",
+      "en-GB"
+    ],
+    "routes": [
+      "/",
+      "/pricing",
+      "/dashboard",
+      "/settings",
+      "/checkout"
+    ],
+    "viewports": [
+      {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      {
+        "name": "tablet",
+        "width": 768,
+        "height": 1024
+      },
+      {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      }
+    ],
+    "browsers": [
+      "chromium"
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "maxPages": 20,
+    "maxDepth": 2,
+    "rateLimitPerSecond": 2,
+    "noAi": true,
+    "hosted": false,
+    "allowLocalhost": true,
+    "allowlist": [
+      "apps/demo-target/data/layout.json",
+      "apps/demo-target/data/locale-state.json",
+      "apps/demo-target/data/translations.json"
+    ]
+  },
+  "issues": [
+    {
+      "issueId": "BF-VIS-HI-001",
+      "scanId": "atlaspay-83210b0daea2",
+      "category": "vertical-clipping",
+      "severity": "blocking",
+      "confidence": "verified",
+      "locale": "hi-IN",
+      "route": "/",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "browser": "deterministic",
+      "selector": "[data-testid=hero-title]",
+      "sourceHint": "apps/demo-target/data/layout.json",
+      "description": "Devanagari glyph bounds exceed the available line box.",
+      "measuredEvidence": {
+        "actual": 28,
+        "expected": 36,
+        "delta": -8
+      },
+      "screenshotBefore": "/evidence/BF-VIS-HI-001.png",
+      "recommendedAction": "Use a script-safe line-height derived from content height.",
+      "deterministicPredicate": "layout.hi-IN.heroLineHeight >= layout.hi-IN.measuredGlyphHeight",
+      "humanReviewRequired": false
+    },
+    {
+      "issueId": "BF-VIS-DE-002",
+      "scanId": "atlaspay-83210b0daea2",
+      "category": "cta-overflow",
+      "severity": "blocking",
+      "confidence": "verified",
+      "locale": "de-DE",
+      "route": "/pricing",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "browser": "deterministic",
+      "selector": "[data-testid=primary-cta]",
+      "sourceHint": "apps/demo-target/data/layout.json",
+      "description": "The German CTA scroll width exceeds its fixed client width.",
+      "measuredEvidence": {
+        "actual": 160,
+        "expected": 212,
+        "delta": -52
+      },
+      "screenshotBefore": "/evidence/BF-VIS-DE-002.png",
+      "recommendedAction": "Allow the CTA to size to content and wrap safely.",
+      "deterministicPredicate": "layout.de-DE.ctaClientWidth >= layout.de-DE.ctaScrollWidth",
+      "humanReviewRequired": false
+    },
+    {
+      "issueId": "BF-LOC-AR-003",
+      "scanId": "atlaspay-83210b0daea2",
+      "category": "wrong-direction",
+      "severity": "blocking",
+      "confidence": "verified",
+      "locale": "ar-SA",
+      "route": "/dashboard",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "browser": "deterministic",
+      "selector": "html",
+      "sourceHint": "apps/demo-target/data/locale-state.json",
+      "description": "The Arabic route is rendered left-to-right.",
+      "measuredEvidence": {
+        "actual": "ltr",
+        "expected": "rtl"
+      },
+      "screenshotBefore": "/evidence/BF-LOC-AR-003.png",
+      "recommendedAction": "Set direction from the locale profile.",
+      "deterministicPredicate": "localeState.directions.ar-SA === \"rtl\"",
+      "humanReviewRequired": false
+    },
+    {
+      "issueId": "BF-RTL-HE-004",
+      "scanId": "atlaspay-83210b0daea2",
+      "category": "rtl-icon-order",
+      "severity": "blocking",
+      "confidence": "verified",
+      "locale": "he-IL",
+      "route": "/settings",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "browser": "deterministic",
+      "selector": "[data-testid=back-link]",
+      "sourceHint": "apps/demo-target/data/layout.json",
+      "description": "The directional icon remains after the label in RTL.",
+      "measuredEvidence": {
+        "actual": "after",
+        "expected": "before"
+      },
+      "screenshotBefore": "/evidence/BF-RTL-HE-004.png",
+      "recommendedAction": "Use logical ordering for directional controls.",
+      "deterministicPredicate": "layout.he-IL.iconOrder === \"before\"",
+      "humanReviewRequired": false
+    },
+    {
+      "issueId": "BF-I18N-JA-005",
+      "scanId": "atlaspay-83210b0daea2",
+      "category": "raw-translation-key",
+      "severity": "blocking",
+      "confidence": "verified",
+      "locale": "ja-JP",
+      "route": "/checkout",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "browser": "deterministic",
+      "selector": "[data-testid=pay-button]",
+      "sourceHint": "apps/demo-target/data/translations.json",
+      "description": "A raw translation key is visible in the checkout action.",
+      "measuredEvidence": {
+        "actual": "checkout.pay_now",
+        "forbidden": "checkout.pay_now"
+      },
+      "screenshotBefore": "/evidence/BF-I18N-JA-005.png",
+      "recommendedAction": "Insert the missing Japanese translation.",
+      "deterministicPredicate": "translations.ja-JP.checkout.pay_now !== \"checkout.pay_now\"",
+      "humanReviewRequired": false
+    },
+    {
+      "issueId": "BF-FONT-ZH-006",
+      "scanId": "atlaspay-83210b0daea2",
+      "category": "font-coverage",
+      "severity": "blocking",
+      "confidence": "verified",
+      "locale": "zh-Hans-CN",
+      "route": "/dashboard",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "browser": "deterministic",
+      "selector": "[data-testid=activity-title]",
+      "sourceHint": "apps/demo-target/data/layout.json",
+      "description": "The configured font stack does not cover the Simplified Chinese specimen.",
+      "measuredEvidence": {
+        "actual": false,
+        "expected": true
+      },
+      "screenshotBefore": "/evidence/BF-FONT-ZH-006.png",
+      "recommendedAction": "Adopt the locale engine font fallback stack.",
+      "deterministicPredicate": "layout.zh-Hans-CN.fontCoverage === true",
+      "humanReviewRequired": false
+    },
+    {
+      "issueId": "BF-VIS-TH-007",
+      "scanId": "atlaspay-83210b0daea2",
+      "category": "line-breaking",
+      "severity": "blocking",
+      "confidence": "verified",
+      "locale": "th-TH",
+      "route": "/pricing",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "browser": "deterministic",
+      "selector": "[data-testid=plan-description]",
+      "sourceHint": "apps/demo-target/data/layout.json",
+      "description": "Thai content is forced onto one line and overflows its container.",
+      "measuredEvidence": {
+        "actual": "nowrap",
+        "expected": "normal"
+      },
+      "screenshotBefore": "/evidence/BF-VIS-TH-007.png",
+      "recommendedAction": "Enable normal wrapping and dictionary line breaking.",
+      "deterministicPredicate": "layout.th-TH.whiteSpace === \"normal\"",
+      "humanReviewRequired": false
+    },
+    {
+      "issueId": "BF-I18N-FR-008",
+      "scanId": "atlaspay-83210b0daea2",
+      "category": "placeholder-mismatch",
+      "severity": "blocking",
+      "confidence": "verified",
+      "locale": "fr-FR",
+      "route": "/checkout",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "browser": "deterministic",
+      "selector": "[data-testid=pay-button]",
+      "sourceHint": "apps/demo-target/data/translations.json",
+      "description": "The {amount} runtime placeholder was removed from the French translation.",
+      "measuredEvidence": {
+        "source": "Pay {amount}",
+        "target": "Payer le montant",
+        "valid": false,
+        "sourceTokens": [
+          "{amount}"
+        ],
+        "targetTokens": []
+      },
+      "screenshotBefore": "/evidence/BF-I18N-FR-008.png",
+      "recommendedAction": "Restore the protected placeholder without changing its token.",
+      "deterministicPredicate": "protectedTokens(translations.en-GB.checkout.pay_now) === protectedTokens(translations.fr-FR.checkout.pay_now)",
+      "humanReviewRequired": false
+    },
+    {
+      "issueId": "BF-LING-ES-009",
+      "scanId": "atlaspay-83210b0daea2",
+      "category": "glossary-violation",
+      "severity": "blocking",
+      "confidence": "verified",
+      "locale": "es-MX",
+      "route": "/checkout",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "browser": "deterministic",
+      "selector": "[data-testid=checkout-title]",
+      "sourceHint": "apps/demo-target/data/glossary.json",
+      "description": "The checkout term conflicts with the project-approved Mexican Spanish glossary.",
+      "measuredEvidence": {
+        "actual": "Finalizar compra",
+        "expected": "Pagar"
+      },
+      "screenshotBefore": "/evidence/BF-LING-ES-009.png",
+      "recommendedAction": "Use the approved glossary term.",
+      "deterministicPredicate": "translations.es-MX.checkout.term === glossary.Checkout.es-MX",
+      "humanReviewRequired": false
+    },
+    {
+      "issueId": "BF-META-EN-010",
+      "scanId": "atlaspay-83210b0daea2",
+      "category": "wrong-page-lang",
+      "severity": "blocking",
+      "confidence": "verified",
+      "locale": "en-GB",
+      "route": "/",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "browser": "deterministic",
+      "selector": "html",
+      "sourceHint": "apps/demo-target/data/locale-state.json",
+      "description": "The source page declares a generic language instead of the configured source locale.",
+      "measuredEvidence": {
+        "actual": "en",
+        "expected": "en-GB"
+      },
+      "screenshotBefore": "/evidence/BF-META-EN-010.png",
+      "recommendedAction": "Set the canonical BCP 47 source locale on the document root.",
+      "deterministicPredicate": "localeState.pageLang === \"en-GB\"",
+      "humanReviewRequired": false
+    }
+  ],
+  "routesDiscovered": [
+    "/",
+    "/pricing",
+    "/dashboard",
+    "/checkout",
+    "/settings"
+  ],
+  "localesTested": [
+    "hi-IN",
+    "de-DE",
+    "ar-SA",
+    "he-IL",
+    "ja-JP",
+    "zh-Hans-CN",
+    "th-TH",
+    "fr-FR",
+    "es-MX",
+    "en-GB"
+  ],
+  "engineVersion": "0.2.0",
+  "mode": "live"
+}

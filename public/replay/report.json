@@ -1,0 +1,102 @@
+{
+  "schemaVersion": "1.0",
+  "generatedAt": "2026-07-29T12:28:34.544Z",
+  "claim": "Deterministic engineering checks are authoritative. Linguistic judgements include confidence levels and human-review gates.",
+  "scan": {
+    "scanId": "atlaspay-75123a28884f",
+    "startedAt": "2026-07-29T12:28:34.524Z",
+    "completedAt": "2026-07-29T12:28:34.661Z",
+    "config": {
+      "projectRoot": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix",
+      "sourceLocale": "en-GB",
+      "locales": [
+        "hi-IN",
+        "de-DE",
+        "ar-SA",
+        "he-IL",
+        "ja-JP",
+        "zh-Hans-CN",
+        "th-TH",
+        "fr-FR",
+        "es-MX",
+        "en-GB"
+      ],
+      "routes": [
+        "/",
+        "/pricing",
+        "/dashboard",
+        "/settings",
+        "/checkout"
+      ],
+      "viewports": [
+        {
+          "name": "mobile",
+          "width": 390,
+          "height": 844
+        },
+        {
+          "name": "tablet",
+          "width": 768,
+          "height": 1024
+        },
+        {
+          "name": "desktop",
+          "width": 1440,
+          "height": 900
+        }
+      ],
+      "browsers": [
+        "chromium"
+      ],
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "maxPages": 20,
+      "maxDepth": 2,
+      "rateLimitPerSecond": 2,
+      "noAi": true,
+      "hosted": false,
+      "allowLocalhost": true,
+      "allowlist": [
+        "apps/demo-target/data/layout.json",
+        "apps/demo-target/data/locale-state.json",
+        "apps/demo-target/data/translations.json"
+      ]
+    },
+    "issues": [],
+    "routesDiscovered": [
+      "/",
+      "/pricing",
+      "/dashboard",
+      "/checkout",
+      "/settings"
+    ],
+    "localesTested": [
+      "hi-IN",
+      "de-DE",
+      "ar-SA",
+      "he-IL",
+      "ja-JP",
+      "zh-Hans-CN",
+      "th-TH",
+      "fr-FR",
+      "es-MX",
+      "en-GB"
+    ],
+    "engineVersion": "0.2.0",
+    "mode": "live"
+  },
+  "verification": {
+    "scanId": "atlaspay-83210b0daea2",
+    "verifiedAt": "2026-07-29T12:28:34.529Z",
+    "status": "verified",
+    "baselineBlocking": 10,
+    "finalBlocking": 0,
+    "sourceLocaleRegression": "PASS",
+    "consoleErrorDelta": 0,
+    "accessibilityRegression": false,
+    "newBlockingIssues": 0,
+    "diffWithinPolicy": true
+  }
+}

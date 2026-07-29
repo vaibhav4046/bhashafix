@@ -25,8 +25,18 @@ async function reset() {
 }
 
 function parseText(result: Awaited<ReturnType<Client["callTool"]>>) {
-  const block = result.content.find((item) => item.type === "text");
-  if (!block || block.type !== "text") throw new Error("Missing text result.");
+  const content = (result as { content?: unknown }).content;
+  if (!Array.isArray(content)) throw new Error("Missing result content.");
+  const block = content.find(
+    (item): item is { type: "text"; text: string } =>
+      Boolean(
+        item &&
+          typeof item === "object" &&
+          (item as { type?: unknown }).type === "text" &&
+          typeof (item as { text?: unknown }).text === "string",
+      ),
+  );
+  if (!block) throw new Error("Missing text result.");
   return JSON.parse(block.text);
 }
 
