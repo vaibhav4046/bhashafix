@@ -1,32 +1,45 @@
 # Technical architecture
 
 ```text
-Bundled Zariya routes
-        │
-        ▼
-Rendered locale frames (EN / HI / TA / UR)
-        │
-        ▼
-Deterministic predicates
-overflow · RTL · raw keys · lang · accessible name
-        │
-        ▼
-Stable issue bundles (BF-*)
-        │
-        ▼
-Three-file repair allowlist
-        │
-        ▼
-Identical predicate rerun + English control
-        │
-        ▼
-Proof report · JSON · unified patch · receipts
+URL / repository / AtlasPay fixture
+               │
+    Discover → Crawl → Extract
+               │
+     BCP 47 locale intelligence
+               │
+ deterministic + confidence-scoped checks
+               │
+ Playwright render / stress / axe evidence
+               │
+ stable issue contract (Zod, BF-* IDs)
+               │
+ explicit scan + issue IDs
+               │
+ allowlisted repair plan → unified diff
+               │
+ identical predicates + en-GB regression
+               │
+ JSON / HTML / SARIF / JUnit / CSV / patch
 ```
 
-The deployed app is built with Next-compatible React on vinext and ships as a
-Cloudflare Worker through Sites. The live lab measures same-origin rendered
-frames in the browser. The repository CLI demonstrates the source mutation
-boundary and exports deterministic proof artifacts.
+## Shared core
 
-Acceptance is code-controlled. AI diagnosis can enhance explanations, but no
-model response changes pass/fail state.
+The Next.js app, CLI, MCP server, and GitHub Actions call the same workspace
+packages: `core`, `crawler`, `extractor`, `locale-engine`,
+`linguistic-engine`, `visual-engine`, `repair-engine`, `verifier`, `report`,
+`providers`, `config`, and `shared`.
+
+## Safety boundary
+
+Hosted URL scans enforce protocol, DNS, redirect, private-network,
+response-size, timeout, and rate policies. Repairs resolve regular files inside
+the project root, reject symlinks and path traversal, require an allowlist, show
+the diff before application, keep rollback data, and never commit
+automatically.
+
+## Proof boundary
+
+The AtlasPay baseline and final state live in actual JSON files. Generic
+predicates evaluate those files. The replay bundle is generated after the real
+apply-and-verify run and is labelled. AI output can explain an issue; only the
+identical predicate and regression gate can accept a repair.

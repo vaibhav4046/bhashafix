@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "1.0",
+  "product": "BhashaFix",
+  "version": "0.2.0",
+  "generatedAt": "2026-07-29T20:05:32.875Z",
+  "commit": "65838ad",
+  "deployment": "https://bhashafix.vercel.app",
+  "repository": null,
+  "proof": {
+    "schemaVersion": "1.0",
+    "generatedAt": "2026-07-29T20:05:32.875Z",
+    "mode": "genuine deterministic replay artifact",
+    "baselineScanId": "atlaspay-83210b0daea2",
+    "verificationScanId": "atlaspay-75123a28884f",
+    "baselineBlocking": 10,
+    "finalBlocking": 0,
+    "sourceLocaleRegression": "PASS",
+    "consoleErrorDelta": 0,
+    "accessibilityRegression": false,
+    "diffWithinPolicy": true,
+    "status": "verified"
+  },
+  "artifacts": [
+    "BhashaFix-Hackathon-Deck.pptx",
+    "FINAL_SUBMISSION_FORM.md",
+    "PROJECT_DESCRIPTION.md",
+    "ONE_LINE_PITCH.txt",
+    "DEMO_SCRIPT_90_SECONDS.md",
+    "PITCH_SCRIPT_3_MINUTES.md",
+    "TECHNICAL_ARCHITECTURE.md",
+    "CODEX_USAGE_EVIDENCE.md",
+    "MARKET_POSITIONING.md",
+    "JUDGING_CHECKLIST.md",
+    "repair-proof.json",
+    "repair.patch",
+    "screenshots/"
+  ],
+  "claims": {
+    "universalLinguisticPerfection": false,
+    "deterministicEngineeringChecksAuthoritative": true,
+    "linguisticHumanReviewGates": true
+  }
+}

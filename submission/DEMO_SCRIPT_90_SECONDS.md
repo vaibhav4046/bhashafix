@@ -1,35 +1,48 @@
 # BhashaFix — 90-second demo
 
-**0–10s — Show the breakage**
+## 0–12 seconds — the gap
 
-“These translations are correct. The product is not.” Show the Hindi heading
-clip, Tamil CTA truncation, and Urdu page flowing left-to-right.
+Open AtlasPay broken in Arabic, Hindi, and German.
 
-**10–22s — State the gap**
+“These strings were translated. The product is still broken: direction,
+glyphs, layout, placeholders, terminology, metadata.”
 
-“Translation tools stop at strings. BhashaFix tests the rendered product.”
+## 12–24 seconds — the product
 
-**22–40s — Run the scan**
+Open `/`.
 
-Open `/lab` and select **Run 5 → 0 proof**. Point out that each issue has a
-locale, browser measurement, stable ID, and source hint.
+“BhashaFix is the verification harness between AI translation and production.
+It tests the rendered product through web, CLI, CI, or MCP.”
 
-**40–57s — Show the bounded repair**
+## 24–42 seconds — evidence
 
-Follow the pipeline into Repair. Call out the three-file allowlist and the
-command receipt. “The model can propose a patch; it cannot mark itself correct.”
+Open `/scan/atlaspay-replay`.
 
-**57–73s — Verify**
+“This is a clearly labelled replay of a genuine deterministic run: five routes,
+ten locales, three viewports, ten stable failures. Every issue has a selector,
+source hint, measurement, screenshot context, and pass predicate.”
 
-The same predicates rerun. Show **All predicates green**, **English regression:
-PASS**, and zero command failures.
+Change locale and viewport; toggle **Before repair** to **After repair**.
 
-**73–86s — Prove**
+## 42–60 seconds — bounded repair
 
-Open the report. Drag the before/after reveal, switch locale tabs, show the
-unified diff, then download the JSON proof or patch.
+Open **Repairs**.
 
-**86–90s — Close**
+“The repair requires a scan ID and issue IDs, can touch only three allowlisted
+JSON files, rejects traversal and symlinks, and shows the unified diff before
+application. A model cannot mark itself correct.”
 
-“Translation tools stop at strings. BhashaFix repairs the product—and proves
-it.”
+## 60–77 seconds — identical verification
+
+Return to **Overview**, then open **Report**.
+
+“The exact predicates rerun. Ten blocking failures become zero. en-GB
+regression passes. Accessibility and console checks do not regress.”
+
+## 77–90 seconds — portable proof
+
+Show the JSON, HTML, SARIF, JUnit, CSV, patch, and proof downloads.
+
+“General coding agents reason broadly. BhashaFix gives them a specialised,
+reproducible localisation harness. Every language. Every viewport. Evidence
+before release.”

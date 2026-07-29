@@ -1,35 +1,49 @@
 # BhashaFix — 3-minute pitch
 
-Localization teams already have strong translation tools. Yet translated
-products still ship with clipped Hindi glyphs, truncated Tamil buttons, broken
-Urdu direction, raw fallback keys, and inaccessible locale controls.
+Translation can be correct while the product is still broken.
 
-The missing layer is not another translator. It is a repair loop for the
-rendered interface.
+AI systems and localisation platforms are increasingly good at generating and
+managing strings. But production failures happen after that: Devanagari glyphs
+clip, German buttons overflow, Arabic remains left-to-right, Hebrew icons point
+the wrong way, Japanese keys leak, Chinese fonts miss glyphs, Thai refuses to
+wrap, placeholders disappear, terminology drifts, and page metadata lies.
 
-BhashaFix opens the real route at the exact locale and viewport, measures the
-DOM and metadata, bundles reproducible evidence, applies a path-restricted
-source patch, then reruns the same predicates. The model does not get to declare
-victory; the browser does.
+BhashaFix is the verification harness between AI-generated translations and
+production software.
 
-Our Zariya vertical slice makes this undeniable. It begins with five deliberate
-localization defects across Hindi, Tamil, and Urdu. In one run BhashaFix captures
-all five, repairs only three allowlisted source files, reaches zero open defects,
-and keeps the English control green.
+It combines a route crawler, contextual string extraction, `Intl`-backed BCP 47
+locale intelligence, deterministic linguistic checks, real browser evidence,
+bounded source repair, identical-test verification, and portable release proof.
+Developers use one shared engine through the web, terminal, GitHub Actions, or
+MCP.
 
-The proof report retains what teams and reviewers need: before/after rendered
-evidence, stable issue IDs, source hints, a real unified diff, command exit
-codes, and downloadable structured artifacts.
+The demonstration is deliberately falsifiable. AtlasPay contains ten real
+defects across ten locales and five routes. BhashaFix reports stable issue IDs,
+locale and route context, a deterministic predicate, measured evidence, and the
+owning source file. It then prepares a real patch restricted to three
+allowlisted fixture files.
 
-We made one deliberate product decision for reliability: the hosted demo is a
-clearly labelled deterministic replay. It requires no browser binary or API key
-at request time. The local workflow performs the real bounded source mutation
-and proof export. This keeps the judge demo resilient while preserving an
-honest technical core.
+The model never gets to say “fixed.” The same predicates rerun. The final result
+is ten blocking failures to zero, with the en-GB source locale passing,
+accessibility not regressing, and no additional console errors.
 
-The roadmap is straightforward: isolated worktrees, framework adapters, CI
-gates, screenshot retention, and optional coding-agent integrations. But the
-wedge stays the same: do not ask whether every string was translated. Ask
-whether every language actually shipped.
+The hosted experience is a clearly labelled replay generated from that real
+run. It works with no API key or browser launch at request time. Locally, the
+CLI and MCP tests execute the real scan, repair, and verification flow. The
+report exports JSON, HTML, SARIF, JUnit, CSV, the unified patch, and proof JSON.
 
-Translation tools stop at strings. BhashaFix repairs the product—and proves it.
+The architecture is provider-independent. OpenAI, Anthropic, Groq, or a local
+compatible endpoint may evaluate meaning, tone, or cultural risk with a
+confidence level and human-review gate. No provider is mandatory, and model
+preference never overrides deterministic evidence.
+
+Our wedge is not replacing translation management. It is giving every
+translator, developer, QA team, and coding agent a reproducible answer to one
+question: is this language safe to release?
+
+BhashaFix supports Unicode content and user-selected BCP 47 locales through a
+provider-independent pipeline. It does not promise perfect native-language
+quality. It does promise that its engineering checks are measurable, its repair
+boundary is visible, and its verification is repeatable.
+
+Test, repair and prove every language before it reaches production.

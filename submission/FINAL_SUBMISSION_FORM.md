@@ -1,54 +1,69 @@
-# Ready-to-paste submission copy
+# BhashaFix — ready-to-paste submission copy
 
 ## Project name
 
 BhashaFix
 
+## One-line pitch
+
+Test, repair and prove every language before it reaches production.
+
 ## Tagline
 
-Ship every language without breaking the UI.
-
-## One sentence
-
-BhashaFix repairs the multilingual UI failures translation tools miss—and
-proves every fix in the rendered product.
+Every language. Every viewport. Evidence before release.
 
 ## Short description
 
-BhashaFix renders a real app in Hindi, Tamil, and Urdu, detects clipping,
-truncation, broken RTL, raw keys, and metadata/accessibility failures, applies a
-bounded source repair, then reruns the same deterministic browser predicates.
-The demo proves five reproducible defects become zero while English remains
-green.
+BhashaFix is the open-source verification harness between AI-generated
+translations and production software. It finds linguistic, visual,
+accessibility, metadata, formatting, and locale failures; produces measured
+evidence; prepares a bounded source repair; reruns the identical predicates;
+and exports portable proof through the web, CLI, CI, or MCP.
 
-## Problem
+## What is new
 
-Localization platforms translate and manage strings, but translated interfaces
-still break at render time. Developers must manually find the owning source,
-repair layout or metadata, rerun the failure, and prove the fix did not regress
-the control language.
+Translation tools produce and manage strings. BhashaFix tests the rendered
+product after translation. Its bundled AtlasPay demonstration discovers ten
+real configuration and content defects across ten locales, repairs only three
+allowlisted files, reaches zero blocking failures, and passes the en-GB
+source-locale regression.
 
-## Solution
+## How Codex was used
 
-BhashaFix closes that loop with rendered evidence, stable issue bundles,
-allowlisted source repair, identical-case verification, and portable proof
-artifacts.
+Codex acted as principal engineer, localisation engineer, designer, security
+reviewer, test engineer, and release owner. It implemented the shared workspace,
+web UI, CLI, MCP server, deterministic engines, repair boundary, reports, tests,
+documentation, screenshots, deck, and Vercel release; then ran the browser and
+command gates. Deterministic tests—not a model message—accept each repair.
 
-## Built with Codex
-
-Codex was used as the repository-native implementation and repair agent:
-scaffolding the application, implementing the multilingual target and
-deterministic predicates, debugging a Devanagari glyph-tolerance edge case,
-running the release gate, and packaging the site and pitch assets.
-
-## Repository URL
-
-ADD_PUBLIC_GITHUB_URL_AFTER_PUBLISHING
-
-## Live demo URL
+## Live demo
 
 https://bhashafix.vercel.app
 
-## Video URL
+## Public repository
 
-ADD_90_SECOND_VIDEO_URL_AFTER_RECORDING
+Not published at artifact-generation time. See `MANUAL_AUTH_REQUIRED.md`; add
+the real GitHub URL only after authenticated publication succeeds.
+
+## Demo video
+
+Not recorded at artifact-generation time. Use `DEMO_SCRIPT_90_SECONDS.md`, then
+add the real video URL after upload.
+
+## Technologies
+
+TypeScript, Next.js, React, pnpm workspaces, Playwright, axe-core, Zod, Vitest,
+MCP SDK, `Intl`, YAML, Vercel, and GitHub Actions.
+
+## Open-source licence
+
+Apache License 2.0.
+
+## Honest limitations
+
+The hosted public-URL scan is bounded and does not bypass authentication,
+robots policies, inaccessible APIs, or automation blocking. Automatic repair
+is deliberately confined to the bundled allowlisted fixture in this MVP.
+Linguistic model findings are confidence-scoped and may require human review.
+Firefox/WebKit are environment-dependent. Teams, billing, remote MCP, and
+enterprise isolation remain roadmap items.
