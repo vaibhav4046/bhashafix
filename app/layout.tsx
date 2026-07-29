@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
+const deploymentHost =
+  process.env.VERCEL_PROJECT_PRODUCTION_URL ?? process.env.VERCEL_URL;
+
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    deploymentHost ? `https://${deploymentHost}` : "http://localhost:3000",
+  ),
   title: {
     default: "BhashaFix — Ship every language without breaking the UI",
     template: "%s — BhashaFix",
