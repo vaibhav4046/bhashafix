@@ -1,6 +1,7 @@
 {
   "schemaVersion": "1.0",
-  "generatedAt": "2026-07-29T12:28:34.529Z",
+  "generatedAt": "2026-07-30T14:12:43.851Z",
+  "origin": "RECORDED_REPLAY",
   "mode": "genuine deterministic replay artifact",
   "baselineScanId": "atlaspay-83210b0daea2",
   "verificationScanId": "atlaspay-75123a28884f",

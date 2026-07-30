@@ -4,6 +4,10 @@ import {
   extractTextFromHtml,
 } from "@bhashafix/extractor";
 import { localeProfile } from "@bhashafix/locale-engine";
+import {
+  issueCategoryForRule,
+  type IssueCategory,
+} from "@bhashafix/shared";
 import { fetchWithPolicy } from "./policy";
 
 type FetchResult = Awaited<ReturnType<typeof fetchWithPolicy>>;
@@ -21,7 +25,10 @@ export type HostedHttpScanInput = {
 
 export type HostedScanIssue = {
   issueId: string;
-  category:
+  scanId: string;
+  origin: "LIVE_PUBLIC_SCAN";
+  category: IssueCategory;
+  ruleId:
     | "missing-page-lang"
     | "wrong-page-lang"
     | "wrong-page-direction"
@@ -32,10 +39,18 @@ export type HostedScanIssue = {
     | "low-static-text-coverage";
   severity: "blocking" | "warning";
   confidence: "verified";
+  locale: string;
   route: string;
-  selector: string;
+  viewport: null;
+  browser: "http";
+  selector: string | null;
   description: string;
+  whyItMatters: string;
+  evidence: Record<string, unknown>;
   measuredEvidence: string;
+  screenshotBefore: null;
+  sourceHint: null;
+  recommendedAction: string;
   deterministicPredicate: string;
 };
 
@@ -53,6 +68,8 @@ export type HostedScanRoute = {
 
 export type HostedHttpScanResult = {
   scanId: string;
+  origin: "LIVE_PUBLIC_SCAN";
+  status: "completed" | "completed_with_warnings";
   mode: "live hosted HTTP scan";
   startedAt: string;
   completedAt: string;
@@ -232,22 +249,47 @@ function issueId(url: string, category: string, selector: string, evidence: stri
 }
 
 function createIssue(
+  scanId: string,
   url: string,
-  input: Omit<HostedScanIssue, "issueId" | "confidence">,
+  sourceLocale: string,
+  input: Omit<
+    HostedScanIssue,
+    | "issueId"
+    | "scanId"
+    | "origin"
+    | "category"
+    | "confidence"
+    | "locale"
+    | "viewport"
+    | "browser"
+    | "evidence"
+    | "screenshotBefore"
+    | "sourceHint"
+  >,
 ): HostedScanIssue {
   return {
     issueId: issueId(
       url,
-      input.category,
-      input.selector,
+      input.ruleId,
+      input.selector ?? "document",
       input.measuredEvidence,
     ),
+    scanId,
+    origin: "LIVE_PUBLIC_SCAN",
+    category: issueCategoryForRule(input.ruleId),
     confidence: "verified",
+    locale: sourceLocale,
+    viewport: null,
+    browser: "http",
+    evidence: { measurement: input.measuredEvidence },
+    screenshotBefore: null,
+    sourceHint: null,
     ...input,
   };
 }
 
 function analyseHtml(
+  scanId: string,
   fetched: FetchResult,
   sourceLocale: string,
 ): { route: HostedScanRoute; issues: HostedScanIssue[] } {
@@ -269,13 +311,15 @@ function analyseHtml(
 
   if (fetched.status >= 400) {
     issues.push(
-      createIssue(fetched.url, {
-        category: "target-response-error",
+      createIssue(scanId, fetched.url, sourceLocale, {
+        ruleId: "target-response-error",
         severity: "blocking",
         route: routeName,
         selector: "document",
         description: `The route returned HTTP ${fetched.status}.`,
+        whyItMatters: "Users cannot access the localised route.",
         measuredEvidence: `status=${fetched.status}`,
+        recommendedAction: "Restore a successful HTML response for the route.",
         deterministicPredicate: "response.status < 400",
       }),
     );
@@ -283,13 +327,16 @@ function analyseHtml(
 
   if (!declaredLang) {
     issues.push(
-      createIssue(fetched.url, {
-        category: "missing-page-lang",
+      createIssue(scanId, fetched.url, sourceLocale, {
+        ruleId: "missing-page-lang",
         severity: "blocking",
         route: routeName,
         selector: "html",
         description: "The document does not declare an HTML language.",
+        whyItMatters:
+          "Assistive technology and browsers cannot reliably determine the page language.",
         measuredEvidence: `expected language compatible with ${expected.canonical}; lang is missing`,
+        recommendedAction: `Set the document lang attribute to ${expected.canonical}.`,
         deterministicPredicate: "html[lang] exists",
       }),
     );
@@ -302,13 +349,16 @@ function analyseHtml(
     }
     if (declaredLanguage !== expected.language) {
       issues.push(
-        createIssue(fetched.url, {
-          category: "wrong-page-lang",
+        createIssue(scanId, fetched.url, sourceLocale, {
+          ruleId: "wrong-page-lang",
           severity: "blocking",
           route: routeName,
           selector: "html",
           description: "The declared page language conflicts with the configured source locale.",
+          whyItMatters:
+            "Screen readers and locale-aware browser behavior may use the wrong language.",
           measuredEvidence: `expected language=${expected.language}; declared=${declaredLang}`,
+          recommendedAction: `Set the document lang attribute to ${expected.canonical}.`,
           deterministicPredicate:
             "Intl.Locale(html.lang).language === Intl.Locale(sourceLocale).language",
         }),
@@ -321,25 +371,31 @@ function analyseHtml(
     declaredDir !== expected.direction
   ) {
     issues.push(
-      createIssue(fetched.url, {
-        category: "wrong-page-direction",
+      createIssue(scanId, fetched.url, sourceLocale, {
+        ruleId: "wrong-page-direction",
         severity: "blocking",
         route: routeName,
         selector: "html",
         description: "The document direction conflicts with the configured source locale.",
+        whyItMatters:
+          "Reading order, navigation placement and mixed-direction content can become confusing.",
         measuredEvidence: `expected dir=${expected.direction}; declared=${declaredDir}`,
+        recommendedAction: `Set document direction to ${expected.direction}.`,
         deterministicPredicate: "html.dir === locale.direction",
       }),
     );
   } else if (expected.direction === "rtl" && declaredDir === null) {
     issues.push(
-      createIssue(fetched.url, {
-        category: "wrong-page-direction",
+      createIssue(scanId, fetched.url, sourceLocale, {
+        ruleId: "wrong-page-direction",
         severity: "blocking",
         route: routeName,
         selector: "html",
         description: "The RTL source locale requires an explicit document direction.",
+        whyItMatters:
+          "The page can render in an incorrect reading and navigation order.",
         measuredEvidence: `expected dir=rtl; dir is missing`,
+        recommendedAction: "Set dir=\"rtl\" on the document root.",
         deterministicPredicate: "html.dir === 'rtl'",
       }),
     );
@@ -349,13 +405,16 @@ function analyseHtml(
     looksLikeRawTranslationKey(item.text),
   )) {
     issues.push(
-      createIssue(fetched.url, {
-        category: "raw-translation-key",
+      createIssue(scanId, fetched.url, sourceLocale, {
+        ruleId: "raw-translation-key",
         severity: "blocking",
         route: routeName,
         selector: item.selector,
         description: "A translation key is visible to the user.",
+        whyItMatters:
+          "Users see internal implementation text instead of usable product copy.",
         measuredEvidence: `visible text=${item.text}`,
+        recommendedAction: "Provide a visible translation for this key.",
         deterministicPredicate: "visibleText does not match rawTranslationKey",
       }),
     );
@@ -363,13 +422,16 @@ function analyseHtml(
 
   if (!title) {
     issues.push(
-      createIssue(fetched.url, {
-        category: "missing-document-title",
+      createIssue(scanId, fetched.url, sourceLocale, {
+        ruleId: "missing-document-title",
         severity: "warning",
         route: routeName,
         selector: "head > title",
         description: "The route has no non-empty document title.",
+        whyItMatters:
+          "Browser tabs and assistive navigation cannot identify the page reliably.",
         measuredEvidence: "title is missing or empty",
+        recommendedAction: "Add a concise localised document title.",
         deterministicPredicate: "document.title.trim().length > 0",
       }),
     );
@@ -380,13 +442,17 @@ function analyseHtml(
   ].filter((match) => !/\salt\s*=/i.test(match[0])).length;
   if (missingAltCount > 0) {
     issues.push(
-      createIssue(fetched.url, {
-        category: "missing-image-alt",
+      createIssue(scanId, fetched.url, sourceLocale, {
+        ruleId: "missing-image-alt",
         severity: "warning",
         route: routeName,
         selector: "img:not([alt])",
         description: `${missingAltCount} image${missingAltCount === 1 ? "" : "s"} omit the alt attribute.`,
+        whyItMatters:
+          "Screen-reader users may miss meaningful image content or hear an unhelpful file name.",
         measuredEvidence: `img_without_alt=${missingAltCount}`,
+        recommendedAction:
+          "Add localised alternative text, or an empty alt attribute for decorative images.",
         deterministicPredicate: "every img has an alt attribute",
       }),
     );
@@ -394,14 +460,18 @@ function analyseHtml(
 
   if (strings.length < 3 && /<script\b/i.test(fetched.body)) {
     issues.push(
-      createIssue(fetched.url, {
-        category: "low-static-text-coverage",
+      createIssue(scanId, fetched.url, sourceLocale, {
+        ruleId: "low-static-text-coverage",
         severity: "warning",
         route: routeName,
         selector: "document",
         description:
           "Very little static text was available; a JavaScript-rendered browser scan is required for dependable coverage.",
+        whyItMatters:
+          "A static response cannot provide enough evidence to judge the rendered product.",
         measuredEvidence: `static_visible_strings=${strings.length}`,
+        recommendedAction:
+          "Run the local browser scanner or a configured browser-capable worker.",
         deterministicPredicate: "staticVisibleStrings >= 3",
       }),
     );
@@ -428,6 +498,7 @@ export async function runHostedHttpScan(
   fetchPage: PolicyFetcher = fetchWithPolicy,
 ): Promise<HostedHttpScanResult> {
   const started = new Date();
+  const scanId = `web-${randomUUID()}`;
   const sourceLocale = localeProfile(input.sourceLocale).canonical;
   const requestedLocales = input.locales.map(
     (locale) => localeProfile(locale).canonical,
@@ -505,13 +576,15 @@ export async function runHostedHttpScan(
     pages.push(fetched);
   }
 
-  const analysed = pages.map((page) => analyseHtml(page, sourceLocale));
+  const analysed = pages.map((page) => analyseHtml(scanId, page, sourceLocale));
   const routes = analysed.map((item) => item.route);
   const issues = analysed.flatMap((item) => item.issues);
   const completed = new Date();
 
   return {
-    scanId: `web-${randomUUID()}`,
+    scanId,
+    origin: "LIVE_PUBLIC_SCAN",
+    status: issues.length > 0 ? "completed_with_warnings" : "completed",
     mode: "live hosted HTTP scan",
     startedAt: started.toISOString(),
     completedAt: completed.toISOString(),

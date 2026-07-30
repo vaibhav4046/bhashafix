@@ -15,6 +15,16 @@ function csvCell(value: unknown) {
   return `"${String(value ?? "").replaceAll('"', '""')}"`;
 }
 
+function portableScan(scan: Scan): Scan {
+  return {
+    ...scan,
+    config: {
+      ...scan.config,
+      projectRoot: ".",
+    },
+  };
+}
+
 export function buildJsonReport(
   scan: Scan,
   verification?: VerificationResult,
@@ -24,7 +34,7 @@ export function buildJsonReport(
     generatedAt: new Date().toISOString(),
     claim:
       "Deterministic engineering checks are authoritative. Linguistic judgements include confidence levels and human-review gates.",
-    scan,
+    scan: portableScan(scan),
     verification: verification ?? null,
   };
 }
@@ -39,7 +49,7 @@ export function buildHtmlReport(
 <td>${escapeHtml(issue.issueId)}</td>
 <td>${escapeHtml(issue.locale)}</td>
 <td>${escapeHtml(issue.route)}</td>
-<td>${escapeHtml(issue.category)}</td>
+<td>${escapeHtml(issue.ruleId)}</td>
 <td>${escapeHtml(issue.severity)}</td>
 <td>${escapeHtml(issue.description)}</td>
 <td><code>${escapeHtml(issue.deterministicPredicate)}</code></td>
@@ -51,7 +61,7 @@ export function buildHtmlReport(
 <title>BhashaFix report ${escapeHtml(scan.scanId)}</title>
 <style>body{font:16px/1.5 system-ui;margin:40px;color:#1a1025;background:#fbf8ff}table{border-collapse:collapse;width:100%}th,td{padding:12px;border:1px solid #d8b4fe;text-align:left}th{background:#f1e8ff}code{font-size:12px}.pass{color:#166534}.fail{color:#9f1239}</style></head>
 <body><h1>BhashaFix release report</h1>
-<p>Scan <code>${escapeHtml(scan.scanId)}</code> · ${scan.issues.length} open issue(s)</p>
+<p>Scan <code>${escapeHtml(scan.scanId)}</code> · origin <strong>${escapeHtml(scan.origin)}</strong> · ${scan.issues.length} open issue(s)</p>
 <p class="${verification?.status === "verified" ? "pass" : "fail"}">Verification: ${escapeHtml(verification?.status ?? "unverified")} · source-locale regression ${escapeHtml(verification?.sourceLocaleRegression ?? "not run")}</p>
 <table><thead><tr><th>Issue</th><th>Locale</th><th>Route</th><th>Category</th><th>Severity</th><th>Evidence</th><th>Predicate</th></tr></thead><tbody>${rows}</tbody></table>
 <p><small>Deterministic engineering checks are authoritative. Linguistic judgements require confidence and human review where indicated.</small></p>
@@ -70,27 +80,33 @@ export function buildSarif(scan: Scan) {
             name: "BhashaFix",
             version: scan.engineVersion,
             rules: scan.issues.map((issue) => ({
-              id: issue.category,
+              id: issue.ruleId,
               shortDescription: { text: issue.description },
             })),
           },
         },
         results: scan.issues.map((issue) => ({
-          ruleId: issue.category,
+          ruleId: issue.ruleId,
           level: issue.severity === "blocking" ? "error" : "warning",
           message: { text: issue.description },
-          locations: [
-            {
-              physicalLocation: {
-                artifactLocation: { uri: issue.sourceHint },
-              },
-            },
-          ],
+          ...(issue.sourceHint
+            ? {
+                locations: [
+                  {
+                    physicalLocation: {
+                      artifactLocation: { uri: issue.sourceHint },
+                    },
+                  },
+                ],
+              }
+            : {}),
           properties: {
             issueId: issue.issueId,
             locale: issue.locale,
             route: issue.route,
             confidence: issue.confidence,
+            origin: issue.origin,
+            category: issue.category,
           },
         })),
       },
@@ -102,7 +118,7 @@ export function buildJunit(scan: Scan) {
   const cases = scan.issues
     .map(
       (issue) =>
-        `<testcase classname="${escapeHtml(issue.category)}" name="${escapeHtml(issue.issueId)}"><failure message="${escapeHtml(issue.description)}">${escapeHtml(issue.deterministicPredicate)}</failure></testcase>`,
+        `<testcase classname="${escapeHtml(issue.ruleId)}" name="${escapeHtml(issue.issueId)}"><failure message="${escapeHtml(issue.description)}">${escapeHtml(issue.deterministicPredicate)}</failure></testcase>`,
     )
     .join("");
   return `<?xml version="1.0" encoding="UTF-8"?><testsuite name="BhashaFix" tests="${scan.issues.length}" failures="${scan.issues.length}">${cases}</testsuite>`;
@@ -114,6 +130,7 @@ export function buildCsv(scan: Scan) {
     "locale",
     "route",
     "category",
+    "ruleId",
     "severity",
     "confidence",
     "description",
@@ -124,6 +141,7 @@ export function buildCsv(scan: Scan) {
       issue.locale,
       issue.route,
       issue.category,
+      issue.ruleId,
       issue.severity,
       issue.confidence,
       issue.description,

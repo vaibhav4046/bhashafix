@@ -1,7 +1,9 @@
 {
   "scanId": "atlaspay-83210b0daea2",
-  "startedAt": "2026-07-29T12:28:32.619Z",
-  "completedAt": "2026-07-29T12:28:32.756Z",
+  "origin": "RECORDED_REPLAY",
+  "status": "completed_with_warnings",
+  "startedAt": "2026-07-30T14:12:35.830Z",
+  "completedAt": "2026-07-30T14:12:35.967Z",
   "config": {
     "projectRoot": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix",
     "sourceLocale": "en-GB",
@@ -64,7 +66,9 @@
     {
       "issueId": "BF-VIS-HI-001",
       "scanId": "atlaspay-83210b0daea2",
-      "category": "vertical-clipping",
+      "origin": "RECORDED_REPLAY",
+      "category": "visual",
+      "ruleId": "vertical-clipping",
       "severity": "blocking",
       "confidence": "verified",
       "locale": "hi-IN",
@@ -78,6 +82,12 @@
       "selector": "[data-testid=hero-title]",
       "sourceHint": "apps/demo-target/data/layout.json",
       "description": "Devanagari glyph bounds exceed the available line box.",
+      "whyItMatters": "A released user interface would present an objectively broken or inconsistent localisation experience.",
+      "evidence": {
+        "actual": 28,
+        "expected": 36,
+        "delta": -8
+      },
       "measuredEvidence": {
         "actual": 28,
         "expected": 36,
@@ -91,7 +101,9 @@
     {
       "issueId": "BF-VIS-DE-002",
       "scanId": "atlaspay-83210b0daea2",
-      "category": "cta-overflow",
+      "origin": "RECORDED_REPLAY",
+      "category": "visual",
+      "ruleId": "cta-overflow",
       "severity": "blocking",
       "confidence": "verified",
       "locale": "de-DE",
@@ -105,6 +117,12 @@
       "selector": "[data-testid=primary-cta]",
       "sourceHint": "apps/demo-target/data/layout.json",
       "description": "The German CTA scroll width exceeds its fixed client width.",
+      "whyItMatters": "A released user interface would present an objectively broken or inconsistent localisation experience.",
+      "evidence": {
+        "actual": 160,
+        "expected": 212,
+        "delta": -52
+      },
       "measuredEvidence": {
         "actual": 160,
         "expected": 212,
@@ -118,7 +136,9 @@
     {
       "issueId": "BF-LOC-AR-003",
       "scanId": "atlaspay-83210b0daea2",
-      "category": "wrong-direction",
+      "origin": "RECORDED_REPLAY",
+      "category": "locale",
+      "ruleId": "wrong-direction",
       "severity": "blocking",
       "confidence": "verified",
       "locale": "ar-SA",
@@ -132,6 +152,11 @@
       "selector": "html",
       "sourceHint": "apps/demo-target/data/locale-state.json",
       "description": "The Arabic route is rendered left-to-right.",
+      "whyItMatters": "A released user interface would present an objectively broken or inconsistent localisation experience.",
+      "evidence": {
+        "actual": "ltr",
+        "expected": "rtl"
+      },
       "measuredEvidence": {
         "actual": "ltr",
         "expected": "rtl"
@@ -144,7 +169,9 @@
     {
       "issueId": "BF-RTL-HE-004",
       "scanId": "atlaspay-83210b0daea2",
-      "category": "rtl-icon-order",
+      "origin": "RECORDED_REPLAY",
+      "category": "visual",
+      "ruleId": "rtl-icon-order",
       "severity": "blocking",
       "confidence": "verified",
       "locale": "he-IL",
@@ -158,6 +185,11 @@
       "selector": "[data-testid=back-link]",
       "sourceHint": "apps/demo-target/data/layout.json",
       "description": "The directional icon remains after the label in RTL.",
+      "whyItMatters": "A released user interface would present an objectively broken or inconsistent localisation experience.",
+      "evidence": {
+        "actual": "after",
+        "expected": "before"
+      },
       "measuredEvidence": {
         "actual": "after",
         "expected": "before"
@@ -170,7 +202,9 @@
     {
       "issueId": "BF-I18N-JA-005",
       "scanId": "atlaspay-83210b0daea2",
-      "category": "raw-translation-key",
+      "origin": "RECORDED_REPLAY",
+      "category": "linguistic",
+      "ruleId": "raw-translation-key",
       "severity": "blocking",
       "confidence": "verified",
       "locale": "ja-JP",
@@ -184,6 +218,11 @@
       "selector": "[data-testid=pay-button]",
       "sourceHint": "apps/demo-target/data/translations.json",
       "description": "A raw translation key is visible in the checkout action.",
+      "whyItMatters": "A released user interface would present an objectively broken or inconsistent localisation experience.",
+      "evidence": {
+        "actual": "checkout.pay_now",
+        "forbidden": "checkout.pay_now"
+      },
       "measuredEvidence": {
         "actual": "checkout.pay_now",
         "forbidden": "checkout.pay_now"
@@ -196,7 +235,9 @@
     {
       "issueId": "BF-FONT-ZH-006",
       "scanId": "atlaspay-83210b0daea2",
-      "category": "font-coverage",
+      "origin": "RECORDED_REPLAY",
+      "category": "visual",
+      "ruleId": "font-coverage",
       "severity": "blocking",
       "confidence": "verified",
       "locale": "zh-Hans-CN",
@@ -210,6 +251,11 @@
       "selector": "[data-testid=activity-title]",
       "sourceHint": "apps/demo-target/data/layout.json",
       "description": "The configured font stack does not cover the Simplified Chinese specimen.",
+      "whyItMatters": "A released user interface would present an objectively broken or inconsistent localisation experience.",
+      "evidence": {
+        "actual": false,
+        "expected": true
+      },
       "measuredEvidence": {
         "actual": false,
         "expected": true
@@ -222,7 +268,9 @@
     {
       "issueId": "BF-VIS-TH-007",
       "scanId": "atlaspay-83210b0daea2",
-      "category": "line-breaking",
+      "origin": "RECORDED_REPLAY",
+      "category": "visual",
+      "ruleId": "line-breaking",
       "severity": "blocking",
       "confidence": "verified",
       "locale": "th-TH",
@@ -236,6 +284,11 @@
       "selector": "[data-testid=plan-description]",
       "sourceHint": "apps/demo-target/data/layout.json",
       "description": "Thai content is forced onto one line and overflows its container.",
+      "whyItMatters": "A released user interface would present an objectively broken or inconsistent localisation experience.",
+      "evidence": {
+        "actual": "nowrap",
+        "expected": "normal"
+      },
       "measuredEvidence": {
         "actual": "nowrap",
         "expected": "normal"
@@ -248,7 +301,9 @@
     {
       "issueId": "BF-I18N-FR-008",
       "scanId": "atlaspay-83210b0daea2",
-      "category": "placeholder-mismatch",
+      "origin": "RECORDED_REPLAY",
+      "category": "linguistic",
+      "ruleId": "placeholder-mismatch",
       "severity": "blocking",
       "confidence": "verified",
       "locale": "fr-FR",
@@ -262,6 +317,16 @@
       "selector": "[data-testid=pay-button]",
       "sourceHint": "apps/demo-target/data/translations.json",
       "description": "The {amount} runtime placeholder was removed from the French translation.",
+      "whyItMatters": "A released user interface would present an objectively broken or inconsistent localisation experience.",
+      "evidence": {
+        "source": "Pay {amount}",
+        "target": "Payer le montant",
+        "valid": false,
+        "sourceTokens": [
+          "{amount}"
+        ],
+        "targetTokens": []
+      },
       "measuredEvidence": {
         "source": "Pay {amount}",
         "target": "Payer le montant",
@@ -279,7 +344,9 @@
     {
       "issueId": "BF-LING-ES-009",
       "scanId": "atlaspay-83210b0daea2",
-      "category": "glossary-violation",
+      "origin": "RECORDED_REPLAY",
+      "category": "linguistic",
+      "ruleId": "glossary-violation",
       "severity": "blocking",
       "confidence": "verified",
       "locale": "es-MX",
@@ -293,6 +360,11 @@
       "selector": "[data-testid=checkout-title]",
       "sourceHint": "apps/demo-target/data/glossary.json",
       "description": "The checkout term conflicts with the project-approved Mexican Spanish glossary.",
+      "whyItMatters": "A released user interface would present an objectively broken or inconsistent localisation experience.",
+      "evidence": {
+        "actual": "Finalizar compra",
+        "expected": "Pagar"
+      },
       "measuredEvidence": {
         "actual": "Finalizar compra",
         "expected": "Pagar"
@@ -305,7 +377,9 @@
     {
       "issueId": "BF-META-EN-010",
       "scanId": "atlaspay-83210b0daea2",
-      "category": "wrong-page-lang",
+      "origin": "RECORDED_REPLAY",
+      "category": "locale",
+      "ruleId": "wrong-page-lang",
       "severity": "blocking",
       "confidence": "verified",
       "locale": "en-GB",
@@ -319,6 +393,11 @@
       "selector": "html",
       "sourceHint": "apps/demo-target/data/locale-state.json",
       "description": "The source page declares a generic language instead of the configured source locale.",
+      "whyItMatters": "A released user interface would present an objectively broken or inconsistent localisation experience.",
+      "evidence": {
+        "actual": "en",
+        "expected": "en-GB"
+      },
       "measuredEvidence": {
         "actual": "en",
         "expected": "en-GB"
@@ -349,5 +428,5 @@
     "en-GB"
   ],
   "engineVersion": "0.2.0",
-  "mode": "live"
+  "mode": "replay"
 }

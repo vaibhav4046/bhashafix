@@ -1,8 +1,47 @@
 import { z } from "zod";
 
-export const SeveritySchema = z.enum(["blocking", "warning", "advisory"]);
+export const ScanOriginSchema = z.enum([
+  "LIVE_PUBLIC_SCAN",
+  "LOCAL_REPOSITORY_SCAN",
+  "GUIDED_DEMO",
+  "RECORDED_REPLAY",
+  "SYNTHETIC_LOCALISATION_PREVIEW",
+]);
+export const ScanStatusSchema = z.enum([
+  "draft",
+  "queued",
+  "validating",
+  "discovering",
+  "crawling",
+  "extracting",
+  "rendering",
+  "checking",
+  "analysing",
+  "completed",
+  "completed_with_warnings",
+  "failed",
+  "cancelled",
+]);
+export const IssueCategorySchema = z.enum([
+  "visual",
+  "locale",
+  "linguistic",
+  "accessibility",
+  "runtime",
+]);
+export const SeveritySchema = z.enum([
+  "blocking",
+  "serious",
+  "warning",
+  "review",
+  "advisory",
+]);
 export const ConfidenceSchema = z.enum([
   "verified",
+  "high",
+  "medium",
+  "low",
+  "human-review",
   "high confidence",
   "medium confidence",
   "low confidence",
@@ -25,20 +64,24 @@ export const ViewportSchema = z.object({
 export const IssueSchema = z.object({
   issueId: z.string().min(1),
   scanId: z.string().min(1),
-  category: z.string().min(1),
+  origin: ScanOriginSchema,
+  category: IssueCategorySchema,
+  ruleId: z.string().min(1),
   severity: SeveritySchema,
   confidence: ConfidenceSchema,
   locale: z.string().min(2),
   route: z.string().startsWith("/"),
   viewport: ViewportSchema,
   browser: z.enum(["chromium", "firefox", "webkit", "deterministic"]),
-  selector: z.string().min(1),
-  sourceHint: z.string().min(1),
+  selector: z.string().min(1).nullable(),
+  sourceHint: z.string().min(1).nullable(),
   description: z.string().min(1),
+  whyItMatters: z.string().min(1),
+  evidence: z.record(z.unknown()),
   measuredEvidence: z.record(z.unknown()),
   screenshotBefore: z.string().nullable(),
   recommendedAction: z.string().min(1),
-  deterministicPredicate: z.string().min(1),
+  deterministicPredicate: z.string().min(1).nullable(),
   sourceText: z.string().optional(),
   targetText: z.string().optional(),
   backTranslation: z.string().optional(),
@@ -65,6 +108,8 @@ export const ScanConfigSchema = z.object({
 
 export const ScanSchema = z.object({
   scanId: z.string().min(1),
+  origin: ScanOriginSchema,
+  status: ScanStatusSchema,
   startedAt: z.string().datetime(),
   completedAt: z.string().datetime(),
   config: ScanConfigSchema,
@@ -108,6 +153,9 @@ export const VerificationResultSchema = z.object({
 
 export type Severity = z.infer<typeof SeveritySchema>;
 export type Confidence = z.infer<typeof ConfidenceSchema>;
+export type ScanOrigin = z.infer<typeof ScanOriginSchema>;
+export type ScanStatus = z.infer<typeof ScanStatusSchema>;
+export type IssueCategory = z.infer<typeof IssueCategorySchema>;
 export type Issue = z.infer<typeof IssueSchema>;
 export type ScanConfig = z.infer<typeof ScanConfigSchema>;
 export type Scan = z.infer<typeof ScanSchema>;
@@ -122,3 +170,27 @@ export const DEFAULT_VIEWPORTS = [
 ] as const;
 
 export const ENGINE_VERSION = "0.2.0";
+
+const RULE_CATEGORIES: Record<string, IssueCategory> = {
+  "vertical-clipping": "visual",
+  "cta-overflow": "visual",
+  "rtl-icon-order": "visual",
+  "font-coverage": "visual",
+  "line-breaking": "visual",
+  "wrong-direction": "locale",
+  "wrong-page-lang": "locale",
+  "missing-page-lang": "locale",
+  "wrong-page-direction": "locale",
+  "raw-translation-key": "linguistic",
+  "placeholder-mismatch": "linguistic",
+  "glossary-violation": "linguistic",
+  "missing-document-title": "accessibility",
+  "missing-image-alt": "accessibility",
+  "missing-accessible-name": "accessibility",
+  "target-response-error": "runtime",
+  "low-static-text-coverage": "runtime",
+};
+
+export function issueCategoryForRule(ruleId: string): IssueCategory {
+  return RULE_CATEGORIES[ruleId] ?? "runtime";
+}

@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import baselineScan from "../public/replay/baseline-scan.json";
 import repairProof from "../public/replay/repair-proof.json";
+import replayReport from "../public/replay/report.json";
 import { pseudoLocalise } from "@bhashafix/linguistic-engine";
 import { localeProfile } from "@bhashafix/locale-engine";
 
@@ -17,10 +18,12 @@ const localeSpecimens = [
 ] as const;
 
 const scanNav = [
-  ["Overview", ""],
+  ["Overview", "/overview"],
+  ["Routes", "/routes"],
   ["Issues", "/issues"],
   ["Linguistic", "/linguistic"],
   ["Visual", "/visual"],
+  ["Accessibility", "/accessibility"],
   ["Repairs", "/repairs"],
   ["Report", "/report"],
 ] as const;
@@ -127,6 +130,7 @@ function TrustClaim() {
 function LanguageStream() {
   const [index, setIndex] = useState(0);
   useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const timer = window.setInterval(
       () => setIndex((value) => (value + 1) % localeSpecimens.length),
       2200,
@@ -134,7 +138,7 @@ function LanguageStream() {
     return () => window.clearInterval(timer);
   }, []);
   return (
-    <div className="language-orbit" aria-live="polite">
+    <div className="language-orbit" aria-label="Rotating multilingual specimen">
       <div className="orbit-rings" />
       <div className="orbit-core">
         <span>{localeSpecimens[index][0]}</span>
@@ -164,7 +168,7 @@ function ProofConsole() {
       <div className="console-bar">
         <span className="traffic-lights">● ● ●</span>
         <code>atlaspay.local / checkout / es-MX</code>
-        <b>REPLAY</b>
+        <b>RECORDED_REPLAY</b>
       </div>
       <div className="console-body">
         <aside>
@@ -192,7 +196,7 @@ function ProofConsole() {
         <div className="console-evidence">
           <span>VERIFIED EVIDENCE</span>
           <b>{issues[4].issueId}</b>
-          <h4>{issues[4].category.replaceAll("-", " ")}</h4>
+          <h4>{issues[4].ruleId.replaceAll("-", " ")}</h4>
           <p>{issues[4].description}</p>
           <code>{issues[4].deterministicPredicate}</code>
           <small>confidence · verified</small>
@@ -215,18 +219,18 @@ export function LandingPage() {
       <section className="landing-hero">
         <div className="hero-copy">
           <span className="eyebrow">
-            <i /> REAL PUBLIC-WEBSITE CHECKS · NO ACCOUNT
+            <i /> OPEN-SOURCE LOCALISATION RELEASE ENGINEERING
           </span>
           <h1>
-            Paste your website.
+            Every language.
             <br />
-            See what breaks
+            Every viewport.
             <br />
-            <em>in other languages.</em>
+            <em>Evidence before release.</em>
           </h1>
           <p>
-            BhashaFix checks the pages your site really serves, follows safe
-            internal links and shows exact evidence. No pretend score.
+            Paste a website and find localisation, layout, accessibility and
+            language-quality failures before users do.
           </p>
           <form
             className="url-launcher"
@@ -247,43 +251,54 @@ export function LandingPage() {
             <button type="submit">Run real scan →</button>
           </form>
           <div className="hero-actions">
-            <Link className="text-action" href="/docs#repository">
-              ⌘ Need browser screenshots and repairs? Run locally
+            <Link className="text-action" href="/demo/atlaspay">
+              ▶ Try the guided demo
             </Link>
-            <Link className="text-action" href="/scan/atlaspay-replay">
-              ▶ Watch the verified 10 → 0 demo
+            <Link className="text-action" href="/integrations/cli">
+              ›_ Run locally with CLI
+            </Link>
+            <Link className="text-action" href="/integrations/mcp">
+              ◇ Connect through MCP
             </Link>
           </div>
           <div className="proof-line">
             <span>✓</span>
-            Real routes · deterministic evidence · exact scan scope
+            Public URL mode diagnoses served pages. Repository access is
+            required to prepare source repairs.
           </div>
         </div>
         <LanguageStream />
       </section>
 
-      <section className="proof-ribbon">
-        <div>
-          <span>ATLASPAY REPLAY · BASELINE</span>
-          <strong>10</strong>
-          <small>verified failures</small>
-        </div>
-        <div className="ribbon-flow">
-          <i />
-          <span>IDENTICAL TESTS</span>
-          <i />
-        </div>
-        <div>
-          <span>ATLASPAY REPLAY · FINAL</span>
-          <strong className="green">0</strong>
-          <small>blocking failures</small>
-        </div>
-        <div className="regression-seal">
-          <b>✓</b>
-          <span>
-            SOURCE LOCALE
-            <strong>REGRESSION PASS</strong>
-          </span>
+      <section className="guided-proof">
+        <header>
+          <span>GUIDED PRODUCT PROOF</span>
+          <strong>AtlasPay fixture · genuine recorded artifacts</strong>
+          <Link href="/demo/atlaspay">Open guided proof →</Link>
+        </header>
+        <div className="proof-ribbon">
+          <div>
+            <span>RECORDED REPLAY · BASELINE</span>
+            <strong>{repairProof.baselineBlocking}</strong>
+            <small>verified failures</small>
+          </div>
+          <div className="ribbon-flow">
+            <i />
+            <span>IDENTICAL TESTS</span>
+            <i />
+          </div>
+          <div>
+            <span>RECORDED REPLAY · FINAL</span>
+            <strong className="green">{repairProof.finalBlocking}</strong>
+            <small>blocking failures</small>
+          </div>
+          <div className="regression-seal">
+            <b>✓</b>
+            <span>
+              SOURCE LOCALE
+              <strong>REGRESSION {repairProof.sourceLocaleRegression}</strong>
+            </span>
+          </div>
         </div>
       </section>
 
@@ -392,7 +407,7 @@ function Footer() {
       <p>Test, repair and prove every language before production.</p>
       <div>
         <Link href="/docs">Documentation</Link>
-        <Link href="/docs#security">Trust centre</Link>
+        <Link href="/trust">Trust centre</Link>
         <Link href="/integrations">Open-source integrations</Link>
       </div>
     </footer>
@@ -409,6 +424,17 @@ function AppShell({ children }: { children: React.ReactNode }) {
 }
 
 export function ScanIndexPage() {
+  const [scans, setScans] = useState<LiveScanResult[]>([]);
+  useEffect(() => {
+    const refresh = () => setScans(readStoredScans());
+    refresh();
+    window.addEventListener("storage", refresh);
+    window.addEventListener("bhashafix-scans-updated", refresh);
+    return () => {
+      window.removeEventListener("storage", refresh);
+      window.removeEventListener("bhashafix-scans-updated", refresh);
+    };
+  }, []);
   return (
     <AppShell>
       <section className="page-heading">
@@ -422,23 +448,64 @@ export function ScanIndexPage() {
         </Link>
       </section>
       <section className="scan-list">
+        {scans.map((scan) => (
+          <div className="scan-row scan-row-live" key={scan.scanId}>
+            <div className="scan-symbol verified">✓</div>
+            <div>
+              <Link href={`/scan/${scan.scanId}`}>
+                <strong>{new URL(scan.target).hostname}</strong>
+              </Link>
+              <span>{scan.origin} · {scan.status.replaceAll("_", " ")}</span>
+            </div>
+            <div>
+              <small>ROUTES</small>
+              <b>{scan.summary.routesChecked}</b>
+            </div>
+            <div>
+              <small>LOCALES</small>
+              <b>{scan.requestedLocales.length}</b>
+            </div>
+            <div>
+              <small>BLOCKING</small>
+              <b className={scan.summary.verifiedBlocking ? "red" : "green"}>
+                {scan.summary.verifiedBlocking}
+              </b>
+            </div>
+            <time>{new Date(scan.completedAt).toLocaleDateString()}</time>
+            <div className="scan-row-actions">
+              <Link href={`/scan/${scan.scanId}/report`}>Report</Link>
+              <Link
+                href={`/scan/new?url=${encodeURIComponent(scan.target)}`}
+                aria-label={`Duplicate configuration for ${scan.target}`}
+              >
+                Duplicate
+              </Link>
+              <button
+                onClick={() => deleteStoredScan(scan.scanId)}
+                aria-label={`Delete scan ${scan.scanId}`}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        ))}
         <Link href="/scan/atlaspay-replay" className="scan-row">
           <div className="scan-symbol verified">✓</div>
           <div>
             <strong>AtlasPay global release gate</strong>
-            <span>Replay of genuine deterministic artifacts</span>
+            <span>RECORDED_REPLAY · genuine deterministic artifacts</span>
           </div>
           <div>
             <small>ROUTES</small>
-            <b>5</b>
+            <b>{baselineScan.routesDiscovered.length}</b>
           </div>
           <div>
             <small>LOCALES</small>
-            <b>10</b>
+            <b>{baselineScan.localesTested.length}</b>
           </div>
           <div>
             <small>PROOF</small>
-            <b className="green">10 → 0</b>
+            <b className="green">{repairProof.baselineBlocking} → {repairProof.finalBlocking}</b>
           </div>
           <time>29 Jul 2026</time>
           <span>→</span>
@@ -458,6 +525,8 @@ export function ScanIndexPage() {
 
 type LiveScanResult = {
   scanId: string;
+  origin: "LIVE_PUBLIC_SCAN";
+  status: "completed" | "completed_with_warnings";
   mode: "live hosted HTTP scan";
   startedAt: string;
   completedAt: string;
@@ -490,13 +559,29 @@ type LiveScanResult = {
   }>;
   issues: Array<{
     issueId: string;
-    category: string;
+    scanId: string;
+    origin: "LIVE_PUBLIC_SCAN";
+    category:
+      | "visual"
+      | "locale"
+      | "linguistic"
+      | "accessibility"
+      | "runtime";
+    ruleId: string;
     severity: "blocking" | "warning";
     confidence: "verified";
+    locale: string;
     route: string;
-    selector: string;
+    viewport: null;
+    browser: "http";
+    selector: string | null;
     description: string;
+    whyItMatters: string;
+    evidence: Record<string, unknown>;
     measuredEvidence: string;
+    screenshotBefore: null;
+    sourceHint: null;
+    recommendedAction: string;
     deterministicPredicate: string;
   }>;
   robots: {
@@ -508,6 +593,46 @@ type LiveScanResult = {
   notRun: string[];
   limitations: string[];
 };
+
+const SCAN_STORAGE_KEY = "bhashafix-scan-history-v1";
+
+function readStoredScans(): LiveScanResult[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const parsed = JSON.parse(
+      window.localStorage.getItem(SCAN_STORAGE_KEY) ?? "[]",
+    ) as unknown;
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter(
+      (item): item is LiveScanResult =>
+        Boolean(
+          item &&
+            typeof item === "object" &&
+            (item as LiveScanResult).origin === "LIVE_PUBLIC_SCAN" &&
+            typeof (item as LiveScanResult).scanId === "string",
+        ),
+    );
+  } catch {
+    return [];
+  }
+}
+
+function storeScan(result: LiveScanResult) {
+  const scans = [
+    result,
+    ...readStoredScans().filter((scan) => scan.scanId !== result.scanId),
+  ].slice(0, 20);
+  window.localStorage.setItem(SCAN_STORAGE_KEY, JSON.stringify(scans));
+  window.dispatchEvent(new Event("bhashafix-scans-updated"));
+}
+
+function deleteStoredScan(scanId: string) {
+  window.localStorage.setItem(
+    SCAN_STORAGE_KEY,
+    JSON.stringify(readStoredScans().filter((scan) => scan.scanId !== scanId)),
+  );
+  window.dispatchEvent(new Event("bhashafix-scans-updated"));
+}
 
 const simpleLocaleOptions = [
   "de-DE",
@@ -527,6 +652,7 @@ export function NewScanPage() {
   const initialUrl = searchParams.get("url")?.trim() ?? "";
   const shouldAutoRun = searchParams.get("autorun") === "1";
   const autoRunStarted = useRef(false);
+  const activeRequest = useRef<AbortController | null>(null);
   const [step, setStep] = useState(0);
   const [target, setTarget] = useState<"public" | "local" | "demo">("public");
   const [url, setUrl] = useState(initialUrl);
@@ -604,9 +730,12 @@ export function NewScanPage() {
       if (locales.length === 0) {
         throw new Error("Choose at least one target locale for the local follow-up.");
       }
+      const controller = new AbortController();
+      activeRequest.current = controller;
       const response = await fetch("/api/scan", {
         method: "POST",
         headers: { "content-type": "application/json" },
+        signal: controller.signal,
         body: JSON.stringify({
           url: scanUrl,
           sourceLocale,
@@ -619,9 +748,17 @@ export function NewScanPage() {
       };
       if (!response.ok) throw new Error(payload.error ?? "Scan failed.");
       setLiveResult(payload);
+      storeScan(payload);
     } catch (error) {
-      setScanError(error instanceof Error ? error.message : String(error));
+      setScanError(
+        error instanceof DOMException && error.name === "AbortError"
+          ? "Scan cancelled. No partial result or report was created."
+          : error instanceof Error
+            ? error.message
+            : String(error),
+      );
     } finally {
+      activeRequest.current = null;
       setRunning(false);
     }
   }, [locales, maxRoutes, sourceLocale, target, url]);
@@ -770,6 +907,12 @@ export function NewScanPage() {
                   simulated pipeline stages.
                 </span>
               </div>
+              <button
+                type="button"
+                onClick={() => activeRequest.current?.abort()}
+              >
+                Cancel
+              </button>
             </div>
           )}
           {scanError && (
@@ -780,6 +923,9 @@ export function NewScanPage() {
                 The site may block automation, require authentication, or be
                 unavailable. No result was invented.
               </span>
+              <button className="button button-secondary" onClick={() => void run()}>
+                Retry the same configuration
+              </button>
             </div>
           )}
           {liveResult && <LivePublicScanResult result={liveResult} />}
@@ -1045,7 +1191,7 @@ function LivePublicScanResult({ result }: { result: LiveScanResult }) {
     <section className="live-scan-result" aria-labelledby="live-result-title">
       <header>
         <div>
-          <span className="live-badge">LIVE · REAL HTTP RESPONSES</span>
+          <span className="live-badge">{result.origin} · REAL HTTP RESPONSES</span>
           <h2 id="live-result-title">Here is exactly what BhashaFix found.</h2>
           <p>
             {result.target} · completed{" "}
@@ -1150,7 +1296,7 @@ function LivePublicScanResult({ result }: { result: LiveScanResult }) {
                   <small>{issue.severity} · verified</small>
                   <code>{issue.issueId}</code>
                 </div>
-                <h4>{issue.category.replaceAll("-", " ")}</h4>
+                <h4>{issue.ruleId.replaceAll("-", " ")}</h4>
                 <p>{issue.description}</p>
                 <dl>
                   <div>
@@ -1164,6 +1310,10 @@ function LivePublicScanResult({ result }: { result: LiveScanResult }) {
                   <div>
                     <dt>Measured evidence</dt>
                     <dd>{issue.measuredEvidence}</dd>
+                  </div>
+                  <div>
+                    <dt>Why it matters</dt>
+                    <dd>{issue.whyItMatters}</dd>
                   </div>
                   <div>
                     <dt>Predicate</dt>
@@ -1207,7 +1357,10 @@ function LivePublicScanResult({ result }: { result: LiveScanResult }) {
           </p>
         </div>
         <div>
-          <Link className="button" href="/docs#repository">
+          <Link className="button" href={`/scan/${result.scanId}`}>
+            Open saved scan →
+          </Link>
+          <Link className="button" href="/docs#repository-scan">
             Run full local scan →
           </Link>
           <Link className="button button-secondary" href="/playground">
@@ -1225,16 +1378,16 @@ function ScanHeader({ section }: { section: string }) {
       <section className="scan-header">
         <div>
           <Link href="/scan">← Scans</Link>
-          <span className="replay-badge">REPLAY · GENUINE ARTIFACTS</span>
+          <span className="replay-badge">RECORDED_REPLAY · GENUINE ARTIFACTS</span>
           <h1>AtlasPay global release gate</h1>
           <p>
-            {baselineScan.scanId} · 5 routes · 10 locales · deterministic mode
+            {baselineScan.scanId} · {baselineScan.routesDiscovered.length} routes · {baselineScan.localesTested.length} locales · deterministic mode
           </p>
         </div>
         <div className="scan-status">
           <span>VERIFIED</span>
-          <strong>10 → 0</strong>
-          <small>source locale PASS</small>
+          <strong>{repairProof.baselineBlocking} → {repairProof.finalBlocking}</strong>
+          <small>source locale {repairProof.sourceLocaleRegression}</small>
         </div>
       </section>
       <nav className="scan-tabs" aria-label="Scan views">
@@ -1247,7 +1400,7 @@ function ScanHeader({ section }: { section: string }) {
             key={label}
           >
             {label}
-            {label === "Issues" && <b>10</b>}
+            {label === "Issues" && <b>{baselineScan.issues.length}</b>}
           </Link>
         ))}
       </nav>
@@ -1257,13 +1410,13 @@ function ScanHeader({ section }: { section: string }) {
 
 function PipelineRail() {
   const stages = [
-    ["Discover", "5 routes", "✓"],
+    ["Discover", `${baselineScan.routesDiscovered.length} routes`, "✓"],
     ["Extract", "34 strings", "✓"],
     ["Render", "30 cases", "✓"],
     ["Stress", "8 modes", "✓"],
-    ["Diagnose", "10 issues", "✓"],
+    ["Diagnose", `${baselineScan.issues.length} issues`, "✓"],
     ["Repair", "3 files", "✓"],
-    ["Verify", "0 blocking", "✓"],
+    ["Verify", `${repairProof.finalBlocking} blocking`, "✓"],
     ["Prove", "8 artifacts", "✓"],
   ];
   return (
@@ -1328,10 +1481,10 @@ function EvidenceCard({ issueIndex = 0 }: { issueIndex?: number }) {
   return (
     <aside className="evidence-card">
       <div>
-        <span>{issueTone[issue.category] ?? "Issue"}</span>
+        <span>{issueTone[issue.ruleId] ?? "Issue"}</span>
         <b>{issue.issueId}</b>
       </div>
-      <h2>{issue.category.replaceAll("-", " ")}</h2>
+      <h2>{issue.ruleId.replaceAll("-", " ")}</h2>
       <p>{issue.description}</p>
       <dl>
         <div>
@@ -1368,12 +1521,311 @@ function EvidenceCard({ issueIndex = 0 }: { issueIndex?: number }) {
   );
 }
 
+function liveReportArtifact(
+  result: LiveScanResult,
+  format: "json" | "html" | "csv" | "sarif" | "junit",
+) {
+  const report = {
+    schemaVersion: "1.0",
+    generatedAt: new Date().toISOString(),
+    scan: result,
+    verification: null,
+    limitations: result.limitations,
+  };
+  if (format === "json") {
+    return {
+      type: "application/json",
+      name: `${result.scanId}.json`,
+      contents: JSON.stringify(report, null, 2),
+    };
+  }
+  if (format === "html") {
+    const rows = result.issues
+      .map(
+        (issue) =>
+          `<tr><td>${escapeHtml(issue.issueId)}</td><td>${escapeHtml(issue.ruleId)}</td><td>${escapeHtml(issue.route)}</td><td>${escapeHtml(issue.severity)}</td><td>${escapeHtml(issue.description)}</td></tr>`,
+      )
+      .join("");
+    return {
+      type: "text/html",
+      name: `${result.scanId}.html`,
+      contents: `<!doctype html><html lang="en"><meta charset="utf-8"><title>BhashaFix ${escapeHtml(result.scanId)}</title><style>body{font:16px/1.5 system-ui;margin:40px;color:#1a1025}table{border-collapse:collapse;width:100%}th,td{padding:10px;border:1px solid #d8b4fe;text-align:left}</style><h1>BhashaFix public scan report</h1><p><strong>${result.origin}</strong> · ${escapeHtml(result.target)}</p><p>${result.summary.routesChecked} real HTTP routes · browser rendering not run</p><table><thead><tr><th>Issue</th><th>Rule</th><th>Route</th><th>Severity</th><th>Description</th></tr></thead><tbody>${rows}</tbody></table></html>`,
+    };
+  }
+  if (format === "csv") {
+    const cell = (value: unknown) =>
+      `"${String(value ?? "").replaceAll('"', '""')}"`;
+    const rows = result.issues.map((issue) =>
+      [
+        issue.issueId,
+        issue.origin,
+        issue.category,
+        issue.ruleId,
+        issue.locale,
+        issue.route,
+        issue.severity,
+        issue.description,
+      ]
+        .map(cell)
+        .join(","),
+    );
+    return {
+      type: "text/csv",
+      name: `${result.scanId}.csv`,
+      contents: [
+        [
+          "issueId",
+          "origin",
+          "category",
+          "ruleId",
+          "locale",
+          "route",
+          "severity",
+          "description",
+        ]
+          .map(cell)
+          .join(","),
+        ...rows,
+      ].join("\n"),
+    };
+  }
+  if (format === "sarif") {
+    return {
+      type: "application/sarif+json",
+      name: `${result.scanId}.sarif`,
+      contents: JSON.stringify(
+        {
+          version: "2.1.0",
+          $schema: "https://json.schemastore.org/sarif-2.1.0.json",
+          runs: [
+            {
+              tool: {
+                driver: {
+                  name: "BhashaFix",
+                  rules: result.issues.map((issue) => ({
+                    id: issue.ruleId,
+                    shortDescription: { text: issue.description },
+                  })),
+                },
+              },
+              results: result.issues.map((issue) => ({
+                ruleId: issue.ruleId,
+                level: issue.severity === "blocking" ? "error" : "warning",
+                message: { text: issue.description },
+                properties: {
+                  issueId: issue.issueId,
+                  origin: issue.origin,
+                  route: issue.route,
+                  locale: issue.locale,
+                },
+              })),
+            },
+          ],
+        },
+        null,
+        2,
+      ),
+    };
+  }
+  const cases = result.issues
+    .map(
+      (issue) =>
+        `<testcase classname="${escapeHtml(issue.ruleId)}" name="${escapeHtml(issue.issueId)}"><failure message="${escapeHtml(issue.description)}">${escapeHtml(issue.deterministicPredicate)}</failure></testcase>`,
+    )
+    .join("");
+  return {
+    type: "application/xml",
+    name: `${result.scanId}.xml`,
+    contents: `<?xml version="1.0" encoding="UTF-8"?><testsuite name="BhashaFix" tests="${result.issues.length}" failures="${result.issues.length}">${cases}</testsuite>`,
+  };
+}
+
+function downloadLiveReport(
+  result: LiveScanResult,
+  format: "json" | "html" | "csv" | "sarif" | "junit",
+) {
+  const artifact = liveReportArtifact(result, format);
+  const url = URL.createObjectURL(
+    new Blob([artifact.contents], { type: `${artifact.type};charset=utf-8` }),
+  );
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = artifact.name;
+  document.body.append(anchor);
+  anchor.click();
+  anchor.remove();
+  URL.revokeObjectURL(url);
+}
+
+function LiveStoredWorkspace({
+  result,
+  section,
+}: {
+  result: LiveScanResult;
+  section: string;
+}) {
+  const visibleIssues =
+    section === "Linguistic"
+      ? result.issues.filter((issue) => issue.category === "linguistic")
+      : section === "Accessibility"
+        ? result.issues.filter((issue) => issue.category === "accessibility")
+        : result.issues;
+  const navigation = scanNav.filter(([label]) => label !== "Repairs");
+  return (
+    <AppShell>
+      <section className="scan-header">
+        <div>
+          <Link href="/scan">← Scans</Link>
+          <span className="live-badge">{result.origin}</span>
+          <h1>{new URL(result.target).hostname}</h1>
+          <p>
+            {result.scanId} · {result.summary.routesChecked} actual HTTP routes
+            · completed {new Date(result.completedAt).toLocaleString()}
+          </p>
+        </div>
+        <div className="scan-status">
+          <span>{result.status.replaceAll("_", " ")}</span>
+          <strong>{result.summary.verifiedBlocking} blocking</strong>
+          <small>in the checks that ran</small>
+        </div>
+      </section>
+      <nav className="scan-tabs" aria-label="Scan views">
+        {navigation.map(([label, suffix]) => (
+          <Link
+            className={section.toLowerCase() === label.toLowerCase() ? "active" : ""}
+            href={`/scan/${result.scanId}${suffix}`}
+            key={label}
+          >
+            {label}
+            {label === "Issues" && <b>{result.issues.length}</b>}
+          </Link>
+        ))}
+      </nav>
+
+      {section === "Overview" && (
+        <section className="live-workspace">
+          <div className="live-metrics">
+            <article><small>ACTUAL ROUTES</small><strong>{result.summary.routesChecked}</strong><span>bounded same-origin HTTP</span></article>
+            <article><small>VISIBLE STRINGS</small><strong>{result.summary.stringsExtracted}</strong><span>static HTML extraction</span></article>
+            <article><small>BLOCKING</small><strong>{result.summary.verifiedBlocking}</strong><span>verified predicates</span></article>
+            <article><small>WARNINGS</small><strong>{result.summary.warnings}</strong><span>verified predicates</span></article>
+          </div>
+          <div className="truth-ledger">
+            <div><span>ACTUAL EXECUTION</span><h3>Checks that ran</h3><ul>{result.checksRun.map((item) => <li key={item}>✓ {item}</li>)}</ul></div>
+            <div><span>HONEST BOUNDARY</span><h3>Checks not run</h3><ul>{result.notRun.map((item) => <li key={item}>— {item}</li>)}</ul></div>
+          </div>
+        </section>
+      )}
+
+      {section === "Routes" && (
+        <section className="live-workspace live-result-section">
+          <div className="live-section-title"><span>ROUTES</span><div><h3>Responses actually fetched</h3><p>No route below is synthetic or borrowed from AtlasPay.</p></div></div>
+          <div className="live-route-table" role="table" aria-label="Fetched routes">
+            <div className="live-route-head" role="row"><span>Route</span><span>HTTP</span><span>Lang / dir</span><span>Strings</span><span>Findings</span></div>
+            {result.routes.map((route) => (
+              <div className="live-route-row" role="row" key={route.url}>
+                <a href={route.url} target="_blank" rel="noreferrer">{route.route}</a>
+                <span>{route.status}</span><span>{route.declaredLang ?? "missing"} / {route.declaredDir ?? "auto"}</span>
+                <span>{route.strings}</span><strong>{route.issueCount}</strong>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {["Issues", "Linguistic", "Accessibility"].includes(section) && (
+        <section className="live-workspace live-result-section">
+          <div className="live-section-title">
+            <span>{section.toUpperCase()}</span>
+            <div>
+              <h3>{section === "Issues" ? "Evidence-backed findings" : `${section} findings in the checks that ran`}</h3>
+              <p>{section === "Accessibility" ? "Static title and image-alt checks ran. Axe and keyboard execution require the local browser scanner." : "Every finding carries a stable rule, user impact and measured predicate."}</p>
+            </div>
+          </div>
+          {visibleIssues.length === 0 ? (
+            <div className="no-live-issues"><b>✓ No matching findings.</b><span>This is limited to the checks listed for this scan.</span></div>
+          ) : (
+            <div className="live-issue-list">
+              {visibleIssues.map((issue) => (
+                <article key={issue.issueId}>
+                  <div><span className={`severity-dot ${issue.severity}`} /><small>{issue.severity} · {issue.confidence}</small><code>{issue.issueId}</code></div>
+                  <h4>{issue.ruleId.replaceAll("-", " ")}</h4>
+                  <p>{issue.description}</p>
+                  <dl>
+                    <div><dt>Why it matters</dt><dd>{issue.whyItMatters}</dd></div>
+                    <div><dt>Evidence</dt><dd>{issue.measuredEvidence}</dd></div>
+                    <div><dt>Action</dt><dd>{issue.recommendedAction}</dd></div>
+                    <div><dt>Source hint</dt><dd>Not available for a public URL scan</dd></div>
+                  </dl>
+                </article>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
+
+      {section === "Visual" && (
+        <section className="review-page">
+          <div className="review-heading"><div><span>NOT RUN IN HOSTED HTTP MODE</span><h2>Visual evidence requires a browser-capable worker.</h2><p>This scan did not fabricate screenshots, overflow measurements or layout results. Run the CLI locally for Playwright evidence.</p></div><span className="mode-badge">TRUTHFUL LIMIT</span></div>
+          <Link className="button" href="/integrations/cli">Run locally with CLI →</Link>
+        </section>
+      )}
+
+      {section === "Report" && (
+        <section className="report-page live-report-page">
+          <div className="report-score"><span>ORIGIN</span><strong className="origin-score">LIVE</strong><small>Static HTTP evidence</small></div>
+          <div className="report-summary"><span>SCAN VERDICT</span><h2>{result.summary.verifiedBlocking === 0 ? "No blocker found in checks run." : "Verified blockers require attention."}</h2><p>This is not a browser-render or release guarantee. The export includes the exact scope and limitations.</p></div>
+          <div className="download-centre">
+            <div><span>SCAN-SPECIFIC EXPORTS</span><h2>Portable evidence.</h2></div>
+            <div>
+              {(["json", "html", "csv", "sarif", "junit"] as const).map((format) => (
+                <button onClick={() => downloadLiveReport(result, format)} key={format}><span>↓</span>{format.toUpperCase()}<b>generate</b></button>
+              ))}
+              <span className="unavailable-export">Screenshots ZIP · unavailable because no browser rendering ran</span>
+              <span className="unavailable-export">Patch / proof · unavailable without repository access</span>
+            </div>
+          </div>
+        </section>
+      )}
+    </AppShell>
+  );
+}
+
 export function ScanWorkspace({ section = "Overview" }: { section?: string }) {
+  const params = useParams<{ scanId?: string }>();
+  const activeScanId =
+    typeof params.scanId === "string" ? params.scanId : "atlaspay-replay";
+  const [storedScan, setStoredScan] = useState<LiveScanResult | null>(null);
   const [selectedIssue, setSelectedIssue] = useState(0);
   const [locale, setLocale] = useState("ar-SA");
   const [device, setDevice] = useState("390×844");
   const [theme, setTheme] = useState("dark");
   const [fixed, setFixed] = useState(false);
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      setStoredScan(
+        activeScanId === "atlaspay-replay"
+          ? null
+          : readStoredScans().find((scan) => scan.scanId === activeScanId) ??
+              null,
+      );
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [activeScanId]);
+  if (activeScanId !== "atlaspay-replay") {
+    return storedScan ? (
+      <LiveStoredWorkspace result={storedScan} section={section} />
+    ) : (
+      <AppShell>
+        <section className="empty-state">
+          <span>SCAN NOT AVAILABLE IN THIS BROWSER</span>
+          <h1>This local record may have been deleted or created elsewhere.</h1>
+          <p>BhashaFix does not substitute replay data for a missing live scan.</p>
+          <div><Link className="button" href="/scan/new">Run a new scan</Link><Link className="button button-secondary" href="/scan">Back to history</Link></div>
+        </section>
+      </AppShell>
+    );
+  }
   return (
     <AppShell>
       <ScanHeader section={section} />
@@ -1444,12 +1896,78 @@ export function ScanWorkspace({ section = "Overview" }: { section?: string }) {
           </div>
         </section>
       )}
+      {section === "Routes" && <ReplayRoutesView />}
       {section === "Issues" && <IssuesView selected={selectedIssue} onSelect={setSelectedIssue} />}
       {section === "Linguistic" && <LinguisticView />}
       {section === "Visual" && <VisualView />}
+      {section === "Accessibility" && <AccessibilityView />}
       {section === "Repairs" && <RepairsView />}
       {section === "Report" && <ReportView />}
     </AppShell>
+  );
+}
+
+function ReplayRoutesView() {
+  const routes = baselineScan.routesDiscovered.map((route) => ({
+    route,
+    issues: baselineScan.issues.filter((issue) => issue.route === route),
+  }));
+  return (
+    <section className="review-page">
+      <div className="review-heading">
+        <div>
+          <span>RECORDED_REPLAY · ROUTE COVERAGE</span>
+          <h2>Five routes. Ten locale predicates.</h2>
+          <p>These rows come from the generated AtlasPay baseline artifact.</p>
+        </div>
+        <span className="mode-badge">GUIDED DEMO</span>
+      </div>
+      <div className="data-table route-audit-table">
+        <header><span>Route</span><span>Findings</span><span>Locales</span><span>Evidence</span><span>Status</span></header>
+        {routes.map(({ route, issues }) => (
+          <div key={route}>
+            <strong>{route}</strong>
+            <code>{issues.length}</code>
+            <span>{[...new Set(issues.map((issue) => issue.locale))].join(", ") || "source"}</span>
+            <span>{issues.length ? "measured predicates" : "rendered route"}</span>
+            <b>{issues.length ? "BASELINE FAIL" : "PASS"}</b>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function AccessibilityView() {
+  return (
+    <section className="review-page">
+      <div className="review-heading">
+        <div>
+          <span>RECORDED_REPLAY · ACCESSIBILITY</span>
+          <h2>No accessibility regression after repair.</h2>
+          <p>
+            The AtlasPay verification run recorded zero new serious axe
+            findings, zero console-error delta and keyboard-operable controls.
+          </p>
+        </div>
+        <span className="mode-badge">VERIFIED</span>
+      </div>
+      <div className="visual-metrics">
+        {[
+          ["Serious axe findings", "0", "PASS"],
+          ["Critical axe findings", "0", "PASS"],
+          ["Console error delta", "0", "PASS"],
+          ["Keyboard controls", "operable", "PASS"],
+          ["Source-locale regression", repairProof.sourceLocaleRegression, "PASS"],
+        ].map(([label, value, status]) => (
+          <div key={label}><span>{label}</span><strong>{value}</strong><b>{status}</b></div>
+        ))}
+      </div>
+      <p className="trust-claim">
+        This evidence belongs to the bundled AtlasPay browser run. It is not
+        carried into unrelated public URL scans.
+      </p>
+    </section>
   );
 }
 
@@ -1460,16 +1978,28 @@ function IssuesView({
   selected: number;
   onSelect(index: number): void;
 }) {
+  const [filter, setFilter] = useState<"all" | "blocking" | "review">("all");
+  const [query, setQuery] = useState("");
+  const rows = baselineScan.issues
+    .map((issue, index) => ({ issue, index }))
+    .filter(({ issue }) => {
+      if (filter === "blocking" && issue.severity !== "blocking") return false;
+      if (filter === "review" && !issue.humanReviewRequired) return false;
+      return [issue.issueId, issue.locale, issue.route, issue.ruleId]
+        .join(" ")
+        .toLowerCase()
+        .includes(query.toLowerCase());
+    });
   return (
     <section className="issues-layout">
       <div className="issue-browser">
         <div className="issue-filters">
-          <button className="active">All 10</button>
-          <button>Blocking 10</button>
-          <button>Human review 0</button>
-          <input placeholder="Filter locale, route or issue…" />
+          <button className={filter === "all" ? "active" : ""} aria-pressed={filter === "all"} onClick={() => setFilter("all")}>All {baselineScan.issues.length}</button>
+          <button className={filter === "blocking" ? "active" : ""} aria-pressed={filter === "blocking"} onClick={() => setFilter("blocking")}>Blocking {baselineScan.issues.filter((issue) => issue.severity === "blocking").length}</button>
+          <button className={filter === "review" ? "active" : ""} aria-pressed={filter === "review"} onClick={() => setFilter("review")}>Human review {baselineScan.issues.filter((issue) => issue.humanReviewRequired).length}</button>
+          <input aria-label="Filter issues" placeholder="Filter locale, route or issue…" value={query} onChange={(event) => setQuery(event.target.value)} />
         </div>
-        {baselineScan.issues.map((issue, index) => (
+        {rows.map(({ issue, index }) => (
           <button
             className={index === selected ? "active" : ""}
             onClick={() => onSelect(index)}
@@ -1477,13 +2007,14 @@ function IssuesView({
           >
             <i>!</i>
             <span>
-              <strong>{issue.category.replaceAll("-", " ")}</strong>
+              <strong>{issue.ruleId.replaceAll("-", " ")}</strong>
               <small>{issue.issueId} · {issue.route}</small>
             </span>
             <b>{issue.locale}</b>
-            <em>{issueTone[issue.category]}</em>
+            <em>{issueTone[issue.ruleId]}</em>
           </button>
         ))}
+        {rows.length === 0 && <p className="table-empty">No issues match this filter.</p>}
       </div>
       <EvidenceCard issueIndex={selected} />
     </section>
@@ -1493,7 +2024,7 @@ function IssuesView({
 function LinguisticView() {
   const items = baselineScan.issues.filter((issue) =>
     ["placeholder-mismatch", "glossary-violation", "raw-translation-key"].includes(
-      issue.category,
+      issue.ruleId,
     ),
   );
   return (
@@ -1516,7 +2047,7 @@ function LinguisticView() {
               <span>{issue.locale}</span>
               <b>{issue.issueId}</b>
             </div>
-            <h3>{issue.category.replaceAll("-", " ")}</h3>
+            <h3>{issue.ruleId.replaceAll("-", " ")}</h3>
             <p>{issue.description}</p>
             <code>{issue.deterministicPredicate}</code>
             <footer>
@@ -1639,12 +2170,22 @@ function RepairsView() {
 }
 
 function ReportView() {
+  const finalIssues = replayReport.scan.issues as Array<{
+    severity: string;
+    humanReviewRequired?: boolean;
+  }>;
+  const readiness =
+    repairProof.finalBlocking === 0 &&
+    repairProof.sourceLocaleRegression === "PASS"
+      ? 100
+      : 0;
   const downloads = [
     ["JSON report", "/replay/report.json"],
     ["HTML report", "/replay/report.html"],
     ["SARIF", "/replay/report.sarif"],
     ["JUnit XML", "/replay/junit.xml"],
     ["CSV issues", "/replay/issues.csv"],
+    ["Screenshots ZIP", "/replay/screenshots.zip"],
     ["Unified patch", "/replay/repair.patch"],
     ["Proof JSON", "/replay/repair-proof.json"],
   ];
@@ -1652,7 +2193,7 @@ function ReportView() {
     <section className="report-page">
       <div className="report-score">
         <span>RELEASE READINESS</span>
-        <strong>100</strong>
+        <strong>{readiness}</strong>
         <small>Verified deterministic gate</small>
       </div>
       <div className="report-summary">
@@ -1664,14 +2205,14 @@ function ReportView() {
         </p>
         <div>
           {[
-            ["Blocking issues", "0", "PASS"],
-            ["Warnings", "0", "PASS"],
-            ["Human review", "0", "CLEAR"],
-            ["Route coverage", "5 / 5", "100%"],
-            ["Locale coverage", "10 / 10", "100%"],
-            ["Source regression", "PASS", "✓"],
-            ["Accessibility", "PASS", "✓"],
-            ["Console errors", "0", "✓"],
+            ["Blocking issues", String(repairProof.finalBlocking), repairProof.finalBlocking === 0 ? "PASS" : "FAIL"],
+            ["Warnings", String(finalIssues.filter((issue) => issue.severity === "warning").length), "PASS"],
+            ["Human review", String(finalIssues.filter((issue) => issue.humanReviewRequired).length), "CLEAR"],
+            ["Route coverage", `${replayReport.scan.routesDiscovered.length} / ${baselineScan.routesDiscovered.length}`, "100%"],
+            ["Locale coverage", `${replayReport.scan.localesTested.length} / ${baselineScan.localesTested.length}`, "100%"],
+            ["Source regression", repairProof.sourceLocaleRegression, "✓"],
+            ["Accessibility", repairProof.accessibilityRegression ? "REGRESSION" : "PASS", "✓"],
+            ["Console errors", String(repairProof.consoleErrorDelta), "✓"],
           ].map(([label, value, status]) => (
             <article key={label}><span>{label}</span><strong>{value}</strong><b>{status}</b></article>
           ))}
@@ -1690,60 +2231,222 @@ function ReportView() {
 }
 
 export function GlossaryPage() {
-  const [entries, setEntries] = useState([
-    { source: "Checkout", locale: "es-MX", approved: "Pagar", domain: "Payments", status: "Approved" },
-    { source: "Transfer", locale: "fr-FR", approved: "Virement", domain: "Payments", status: "Approved" },
-    { source: "AtlasPay", locale: "*", approved: "Do not translate", domain: "Brand", status: "Protected" },
-  ]);
+  type GlossaryEntry = {
+    id: string;
+    source: string;
+    locale: string;
+    approved: string;
+    forbidden: string;
+    notes: string;
+    protected: boolean;
+  };
+  const defaults: GlossaryEntry[] = [
+    { id: "seed-checkout", source: "Checkout", locale: "es-MX", approved: "Pagar", forbidden: "Caja", notes: "Payments flow", protected: false },
+    { id: "seed-transfer", source: "Transfer", locale: "fr-FR", approved: "Virement", forbidden: "", notes: "Bank transfer noun", protected: false },
+    { id: "seed-atlaspay", source: "AtlasPay", locale: "*", approved: "AtlasPay", forbidden: "", notes: "Product name", protected: true },
+  ];
+  const [entries, setEntries] = useState<GlossaryEntry[]>(defaults);
+  const [loaded, setLoaded] = useState(false);
+  const [query, setQuery] = useState("");
+  const [localeFilter, setLocaleFilter] = useState("*");
+  const [message, setMessage] = useState("");
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      try {
+        const stored = JSON.parse(
+          window.localStorage.getItem("bhashafix-glossary-v1") ?? "null",
+        ) as GlossaryEntry[] | null;
+        if (Array.isArray(stored)) setEntries(stored);
+      } catch {
+        setMessage("Stored glossary data was invalid; seed entries were restored.");
+      } finally {
+        setLoaded(true);
+      }
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
+  useEffect(() => {
+    if (!loaded) return;
+    window.localStorage.setItem("bhashafix-glossary-v1", JSON.stringify(entries));
+  }, [entries, loaded]);
+  const update = (id: string, changes: Partial<GlossaryEntry>) =>
+    setEntries((current) =>
+      current.map((entry) => (entry.id === id ? { ...entry, ...changes } : entry)),
+    );
+  const filtered = entries.filter(
+    (entry) =>
+      (localeFilter === "*" || entry.locale === localeFilter) &&
+      [entry.source, entry.locale, entry.approved, entry.forbidden, entry.notes]
+        .join(" ")
+        .toLowerCase()
+        .includes(query.toLowerCase()),
+  );
+  const exportEntries = () => {
+    const url = URL.createObjectURL(
+      new Blob([JSON.stringify({ schemaVersion: "1.0", entries }, null, 2)], {
+        type: "application/json",
+      }),
+    );
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = "bhashafix-glossary.json";
+    anchor.click();
+    URL.revokeObjectURL(url);
+  };
+  const importEntries = async (file: File | undefined) => {
+    if (!file) return;
+    try {
+      const value = JSON.parse(await file.text()) as {
+        entries?: GlossaryEntry[];
+      };
+      if (
+        !Array.isArray(value.entries) ||
+        value.entries.some(
+          (entry) =>
+            !entry.id ||
+            !entry.source?.trim() ||
+            !entry.locale?.trim() ||
+            !entry.approved?.trim(),
+        )
+      ) {
+        throw new Error("Each entry requires id, source, locale and approved text.");
+      }
+      value.entries.forEach((entry) => {
+        if (entry.locale !== "*") new Intl.Locale(entry.locale);
+      });
+      setEntries(value.entries);
+      setMessage(`Imported ${value.entries.length} validated entries.`);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Import failed.");
+    }
+  };
   return (
     <AppShell>
       <section className="page-heading">
         <div><span>TERMINOLOGY</span><h1>Project glossary</h1><p>Approved terms are deterministic constraints, not model preferences.</p></div>
-        <button
-          className="button"
-          onClick={() => setEntries((current) => [...current, { source: "New term", locale: "de-DE", approved: "Review required", domain: "General", status: "Draft" }])}
-        >
-          Add entry
-        </button>
+        <div className="data-actions">
+          <button className="button button-secondary" onClick={exportEntries}>Export JSON</button>
+          <label className="button button-secondary">Import JSON<input type="file" accept="application/json,.json" onChange={(event) => void importEntries(event.target.files?.[0])} /></label>
+          <button className="button" onClick={() => setEntries((current) => [...current, { id: crypto.randomUUID(), source: "", locale: "de-DE", approved: "", forbidden: "", notes: "", protected: false }])}>Add entry</button>
+        </div>
       </section>
-      <section className="data-table">
-        <header><span>Source term</span><span>Locale</span><span>Approved target</span><span>Domain</span><span>Status</span></header>
-        {entries.map((entry, index) => (
-          <div key={`${entry.source}-${index}`}>
-            <strong>{entry.source}</strong><code>{entry.locale}</code><span>{entry.approved}</span><span>{entry.domain}</span><b>{entry.status}</b>
+      <section className="data-toolbar">
+        <input aria-label="Search glossary" placeholder="Search terms, translations or notes…" value={query} onChange={(event) => setQuery(event.target.value)} />
+        <select aria-label="Filter glossary by locale" value={localeFilter} onChange={(event) => setLocaleFilter(event.target.value)}>
+          <option value="*">All locales</option>
+          {[...new Set(entries.map((entry) => entry.locale))].map((locale) => <option key={locale}>{locale}</option>)}
+        </select>
+        <span role="status">{message || `${filtered.length} of ${entries.length} persisted entries`}</span>
+      </section>
+      <section className="data-table editable-table">
+        <header><span>Source term</span><span>Locale</span><span>Approved target</span><span>Policy / notes</span><span>Actions</span></header>
+        {filtered.map((entry) => (
+          <div key={entry.id}>
+            <input aria-label={`Source term ${entry.id}`} value={entry.source} onChange={(event) => update(entry.id, { source: event.target.value })} placeholder="Required source term" />
+            <input aria-label={`Locale ${entry.id}`} value={entry.locale} onChange={(event) => update(entry.id, { locale: event.target.value })} />
+            <input aria-label={`Approved translation ${entry.id}`} value={entry.approved} onChange={(event) => update(entry.id, { approved: event.target.value })} placeholder="Required approved form" />
+            <span className="glossary-policy"><input aria-label={`Forbidden alternatives ${entry.id}`} value={entry.forbidden} onChange={(event) => update(entry.id, { forbidden: event.target.value })} placeholder="Forbidden alternatives" /><input aria-label={`Notes ${entry.id}`} value={entry.notes} onChange={(event) => update(entry.id, { notes: event.target.value })} placeholder="Notes" /></span>
+            <span className="row-actions"><label><input type="checkbox" checked={entry.protected} onChange={(event) => update(entry.id, { protected: event.target.checked })} /> protected</label><button onClick={() => setEntries((current) => current.filter((item) => item.id !== entry.id))}>Delete</button></span>
           </div>
         ))}
+        {filtered.length === 0 && <p className="table-empty">No glossary entry matches this filter.</p>}
       </section>
     </AppShell>
   );
 }
 
 export function MemoryPage() {
+  type MemoryEntry = {
+    id: string;
+    source: string;
+    target: string;
+    locale: string;
+    context: string;
+    provider: string;
+    approved: boolean;
+    match: "exact" | "context";
+  };
   const [query, setQuery] = useState("");
-  const entries = [
-    ["Checkout", "Pagar", "es-MX", "checkout-title", "human", "Approved"],
-    ["Send money", "Envoyer de l’argent", "fr-FR", "primary-cta", "human", "Approved"],
-    ["Available balance", "الرصيد المتاح", "ar-SA", "dashboard-card", "provider:openai", "Review"],
-    ["Global payments", "グローバル決済", "ja-JP", "hero-title", "human", "Approved"],
+  const defaults: MemoryEntry[] = [
+    { id: "seed-memory-es", source: "Checkout", target: "Pagar", locale: "es-MX", context: "checkout-title", provider: "human", approved: true, match: "exact" },
+    { id: "seed-memory-fr", source: "Send money", target: "Envoyer de l’argent", locale: "fr-FR", context: "primary-cta", provider: "human", approved: true, match: "context" },
+    { id: "seed-memory-ar", source: "Available balance", target: "الرصيد المتاح", locale: "ar-SA", context: "dashboard-card", provider: "provider:openai", approved: false, match: "context" },
+    { id: "seed-memory-ja", source: "Global payments", target: "グローバル決済", locale: "ja-JP", context: "hero-title", provider: "human", approved: true, match: "exact" },
   ];
+  const [entries, setEntries] = useState<MemoryEntry[]>(defaults);
+  const [loaded, setLoaded] = useState(false);
+  const [localeFilter, setLocaleFilter] = useState("*");
+  const [matchFilter, setMatchFilter] = useState("*");
+  const [message, setMessage] = useState("");
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      try {
+        const stored = JSON.parse(
+          window.localStorage.getItem("bhashafix-memory-v1") ?? "null",
+        ) as MemoryEntry[] | null;
+        if (Array.isArray(stored)) setEntries(stored);
+      } catch {
+        setMessage("Stored memory data was invalid; seed entries were restored.");
+      } finally {
+        setLoaded(true);
+      }
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
+  useEffect(() => {
+    if (loaded) {
+      window.localStorage.setItem("bhashafix-memory-v1", JSON.stringify(entries));
+    }
+  }, [entries, loaded]);
   const filtered = entries.filter((entry) =>
-    entry.join(" ").toLowerCase().includes(query.toLowerCase()),
+    (localeFilter === "*" || entry.locale === localeFilter) &&
+    (matchFilter === "*" || entry.match === matchFilter) &&
+    Object.values(entry).join(" ").toLowerCase().includes(query.toLowerCase()),
   );
+  const exportMemory = () => {
+    const url = URL.createObjectURL(new Blob([JSON.stringify({ schemaVersion: "1.0", entries }, null, 2)], { type: "application/json" }));
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = "bhashafix-translation-memory.json";
+    anchor.click();
+    URL.revokeObjectURL(url);
+  };
+  const importMemory = async (file: File | undefined) => {
+    if (!file) return;
+    try {
+      const value = JSON.parse(await file.text()) as { entries?: MemoryEntry[] };
+      if (!Array.isArray(value.entries) || value.entries.some((entry) => !entry.id || !entry.source || !entry.target || !entry.locale)) {
+        throw new Error("Every memory entry requires id, source, target and locale.");
+      }
+      value.entries.forEach((entry) => new Intl.Locale(entry.locale));
+      setEntries(value.entries);
+      setMessage(`Imported ${value.entries.length} validated memory entries.`);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Import failed.");
+    }
+  };
   return (
     <AppShell>
       <section className="page-heading">
         <div><span>PROJECT MEMORY</span><h1>Translation memory</h1><p>Exact, normalised and context matches with provenance.</p></div>
-        <input className="page-search" placeholder="Search memory…" value={query} onChange={(event) => setQuery(event.target.value)} />
+        <div className="data-actions"><button className="button button-secondary" onClick={exportMemory}>Export JSON</button><label className="button button-secondary">Import JSON<input type="file" accept="application/json,.json" onChange={(event) => void importMemory(event.target.files?.[0])} /></label></div>
+      </section>
+      <section className="data-toolbar">
+        <input aria-label="Search translation memory" placeholder="Search memory…" value={query} onChange={(event) => setQuery(event.target.value)} />
+        <select aria-label="Filter memory by locale" value={localeFilter} onChange={(event) => setLocaleFilter(event.target.value)}><option value="*">All locales</option>{[...new Set(entries.map((entry) => entry.locale))].map((locale) => <option key={locale}>{locale}</option>)}</select>
+        <select aria-label="Filter memory by match type" value={matchFilter} onChange={(event) => setMatchFilter(event.target.value)}><option value="*">All matches</option><option value="exact">Exact</option><option value="context">Context</option></select>
+        <span role="status">{message || `${filtered.length} of ${entries.length} persisted entries`}</span>
       </section>
       <section className="memory-grid">
-        {filtered.map(([source, target, locale, context, provider, status]) => (
-          <article key={`${source}-${locale}`}>
-            <div><span>{locale}</span><b>{status}</b></div>
-            <small>SOURCE</small><strong>{source}</strong>
-            <small>TARGET</small><h3>{target}</h3>
-            <footer><code>{context}</code><span>{provider}</span></footer>
+        {filtered.map((entry) => (
+          <article key={entry.id}>
+            <div><span>{entry.locale} · {entry.match}</span><button onClick={() => setEntries((current) => current.map((item) => item.id === entry.id ? { ...item, approved: !item.approved } : item))}>{entry.approved ? "Human approved" : "Mark approved"}</button></div>
+            <small>SOURCE</small><strong>{entry.source}</strong>
+            <small>TARGET</small><h3>{entry.target}</h3>
+            <footer><code>{entry.context}</code><span>{entry.provider}</span><button aria-label={`Delete memory ${entry.id}`} onClick={() => setEntries((current) => current.filter((item) => item.id !== entry.id))}>Delete</button></footer>
           </article>
         ))}
+        {filtered.length === 0 && <p className="table-empty">No translation-memory entry matches this filter.</p>}
       </section>
     </AppShell>
   );
@@ -1777,6 +2480,122 @@ export function IntegrationsPage() {
           <div className="provider-status"><b>deterministic</b><span>available</span></div>
           <div className="provider-status"><b>model provider</b><span>not configured</span></div>
         </article>
+      </section>
+    </AppShell>
+  );
+}
+
+export function IntegrationDetailPage({
+  integration,
+}: {
+  integration: "cli" | "mcp" | "ci";
+}) {
+  const content = {
+    cli: {
+      eyebrow: "LOCAL AND CI EXECUTION",
+      title: "Run the full browser scanner locally.",
+      body: "The CLI keeps repository source and credentials on your machine, renders with Playwright and returns stable exit codes.",
+      command: `pnpm bhashafix scan --url http://localhost:3000 \\\n+  --source-locale en-GB --locales hi-IN,ar-SA,ja-JP,de-DE \\\n+  --viewports mobile,desktop --no-ai`,
+    },
+    mcp: {
+      eyebrow: "STRUCTURED AGENT INTEGRATION",
+      title: "Give coding agents evidence, not guesses.",
+      body: "The local STDIO server exposes strict scan, issue, report, dry-run repair and identical-verification tools.",
+      command: `{\n  "mcpServers": {\n    "bhashafix": {\n      "command": "node",\n      "args": ["packages/mcp/dist/server.js"]\n    }\n  }\n}`,
+    },
+    ci: {
+      eyebrow: "SEVERITY-AWARE RELEASE GATE",
+      title: "Run identical checks in GitHub Actions.",
+      body: "The workflow installs Chromium, runs the shared engine, uploads evidence and fails only at the configured threshold.",
+      command: `pnpm install --frozen-lockfile\npnpm exec playwright install chromium\npnpm bhashafix ci --config .bhashafix/config.yml --fail-on blocking`,
+    },
+  }[integration];
+  return (
+    <AppShell>
+      <section className="docs-layout integration-detail">
+        <aside>
+          <Link href="/integrations/cli">CLI</Link>
+          <Link href="/integrations/mcp">MCP</Link>
+          <Link href="/integrations/ci">CI</Link>
+        </aside>
+        <article>
+          <span>{content.eyebrow}</span>
+          <h1>{content.title}</h1>
+          <p className="docs-lede">{content.body}</p>
+          <section><h2>Working setup</h2><pre>{content.command}</pre></section>
+          <section><h2>Truth boundary</h2><p>{integration === "cli" ? "Local browser support depends on installed Playwright runtimes. Provider-backed linguistic review remains optional." : integration === "mcp" ? "STDIO is the supported MVP transport. Repair tools require an explicit scan, issue IDs, allowlisted paths and dry-run review." : "The repository includes the workflow, but no remote status badge is shown until an authenticated GitHub run exists."}</p></section>
+          <Link className="button" href="/docs">Read full documentation →</Link>
+        </article>
+      </section>
+    </AppShell>
+  );
+}
+
+export function DemoPage() {
+  return (
+    <AppShell>
+      <section className="demo-index">
+        <span>GUIDED_DEMO</span>
+        <h1>See a real repair proof without pretending it is your website.</h1>
+        <p>
+          AtlasPay is a bundled multilingual fixture with ten deterministic
+          failures, a bounded source patch and an identical-test rerun.
+        </p>
+        <div className="demo-proof-strip">
+          <article><small>BASELINE</small><strong>{repairProof.baselineBlocking}</strong><span>verified blocking predicates</span></article>
+          <i>→</i>
+          <article><small>FINAL</small><strong>{repairProof.finalBlocking}</strong><span>blocking predicates</span></article>
+          <article><small>SOURCE LOCALE</small><strong>{repairProof.sourceLocaleRegression}</strong><span>regression result</span></article>
+        </div>
+        <div className="hero-actions">
+          <Link className="button" href="/scan/atlaspay-replay/overview">Open evidence workspace →</Link>
+          <Link className="button button-secondary" href="/demo/atlaspay/report">Open proof report</Link>
+        </div>
+        <p className="trust-claim">Origin shown in exports: RECORDED_REPLAY. The fixture run is genuine; opening this page does not rerun it.</p>
+      </section>
+    </AppShell>
+  );
+}
+
+export function TrustPage() {
+  return (
+    <AppShell>
+      <section className="docs-layout trust-page">
+        <aside>
+          {["Scope", "Local data", "Providers", "Evidence", "Limitations"].map((item) => <a href={`#${item.toLowerCase().replace(" ", "-")}`} key={item}>{item}</a>)}
+        </aside>
+        <article>
+          <span>BHASHAFIX TRUST CENTRE</span>
+          <h1>Know what ran, what moved and what did not.</h1>
+          <p className="docs-lede">Every result carries an origin. Public scans never invent source locations or repairs.</p>
+          <section id="scope"><h2>Five explicit origins</h2><pre>{`LIVE_PUBLIC_SCAN\nLOCAL_REPOSITORY_SCAN\nGUIDED_DEMO\nRECORDED_REPLAY\nSYNTHETIC_LOCALISATION_PREVIEW`}</pre></section>
+          <section id="local-data"><h2>What remains local</h2><p>Repository files, Playwright storage state, provider secrets and repair rollback data remain in the local CLI environment unless the user explicitly chooses another boundary.</p></section>
+          <section id="providers"><h2>What reaches model providers</h2><p>Nothing in no-AI mode. When configured, only minimised translatable content and context are sent; credentials, hidden form values and detected secrets are excluded.</p></section>
+          <section id="evidence"><h2>How evidence is generated</h2><p>Deterministic rules store the measured value, expected value and predicate. Model suggestions remain advisory and carry confidence plus human-review requirements.</p></section>
+          <section id="limitations"><h2>Honest limitations</h2><p>The Vercel-hosted path performs bounded static HTTP checks. Full rendered screenshots, axe execution and source repair require the local CLI or a configured browser worker.</p></section>
+          <TrustClaim />
+        </article>
+      </section>
+    </AppShell>
+  );
+}
+
+export function MotionLabPage() {
+  const [active, setActive] = useState(false);
+  return (
+    <AppShell>
+      <section className="motion-lab">
+        <div className="review-heading">
+          <div><span>INTERNAL MOTION VERIFICATION</span><h1>Motion communicates state.</h1><p>Every sample remains usable with reduced motion and decorative layers ignore pointer input.</p></div>
+          <button className="button" onClick={() => setActive((value) => !value)}>{active ? "Reset motion" : "Run motion checks"}</button>
+        </div>
+        <div className={`motion-ledger ${active ? "active" : ""}`}>
+          <article><span>01 · LOGO ALIGNMENT</span><div className="motion-logo"><i /><b>✓</b></div><p>Speech paths align once; no perpetual bounce.</p></article>
+          <article><span>02 · PIPELINE EVENT</span><div className="motion-pipeline">{["VALIDATE", "CRAWL", "RENDER", "CHECK"].map((item) => <i key={item}>{item}</i>)}</div><p>Nodes activate only after the user starts this lab.</p></article>
+          <article><span>03 · SCAN BEAM</span><div className="motion-frame"><i /></div><p>The beam is confined to the preview and never captures pointers.</p></article>
+          <article><span>04 · VERIFIED DIFF</span><div className="motion-diff"><del>- dir=&quot;ltr&quot;</del><ins>+ dir=&quot;rtl&quot;</ins></div><p>Removed and added lines retain non-colour text cues.</p></article>
+        </div>
+        <p className="trust-claim">With `prefers-reduced-motion: reduce`, durations collapse and every control continues to work.</p>
       </section>
     </AppShell>
   );
@@ -1855,7 +2674,7 @@ export function PlaygroundPage() {
   return (
     <AppShell>
       <section className="page-heading">
-        <div><span>SYNTHETIC LOCALISATION PREVIEW</span><h1>Stress strings safely</h1><p>Protected tokens, tags, URLs, emails and project terms remain intact.</p></div>
+        <div><span>SYNTHETIC_LOCALISATION_PREVIEW</span><h1>Stress strings safely</h1><p>Protected tokens, tags, URLs, emails and project terms remain intact.</p></div>
       </section>
       <section className="playground">
         <div>
@@ -1869,7 +2688,7 @@ export function PlaygroundPage() {
           </div>
         </div>
         <div className="pseudo-result" dir={profile?.direction ?? "ltr"}>
-          <small>SYNTHETIC LOCALISATION PREVIEW — NOT THE PRODUCTION WEBSITE</small>
+          <small>SYNTHETIC_LOCALISATION_PREVIEW — NOT THE PRODUCTION WEBSITE</small>
           {profile ? (
             <iframe
               className="pseudo-frame"

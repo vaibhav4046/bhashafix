@@ -9,7 +9,15 @@ export async function verifyRepair(
   projectRoot: string,
   baseline: Scan,
 ): Promise<{ scan: Scan; result: VerificationResult }> {
-  const scan = await scanDemoProject(projectRoot);
+  const scan = await scanDemoProject(projectRoot, {
+    mode: baseline.origin === "RECORDED_REPLAY" ? "replay" : "live",
+    origin:
+      baseline.origin === "RECORDED_REPLAY"
+        ? "RECORDED_REPLAY"
+        : baseline.origin === "LOCAL_REPOSITORY_SCAN"
+          ? "LOCAL_REPOSITORY_SCAN"
+          : "GUIDED_DEMO",
+  });
   const baselineBlocking = baseline.issues.filter(
     (issue) => issue.severity === "blocking",
   ).length;

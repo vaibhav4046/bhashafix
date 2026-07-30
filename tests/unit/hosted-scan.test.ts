@@ -75,9 +75,10 @@ describe("hosted public scan", () => {
     expect(result.summary.routesChecked).toBe(2);
     expect(result.summary.stringsExtracted).toBeGreaterThan(3);
     expect(result.scope.browserRendered).toBe(false);
+    expect(result.origin).toBe("LIVE_PUBLIC_SCAN");
     expect(result.notRun).toContain("JavaScript browser rendering");
     expect(result.robots.skippedRoutes).toBe(1);
-    expect(result.issues.map((issue) => issue.category)).toEqual(
+    expect(result.issues.map((issue) => issue.ruleId)).toEqual(
       expect.arrayContaining([
         "wrong-page-lang",
         "raw-translation-key",
@@ -125,7 +126,7 @@ describe("hosted public scan", () => {
     );
 
     expect(
-      result.issues.filter((issue) => issue.category === "raw-translation-key"),
+      result.issues.filter((issue) => issue.ruleId === "raw-translation-key"),
     ).toEqual([]);
   });
 

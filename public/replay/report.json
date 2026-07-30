@@ -1,13 +1,15 @@
 {
   "schemaVersion": "1.0",
-  "generatedAt": "2026-07-29T12:28:34.544Z",
+  "generatedAt": "2026-07-30T14:12:43.853Z",
   "claim": "Deterministic engineering checks are authoritative. Linguistic judgements include confidence levels and human-review gates.",
   "scan": {
     "scanId": "atlaspay-75123a28884f",
-    "startedAt": "2026-07-29T12:28:34.524Z",
-    "completedAt": "2026-07-29T12:28:34.661Z",
+    "origin": "RECORDED_REPLAY",
+    "status": "completed",
+    "startedAt": "2026-07-30T14:12:43.848Z",
+    "completedAt": "2026-07-30T14:12:43.985Z",
     "config": {
-      "projectRoot": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix",
+      "projectRoot": ".",
       "sourceLocale": "en-GB",
       "locales": [
         "hi-IN",
@@ -85,11 +87,11 @@
       "en-GB"
     ],
     "engineVersion": "0.2.0",
-    "mode": "live"
+    "mode": "replay"
   },
   "verification": {
     "scanId": "atlaspay-83210b0daea2",
-    "verifiedAt": "2026-07-29T12:28:34.529Z",
+    "verifiedAt": "2026-07-30T14:12:43.851Z",
     "status": "verified",
     "baselineBlocking": 10,
     "finalBlocking": 0,

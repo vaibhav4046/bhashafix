@@ -7,6 +7,7 @@ import {
   ENGINE_VERSION,
   IssueSchema,
   ScanSchema,
+  issueCategoryForRule,
   type Issue,
   type Scan,
 } from "@bhashafix/shared";
@@ -57,7 +58,14 @@ function scanFingerprint(state: State, predicates: Predicate[]) {
 
 export async function scanDemoProject(
   projectRoot: string,
-  options: { mode?: "live" | "replay"; now?: Date } = {},
+  options: {
+    mode?: "live" | "replay";
+    origin?:
+      | "LOCAL_REPOSITORY_SCAN"
+      | "GUIDED_DEMO"
+      | "RECORDED_REPLAY";
+    now?: Date;
+  } = {},
 ): Promise<Scan> {
   const started = options.now ?? new Date();
   const state = await loadDemoState(projectRoot);
@@ -73,7 +81,11 @@ export async function scanDemoProject(
       IssueSchema.parse({
         issueId: predicate.issueId,
         scanId,
-        category: predicate.category,
+        origin:
+          options.origin ??
+          (options.mode === "replay" ? "RECORDED_REPLAY" : "GUIDED_DEMO"),
+        category: issueCategoryForRule(predicate.category),
+        ruleId: predicate.category,
         severity: "blocking",
         confidence: "verified",
         locale: predicate.locale,
@@ -83,6 +95,9 @@ export async function scanDemoProject(
         selector: predicate.selector,
         sourceHint: predicate.sourceHint,
         description: predicate.description,
+        whyItMatters:
+          "A released user interface would present an objectively broken or inconsistent localisation experience.",
+        evidence: result.evidence,
         measuredEvidence: result.evidence,
         screenshotBefore: `/evidence/${predicate.issueId}.png`,
         recommendedAction: predicate.recommendedAction,
@@ -95,6 +110,10 @@ export async function scanDemoProject(
   const completed = new Date(started.getTime() + 137);
   return ScanSchema.parse({
     scanId,
+    origin:
+      options.origin ??
+      (options.mode === "replay" ? "RECORDED_REPLAY" : "GUIDED_DEMO"),
+    status: issues.length > 0 ? "completed_with_warnings" : "completed",
     startedAt: started.toISOString(),
     completedAt: completed.toISOString(),
     config: {

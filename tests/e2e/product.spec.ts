@@ -21,7 +21,7 @@ test("landing page is responsive, themeable and accessible", async ({ page }) =>
   await expect(
     page.getByRole("heading", {
       level: 1,
-      name: "Paste your website. See what breaks in other languages.",
+      name: "Every language. Every viewport. Evidence before release.",
     }),
   ).toBeVisible();
   expect(
@@ -88,6 +88,8 @@ test("real public scan UI shows exact routes, evidence and honest coverage", asy
       contentType: "application/json",
       body: JSON.stringify({
         scanId: "web-ui-contract",
+        origin: "LIVE_PUBLIC_SCAN",
+        status: "completed_with_warnings",
         mode: "live hosted HTTP scan",
         startedAt: "2026-07-30T12:00:00.000Z",
         completedAt: "2026-07-30T12:00:01.000Z",
@@ -134,24 +136,46 @@ test("real public scan UI shows exact routes, evidence and honest coverage", asy
         issues: [
           {
             issueId: "web_missing_lang",
-            category: "missing-page-lang",
+            scanId: "web-ui-contract",
+            origin: "LIVE_PUBLIC_SCAN",
+            category: "locale",
+            ruleId: "missing-page-lang",
             severity: "blocking",
             confidence: "verified",
+            locale: "en-GB",
             route: "/pricing",
+            viewport: null,
+            browser: "http",
             selector: "html",
             description: "The document does not declare an HTML language.",
+            whyItMatters: "Assistive technology cannot determine the language.",
+            evidence: { measurement: "lang is missing" },
             measuredEvidence: "lang is missing",
+            screenshotBefore: null,
+            sourceHint: null,
+            recommendedAction: "Set html lang to en-GB.",
             deterministicPredicate: "html[lang] exists",
           },
           {
             issueId: "web_missing_alt",
-            category: "missing-image-alt",
+            scanId: "web-ui-contract",
+            origin: "LIVE_PUBLIC_SCAN",
+            category: "accessibility",
+            ruleId: "missing-image-alt",
             severity: "warning",
             confidence: "verified",
+            locale: "en-GB",
             route: "/pricing",
+            viewport: null,
+            browser: "http",
             selector: "img:not([alt])",
             description: "1 image omits the alt attribute.",
+            whyItMatters: "Screen-reader users may miss meaningful content.",
+            evidence: { measurement: "img_without_alt=1" },
             measuredEvidence: "img_without_alt=1",
+            screenshotBefore: null,
+            sourceHint: null,
+            recommendedAction: "Add localised alternative text.",
             deterministicPredicate: "every img has an alt attribute",
           },
         ],
@@ -188,7 +212,7 @@ test("real public scan UI shows exact routes, evidence and honest coverage", asy
     "https://product.example",
   );
   await page.getByRole("button", { name: "Run real scan →" }).click();
-  await expect(page.getByText("LIVE · REAL HTTP RESPONSES")).toBeVisible();
+  await expect(page.getByText("LIVE_PUBLIC_SCAN · REAL HTTP RESPONSES")).toBeVisible();
   await expect(page.getByText("Routes actually fetched")).toBeVisible();
   await expect(page.getByRole("cell", { name: "/pricing" })).toBeVisible();
   await expect(page.getByText("missing page lang")).toBeVisible();
@@ -207,6 +231,54 @@ test("real public scan UI shows exact routes, evidence and honest coverage", asy
       violation.impact === "critical" || violation.impact === "serious",
     ),
   ).toEqual([]);
+  await page.getByRole("link", { name: "Open saved scan →" }).click();
+  await expect(page.getByText("LIVE_PUBLIC_SCAN", { exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Checks that ran" })).toBeVisible();
+  await page.goto("/scan/web-ui-contract/report");
+  await expect(page.getByText("SCAN-SPECIFIC EXPORTS")).toBeVisible();
+  expect(consoleErrors).toEqual([]);
+});
+
+test("locked product routes, glossary persistence and motion lab are functional", async ({
+  page,
+}) => {
+  const consoleErrors = collectConsoleErrors(page);
+  for (const route of [
+    "/scan/atlaspay-replay/overview",
+    "/scan/atlaspay-replay/routes",
+    "/scan/atlaspay-replay/accessibility",
+    "/demo",
+    "/integrations/cli",
+    "/integrations/mcp",
+    "/integrations/ci",
+    "/trust",
+    "/motion-lab",
+  ]) {
+    await page.goto(route);
+    await expect(page.locator("main")).toBeVisible();
+  }
+  await page.goto("/motion-lab");
+  await page.getByRole("button", { name: "Run motion checks" }).click();
+  await expect(page.locator(".motion-ledger")).toHaveClass(/active/);
+  await expect(page.locator(".motion-frame")).toHaveCSS("pointer-events", "none");
+
+  await page.goto("/glossary");
+  await page.getByRole("button", { name: "Add entry" }).click();
+  const source = page.getByPlaceholder("Required source term").last();
+  await source.fill("Beneficiary");
+  await page.getByPlaceholder("Required approved form").last().fill("Begünstigter");
+  await page.reload();
+  await page.getByLabel("Search glossary").fill("Beneficiary");
+  await expect(page.getByLabel(/Source term/).last()).toHaveValue("Beneficiary");
+  await page.getByRole("button", { name: "Delete" }).click();
+
+  await page.goto("/memory");
+  await page.getByLabel("Search translation memory").fill("Available balance");
+  await expect(page.getByText("الرصيد المتاح")).toBeVisible();
+  await page.getByRole("button", { name: "Mark approved" }).click();
+  await page.reload();
+  await page.getByLabel("Search translation memory").fill("Available balance");
+  await expect(page.getByRole("button", { name: "Human approved" })).toBeVisible();
   expect(consoleErrors).toEqual([]);
 });
 
@@ -276,7 +348,7 @@ test("proof report exposes verified release evidence and portable exports", asyn
   const sourceRegression = page.locator("article").filter({ hasText: "Source regression" });
   await expect(sourceRegression).toContainText("PASS");
   const downloads = page.locator("a[download]");
-  await expect(downloads).toHaveCount(7);
+  await expect(downloads).toHaveCount(8);
   for (const link of await downloads.evaluateAll((items) =>
     items.map((item) => ({
       href: (item as HTMLAnchorElement).href,
@@ -304,7 +376,7 @@ test("synthetic localisation preview is isolated, labelled and locale-aware", as
   await page.goto("/playground");
   await expect(
     page.getByText(
-      "SYNTHETIC LOCALISATION PREVIEW — NOT THE PRODUCTION WEBSITE",
+      "SYNTHETIC_LOCALISATION_PREVIEW — NOT THE PRODUCTION WEBSITE",
       { exact: true },
     ),
   ).toBeVisible();

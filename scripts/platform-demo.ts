@@ -1,9 +1,16 @@
-import { copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
+import {
+  copyFile,
+  mkdir,
+  readFile,
+  readdir,
+  writeFile,
+} from "node:fs/promises";
 import path from "node:path";
 import { scanDemoProject, loadDemoPredicates } from "@bhashafix/core";
 import { applyRepair, prepareRepair } from "@bhashafix/repair-engine";
 import { writeReportBundle } from "@bhashafix/report";
 import { verifyRepair } from "@bhashafix/verifier";
+import { buildStoredZip } from "./stored-zip";
 
 const projectRoot = process.cwd();
 const command = process.argv[2];
@@ -21,6 +28,7 @@ const files = [
   "glossary.json",
 ];
 const evidenceRoot = path.join(projectRoot, "artifacts", "replay");
+const publicReplayRoot = path.join(projectRoot, "public", "replay");
 const submissionRoot = path.join(projectRoot, "submission");
 
 async function reset() {
@@ -34,7 +42,10 @@ async function reset() {
 }
 
 async function scan() {
-  const result = await scanDemoProject(projectRoot);
+  const result = await scanDemoProject(projectRoot, {
+    mode: "replay",
+    origin: "RECORDED_REPLAY",
+  });
   const expected = (await loadDemoPredicates(projectRoot)).length;
   if (result.issues.length !== expected) {
     throw new Error(
@@ -49,6 +60,8 @@ async function scan() {
     path.join(projectRoot, ".bhashafix", "baseline-scan.json"),
     encoded,
   );
+  await mkdir(publicReplayRoot, { recursive: true });
+  await writeFile(path.join(publicReplayRoot, "baseline-scan.json"), encoded);
   console.log(
     `SCAN ${result.scanId} ${result.issues.length} verified failures across ${result.routesDiscovered.length} routes`,
   );
@@ -56,7 +69,10 @@ async function scan() {
 }
 
 async function repair() {
-  const baseline = await scanDemoProject(projectRoot);
+  const baseline = await scanDemoProject(projectRoot, {
+    mode: "replay",
+    origin: "RECORDED_REPLAY",
+  });
   const plan = await prepareRepair(projectRoot, baseline);
   await mkdir(evidenceRoot, { recursive: true });
   await mkdir(submissionRoot, { recursive: true });
@@ -87,6 +103,7 @@ async function prove() {
   const proof = {
     schemaVersion: "1.0",
     generatedAt: new Date().toISOString(),
+    origin: "RECORDED_REPLAY",
     mode: "genuine deterministic replay artifact",
     baselineScanId: baseline.scanId,
     verificationScanId: finalScan.scanId,
@@ -107,6 +124,45 @@ async function prove() {
     `${JSON.stringify(proof, null, 2)}\n`,
   );
   await writeReportBundle(path.join(evidenceRoot, "report"), finalScan, result);
+  const screenshotDirectory = path.join(submissionRoot, "screenshots");
+  const screenshotFiles = (await readdir(screenshotDirectory))
+    .filter((file) => file.endsWith(".png"))
+    .sort()
+    .slice(0, 12);
+  if (screenshotFiles.length === 0) {
+    throw new Error("Replay proof requires at least one actual browser screenshot.");
+  }
+  const screenshotZip = buildStoredZip(
+    await Promise.all(
+      screenshotFiles.map(async (file) => ({
+        name: file,
+        data: await readFile(path.join(screenshotDirectory, file)),
+      })),
+    ),
+  );
+  await writeFile(
+    path.join(evidenceRoot, "report", "screenshots.zip"),
+    screenshotZip,
+  );
+  await mkdir(publicReplayRoot, { recursive: true });
+  await Promise.all([
+    writeFile(
+      path.join(publicReplayRoot, "repair-proof.json"),
+      `${JSON.stringify(proof, null, 2)}\n`,
+    ),
+    copyFile(
+      path.join(evidenceRoot, "repair.patch"),
+      path.join(publicReplayRoot, "repair.patch"),
+    ),
+    ...["report.json", "report.html", "report.sarif", "junit.xml", "issues.csv"].map(
+      (file) =>
+        copyFile(
+          path.join(evidenceRoot, "report", file),
+          path.join(publicReplayRoot, file),
+        ),
+    ),
+    writeFile(path.join(publicReplayRoot, "screenshots.zip"), screenshotZip),
+  ]);
   console.log(
     `PROVE ${result.baselineBlocking} → ${result.finalBlocking}; source-locale regression ${result.sourceLocaleRegression}`,
   );
