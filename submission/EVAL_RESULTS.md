@@ -1,6 +1,6 @@
 # BhashaFix evaluation results
 
-Generated: 2026-07-30T14:36:30.269Z
+Generated: 2026-07-30T17:43:31.743Z
 
 | Release gate | Result | Evidence |
 | --- | --- | --- |

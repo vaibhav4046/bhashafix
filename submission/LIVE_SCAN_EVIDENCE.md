@@ -1,6 +1,6 @@
 # Live public scan evidence
 
-Generated: 2026-07-30T14:36:30.269Z
+Generated: 2026-07-30T17:43:31.743Z
 
 | Field | Verified value |
 | --- | --- |
@@ -27,16 +27,17 @@ Generated: 2026-07-30T14:36:30.269Z
 | Production URL | `https://bhashafix.vercel.app` |
 | Immutable deployment | `https://bhashafix-qgytrihbx-vaibhav4046s-projects.vercel.app` |
 | Vercel deployment ID | `dpl_AfpuC65KPEjL5g7FUPiWCLkCN9Fw` |
-| Production scan ID | `web-e5972aa9-f17a-4bcf-b61a-9dae1d68d4ee` |
+| Production scan ID | `web-d9633b42-7b6f-451e-8deb-655a85d03682` |
 | Target | `https://www.mozilla.org/` |
 | Origin | `LIVE_PUBLIC_SCAN` |
 | Real routes checked | 5 |
 | Visible strings extracted | 778 |
 | Blocking findings in checks run | 0 |
 | Saved-scan persistence | PASS |
-| Browser-console errors | 0 |
-| Desktop viewport overflow | 0 at 1440 × 900 |
+| Browser-console warnings or errors | 0 |
+| Desktop viewport overflow | 0 |
 | Mobile viewport overflow | 0; exact 390 × 844 covered by Playwright |
+| Dark and light themes | PASS |
 
 The production result remained labelled `LIVE_PUBLIC_SCAN`. The AtlasPay
 demonstration remained separately labelled
