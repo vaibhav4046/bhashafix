@@ -45,6 +45,11 @@ type Options = {
   output?: string;
   project: string;
   url?: string;
+  sourceLocale?: string;
+  locales?: string[];
+  routes?: string[];
+  viewports?: string[];
+  themes?: Array<"light" | "dark">;
   configPath?: string;
   failOn: "blocking" | "warning" | "advisory";
   apply: boolean;
@@ -79,6 +84,9 @@ Commands:
 Options:
   --json --quiet --verbose --output <path> --changed-only --no-ai
   --dry-run --apply --project <path> --url <url>
+  --source-locale <bcp47> --locales <bcp47,bcp47>
+  --routes </,/pricing> --viewports <mobile,desktop>
+  --themes <light,dark>
   --text <value> --locale <bcp47> --mode <pseudo-mode>
   --config <path> --fail-on <blocking|warning|advisory>
 
@@ -103,6 +111,32 @@ function parseArgs(args: string[]) {
     if (args[index] === "--output" && value) options.output = value;
     if (args[index] === "--project" && value) options.project = path.resolve(value);
     if (args[index] === "--url" && value) options.url = value;
+    if (args[index] === "--source-locale" && value) {
+      options.sourceLocale = localeProfile(value).canonical;
+    }
+    if (args[index] === "--locales" && value) {
+      options.locales = value.split(",").map((locale) => localeProfile(locale).canonical);
+    }
+    if (args[index] === "--routes" && value) {
+      options.routes = value.split(",").map((route) => {
+        if (!route.startsWith("/")) throw new Error(`Invalid route "${route}".`);
+        return route;
+      });
+    }
+    if (args[index] === "--viewports" && value) {
+      const viewports = value.split(",");
+      if (viewports.some((viewport) => !["mobile", "tablet", "desktop"].includes(viewport))) {
+        throw new Error(`Invalid viewport list "${value}".`);
+      }
+      options.viewports = viewports;
+    }
+    if (args[index] === "--themes" && value) {
+      const themes = value.split(",");
+      if (themes.some((theme) => !["light", "dark"].includes(theme))) {
+        throw new Error(`Invalid theme list "${value}".`);
+      }
+      options.themes = themes as Array<"light" | "dark">;
+    }
     if (args[index] === "--config" && value) options.configPath = value;
     if (args[index] === "--text" && value) options.text = value;
     if (args[index] === "--locale" && value) options.locale = value;
@@ -192,6 +226,39 @@ async function readBaseline(projectRoot: string) {
   return JSON.parse(await readFile(file, "utf8"));
 }
 
+async function scanLocalProject(projectRoot: string, options?: Options) {
+  const scan = await scanDemoProject(projectRoot, {
+    mode: "live",
+    origin: "LOCAL_REPOSITORY_SCAN",
+  });
+  if (options?.sourceLocale) scan.config.sourceLocale = options.sourceLocale;
+  if (options?.locales) {
+    scan.issues = scan.issues.filter((issue) =>
+      options.locales!.includes(issue.locale),
+    );
+    scan.localesTested = scan.localesTested.filter((locale) =>
+      options.locales!.includes(locale),
+    );
+    scan.config.locales = options.locales;
+  }
+  if (options?.routes) {
+    scan.issues = scan.issues.filter((issue) =>
+      options.routes!.includes(issue.route),
+    );
+    scan.routesDiscovered = scan.routesDiscovered.filter((route) =>
+      options.routes!.includes(route),
+    );
+    scan.config.routes = options.routes;
+  }
+  if (options?.viewports) {
+    scan.config.viewports = scan.config.viewports.filter((viewport) =>
+      options.viewports!.includes(viewport.name),
+    );
+  }
+  if (options?.themes) scan.config.themes = options.themes;
+  return scan;
+}
+
 export async function runCli(
   args: string[],
   io: Io = {
@@ -266,7 +333,7 @@ export async function runCli(
       return response.status >= 400 ? EXIT.unavailable : EXIT.passed;
     }
     if (command === "scan") {
-      const scan = await scanDemoProject(options.project);
+      const scan = await scanLocalProject(options.project, options);
       await mkdir(path.join(options.project, ".bhashafix"), { recursive: true });
       await writeFile(
         path.join(options.project, ".bhashafix", "baseline-scan.json"),
@@ -286,7 +353,7 @@ export async function runCli(
         : EXIT.passed;
     }
     if (command === "issues" || command === "diagnose") {
-      const scan = await scanDemoProject(options.project);
+      const scan = await scanLocalProject(options.project, options);
       emit(
         io,
         options,
@@ -327,7 +394,7 @@ export async function runCli(
       return preview.placeholders.valid ? EXIT.passed : EXIT.runtime;
     }
     if (command === "repair") {
-      const scan = await scanDemoProject(options.project);
+      const scan = await scanLocalProject(options.project, options);
       const plan = await prepareRepair(options.project, scan);
       const result = options.apply
         ? await applyRepair(plan, { dryRun: options.dryRun })
@@ -353,15 +420,21 @@ export async function runCli(
       return result.status === "verified" ? EXIT.passed : EXIT.blocking;
     }
     if (command === "report") {
-      const scan = await scanDemoProject(options.project);
+      const scan = await scanLocalProject(options.project, options);
       const output = path.resolve(options.output ?? "artifacts/report");
       const files = await writeReportBundle(output, scan);
       emit(io, options, { output, files }, `Wrote ${files.length} reports to ${output}.`);
       return EXIT.passed;
     }
     if (command === "ci") {
-      const scan = await scanDemoProject(options.project);
-      const severityRank = { blocking: 0, warning: 1, advisory: 2 } as const;
+      const scan = await scanLocalProject(options.project, options);
+      const severityRank = {
+        blocking: 0,
+        serious: 0.5,
+        warning: 1,
+        review: 2,
+        advisory: 3,
+      } as const;
       const failingIssues = scan.issues.filter(
         (issue) => severityRank[issue.severity] <= severityRank[options.failOn],
       );

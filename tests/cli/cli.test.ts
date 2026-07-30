@@ -59,6 +59,39 @@ describe("CLI contract", () => {
     ).toBe(EXIT.blocking);
   });
 
+  it("applies locale, route, viewport and theme coverage flags", async () => {
+    const captured = capture();
+    expect(
+      await runCli(
+        [
+          "scan",
+          "--json",
+          "--project",
+          process.cwd(),
+          "--source-locale",
+          "en-GB",
+          "--locales",
+          "de-DE,ar-SA",
+          "--routes",
+          "/pricing,/dashboard",
+          "--viewports",
+          "mobile,desktop",
+          "--themes",
+          "light,dark",
+        ],
+        captured.io,
+      ),
+    ).toBe(EXIT.blocking);
+    const result = JSON.parse(captured.output.join("\n"));
+    expect(result.origin).toBe("LOCAL_REPOSITORY_SCAN");
+    expect(result.localesTested).toEqual(["de-DE", "ar-SA"]);
+    expect(result.routesDiscovered).toEqual(["/pricing", "/dashboard"]);
+    expect(result.config.viewports.map((item: { name: string }) => item.name)).toEqual([
+      "mobile",
+      "desktop",
+    ]);
+  });
+
   it("lists the global registry and preserves preview placeholders", async () => {
     const locales = capture();
     expect(await runCli(["locales", "--json"], locales.io)).toBe(EXIT.passed);

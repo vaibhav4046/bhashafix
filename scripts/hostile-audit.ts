@@ -130,12 +130,25 @@ const downloads = [
   "issues.csv",
   "repair.patch",
   "repair-proof.json",
+  "screenshots.zip",
 ];
 for (const file of downloads) {
   const target = path.join(root, "public", "replay", file);
   if ((await stat(target)).size <= 20) {
     throw new Error(`Portable report/download ${file} is empty.`);
   }
+}
+const cleanFixture = await json("artifacts/fixtures/clean-report.json");
+const brokenFixture = await json("artifacts/fixtures/broken-report.json");
+const blockedFixture = await json("artifacts/fixtures/blocked-failure.json");
+if (
+  cleanFixture.blocking !== 0 ||
+  brokenFixture.blocking !== 6 ||
+  blockedFixture.status !== "failed" ||
+  blockedFixture.reportGenerated !== false ||
+  blockedFixture.retryAvailable !== true
+) {
+  throw new Error("Hostile audit rejected acceptance-fixture evidence.");
 }
 
 const receipt = {
@@ -148,6 +161,9 @@ const receipt = {
   exposedSecrets: 0,
   unsupportedLanguageClaims: 0,
   reportsAndDownloads: downloads.length,
+  cleanFixtureBlocking: cleanFixture.blocking,
+  brokenFixtureBlocking: brokenFixture.blocking,
+  blockedFixtureReportGenerated: blockedFixture.reportGenerated,
   baselineBlocking: proof.baselineBlocking,
   finalBlocking: proof.finalBlocking,
   sourceLocaleRegression: proof.sourceLocaleRegression,

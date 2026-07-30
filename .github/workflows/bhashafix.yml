@@ -57,19 +57,7 @@ jobs:
 
       - name: Write job summary
         if: always()
-        shell: bash
-        run: |
-          {
-            echo "## BhashaFix localisation gate"
-            echo
-            echo "- Severity threshold: \`${BHASHAFIX_FAIL_ON}\`"
-            echo "- Deterministic baseline: 10 verified fixture failures"
-            echo "- Verified final blocking issues: 0"
-            echo "- Source-locale regression: PASS"
-            echo "- Browser matrix: Chromium, 390×844 and 1440×900, light/dark, reduced motion"
-            echo
-            echo "Reports and genuine screenshots are attached to this run."
-          } >> "$GITHUB_STEP_SUMMARY"
+        run: pnpm tsx scripts/ci-summary.ts
 
       - name: Upload BhashaFix evidence
         if: always()

@@ -52,7 +52,10 @@ const livePublicScan = JSON.parse(
   ),
 ) as {
   status: string;
+  scanId: string;
+  origin: string;
   target: string;
+  routes: Array<{ route: string; status: number; strings: number }>;
   routesChecked: number;
   stringsExtracted: number;
   verifiedBlocking: number;
@@ -96,6 +99,7 @@ if (screenshots.length < 5) {
 const proof = {
   schemaVersion: "1.0",
   generatedAt: new Date().toISOString(),
+  origin: "RECORDED_REPLAY",
   mode: "genuine deterministic replay artifact",
   baselineScanId: baseline.scanId,
   verificationScanId: finalScan.scanId,
@@ -126,6 +130,9 @@ const manifest = {
     "PITCH_SCRIPT_3_MINUTES.md",
     "TECHNICAL_ARCHITECTURE.md",
     "CODEX_USAGE_EVIDENCE.md",
+    "CLI_EXECUTION_EVIDENCE.md",
+    "MCP_EXECUTION_EVIDENCE.md",
+    "LIVE_SCAN_EVIDENCE.md",
     "MCP_MCPC_EVIDENCE.md",
     "EVAL_RESULTS.md",
     "MARKET_POSITIONING.md",
@@ -192,12 +199,45 @@ The live public scan is bounded static HTTP evidence, not a browser-render or
 universal translation-quality benchmark.
 `;
 
+const liveScanEvidence = `# Live public scan evidence
+
+Generated: ${new Date().toISOString()}
+
+| Field | Verified value |
+| --- | --- |
+| Scan ID | \`${livePublicScan.scanId}\` |
+| Origin | \`${livePublicScan.origin}\` |
+| Target | \`${livePublicScan.target}\` |
+| Real routes checked | ${livePublicScan.routesChecked} |
+| Visible strings extracted | ${livePublicScan.stringsExtracted} |
+| Blocking findings in checks run | ${livePublicScan.verifiedBlocking} |
+| Browser rendering | Not run in hosted static mode |
+
+## Discovered responses
+
+${livePublicScan.routes.map((route) => `- \`${route.route}\` — HTTP ${route.status}; ${route.strings} strings`).join("\n")}
+
+## Actual screenshots
+
+- \`submission/screenshots/09-live-public-product.png\`
+- \`submission/screenshots/10-live-public-product-proof.png\`
+
+These screenshots show the BhashaFix result workspace, not screenshots of the
+target website. The Vercel-hosted scanner performs bounded static HTTP
+inspection; full target rendering and axe execution require the local CLI or a
+browser-capable worker.
+`;
+
 await writeFile(
   path.join(submission, "RELEASE_MANIFEST.json"),
   `${JSON.stringify(manifest, null, 2)}\n`,
 );
 await writeFile(path.join(submission, "MCP_MCPC_EVIDENCE.md"), mcpEvidence);
 await writeFile(path.join(submission, "EVAL_RESULTS.md"), evalResults);
+await writeFile(
+  path.join(submission, "LIVE_SCAN_EVIDENCE.md"),
+  liveScanEvidence,
+);
 await writeFile(
   path.join(submission, "live-public-scan-receipt.json"),
   `${JSON.stringify(livePublicScan, null, 2)}\n`,

@@ -59,8 +59,8 @@ try {
     throw new Error("Live scan response did not contain real route evidence.");
   }
   const dottedBrandFalsePositive = payload.issues.some(
-    (issue: { category: string; measuredEvidence: string }) =>
-      issue.category === "raw-translation-key" &&
+    (issue: { ruleId: string; measuredEvidence: string }) =>
+      issue.ruleId === "raw-translation-key" &&
       issue.measuredEvidence.includes("Mozilla.ai"),
   );
   if (dottedBrandFalsePositive) {
@@ -80,9 +80,18 @@ try {
   await page.screenshot({ path: proofScreenshotPath, fullPage: false });
   const receipt = {
     generatedAt: new Date().toISOString(),
+    scanId: payload.scanId,
+    origin: payload.origin,
     baseUrl,
     target: payload.target,
     mode: payload.mode,
+    routes: payload.routes.map(
+      (route: { route: string; status: number; strings: number }) => ({
+        route: route.route,
+        status: route.status,
+        strings: route.strings,
+      }),
+    ),
     routesChecked: payload.summary.routesChecked,
     stringsExtracted: payload.summary.stringsExtracted,
     verifiedBlocking: payload.summary.verifiedBlocking,

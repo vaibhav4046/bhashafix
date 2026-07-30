@@ -10380,9 +10380,48 @@ var coerce = {
 var NEVER = INVALID;
 
 // ../shared/src/index.ts
-var SeveritySchema = external_exports.enum(["blocking", "warning", "advisory"]);
+var ScanOriginSchema = external_exports.enum([
+  "LIVE_PUBLIC_SCAN",
+  "LOCAL_REPOSITORY_SCAN",
+  "GUIDED_DEMO",
+  "RECORDED_REPLAY",
+  "SYNTHETIC_LOCALISATION_PREVIEW"
+]);
+var ScanStatusSchema = external_exports.enum([
+  "draft",
+  "queued",
+  "validating",
+  "discovering",
+  "crawling",
+  "extracting",
+  "rendering",
+  "checking",
+  "analysing",
+  "completed",
+  "completed_with_warnings",
+  "failed",
+  "cancelled"
+]);
+var IssueCategorySchema = external_exports.enum([
+  "visual",
+  "locale",
+  "linguistic",
+  "accessibility",
+  "runtime"
+]);
+var SeveritySchema = external_exports.enum([
+  "blocking",
+  "serious",
+  "warning",
+  "review",
+  "advisory"
+]);
 var ConfidenceSchema = external_exports.enum([
   "verified",
+  "high",
+  "medium",
+  "low",
+  "human-review",
   "high confidence",
   "medium confidence",
   "low confidence",
@@ -10403,20 +10442,24 @@ var ViewportSchema = external_exports.object({
 var IssueSchema = external_exports.object({
   issueId: external_exports.string().min(1),
   scanId: external_exports.string().min(1),
-  category: external_exports.string().min(1),
+  origin: ScanOriginSchema,
+  category: IssueCategorySchema,
+  ruleId: external_exports.string().min(1),
   severity: SeveritySchema,
   confidence: ConfidenceSchema,
   locale: external_exports.string().min(2),
   route: external_exports.string().startsWith("/"),
   viewport: ViewportSchema,
   browser: external_exports.enum(["chromium", "firefox", "webkit", "deterministic"]),
-  selector: external_exports.string().min(1),
-  sourceHint: external_exports.string().min(1),
+  selector: external_exports.string().min(1).nullable(),
+  sourceHint: external_exports.string().min(1).nullable(),
   description: external_exports.string().min(1),
+  whyItMatters: external_exports.string().min(1),
+  evidence: external_exports.record(external_exports.unknown()),
   measuredEvidence: external_exports.record(external_exports.unknown()),
   screenshotBefore: external_exports.string().nullable(),
   recommendedAction: external_exports.string().min(1),
-  deterministicPredicate: external_exports.string().min(1),
+  deterministicPredicate: external_exports.string().min(1).nullable(),
   sourceText: external_exports.string().optional(),
   targetText: external_exports.string().optional(),
   backTranslation: external_exports.string().optional(),
@@ -10441,6 +10484,8 @@ var ScanConfigSchema = external_exports.object({
 });
 var ScanSchema = external_exports.object({
   scanId: external_exports.string().min(1),
+  origin: ScanOriginSchema,
+  status: ScanStatusSchema,
   startedAt: external_exports.string().datetime(),
   completedAt: external_exports.string().datetime(),
   config: ScanConfigSchema,
@@ -10484,6 +10529,28 @@ var DEFAULT_VIEWPORTS = [
   { name: "desktop", width: 1440, height: 900 }
 ];
 var ENGINE_VERSION = "0.2.0";
+var RULE_CATEGORIES = {
+  "vertical-clipping": "visual",
+  "cta-overflow": "visual",
+  "rtl-icon-order": "visual",
+  "font-coverage": "visual",
+  "line-breaking": "visual",
+  "wrong-direction": "locale",
+  "wrong-page-lang": "locale",
+  "missing-page-lang": "locale",
+  "wrong-page-direction": "locale",
+  "raw-translation-key": "linguistic",
+  "placeholder-mismatch": "linguistic",
+  "glossary-violation": "linguistic",
+  "missing-document-title": "accessibility",
+  "missing-image-alt": "accessibility",
+  "missing-accessible-name": "accessibility",
+  "target-response-error": "runtime",
+  "low-static-text-coverage": "runtime"
+};
+function issueCategoryForRule(ruleId) {
+  return RULE_CATEGORIES[ruleId] ?? "runtime";
+}
 
 // ../linguistic-engine/src/index.ts
 var TOKEN_PATTERN = /(\{\{[^{}]+\}\}|\{[A-Za-z_][^{}]*\}|%[sdif]|<\/?[A-Za-z][^>]*>|https?:\/\/[^\s]+|[\w.+-]+@[\w.-]+\.[A-Za-z]{2,})/g;
@@ -10715,7 +10782,9 @@ async function scanDemoProject(projectRoot, options = {}) {
       IssueSchema.parse({
         issueId: predicate.issueId,
         scanId,
-        category: predicate.category,
+        origin: options.origin ?? (options.mode === "replay" ? "RECORDED_REPLAY" : "GUIDED_DEMO"),
+        category: issueCategoryForRule(predicate.category),
+        ruleId: predicate.category,
         severity: "blocking",
         confidence: "verified",
         locale: predicate.locale,
@@ -10725,6 +10794,8 @@ async function scanDemoProject(projectRoot, options = {}) {
         selector: predicate.selector,
         sourceHint: predicate.sourceHint,
         description: predicate.description,
+        whyItMatters: "A released user interface would present an objectively broken or inconsistent localisation experience.",
+        evidence: result.evidence,
         measuredEvidence: result.evidence,
         screenshotBefore: `/evidence/${predicate.issueId}.png`,
         recommendedAction: predicate.recommendedAction,
@@ -10736,6 +10807,8 @@ async function scanDemoProject(projectRoot, options = {}) {
   const completed = new Date(started.getTime() + 137);
   return ScanSchema.parse({
     scanId,
+    origin: options.origin ?? (options.mode === "replay" ? "RECORDED_REPLAY" : "GUIDED_DEMO"),
+    status: issues.length > 0 ? "completed_with_warnings" : "completed",
     startedAt: started.toISOString(),
     completedAt: completed.toISOString(),
     config: {
@@ -11080,12 +11153,21 @@ function escapeHtml(value) {
 function csvCell(value) {
   return `"${String(value ?? "").replaceAll('"', '""')}"`;
 }
+function portableScan(scan) {
+  return {
+    ...scan,
+    config: {
+      ...scan.config,
+      projectRoot: "."
+    }
+  };
+}
 function buildJsonReport(scan, verification) {
   return {
     schemaVersion: "1.0",
     generatedAt: (/* @__PURE__ */ new Date()).toISOString(),
     claim: "Deterministic engineering checks are authoritative. Linguistic judgements include confidence levels and human-review gates.",
-    scan,
+    scan: portableScan(scan),
     verification: verification ?? null
   };
 }
@@ -11095,7 +11177,7 @@ function buildHtmlReport(scan, verification) {
 <td>${escapeHtml(issue.issueId)}</td>
 <td>${escapeHtml(issue.locale)}</td>
 <td>${escapeHtml(issue.route)}</td>
-<td>${escapeHtml(issue.category)}</td>
+<td>${escapeHtml(issue.ruleId)}</td>
 <td>${escapeHtml(issue.severity)}</td>
 <td>${escapeHtml(issue.description)}</td>
 <td><code>${escapeHtml(issue.deterministicPredicate)}</code></td>
@@ -11106,7 +11188,7 @@ function buildHtmlReport(scan, verification) {
 <title>BhashaFix report ${escapeHtml(scan.scanId)}</title>
 <style>body{font:16px/1.5 system-ui;margin:40px;color:#1a1025;background:#fbf8ff}table{border-collapse:collapse;width:100%}th,td{padding:12px;border:1px solid #d8b4fe;text-align:left}th{background:#f1e8ff}code{font-size:12px}.pass{color:#166534}.fail{color:#9f1239}</style></head>
 <body><h1>BhashaFix release report</h1>
-<p>Scan <code>${escapeHtml(scan.scanId)}</code> \xB7 ${scan.issues.length} open issue(s)</p>
+<p>Scan <code>${escapeHtml(scan.scanId)}</code> \xB7 origin <strong>${escapeHtml(scan.origin)}</strong> \xB7 ${scan.issues.length} open issue(s)</p>
 <p class="${verification?.status === "verified" ? "pass" : "fail"}">Verification: ${escapeHtml(verification?.status ?? "unverified")} \xB7 source-locale regression ${escapeHtml(verification?.sourceLocaleRegression ?? "not run")}</p>
 <table><thead><tr><th>Issue</th><th>Locale</th><th>Route</th><th>Category</th><th>Severity</th><th>Evidence</th><th>Predicate</th></tr></thead><tbody>${rows}</tbody></table>
 <p><small>Deterministic engineering checks are authoritative. Linguistic judgements require confidence and human review where indicated.</small></p>
@@ -11123,27 +11205,31 @@ function buildSarif(scan) {
             name: "BhashaFix",
             version: scan.engineVersion,
             rules: scan.issues.map((issue) => ({
-              id: issue.category,
+              id: issue.ruleId,
               shortDescription: { text: issue.description }
             }))
           }
         },
         results: scan.issues.map((issue) => ({
-          ruleId: issue.category,
+          ruleId: issue.ruleId,
           level: issue.severity === "blocking" ? "error" : "warning",
           message: { text: issue.description },
-          locations: [
-            {
-              physicalLocation: {
-                artifactLocation: { uri: issue.sourceHint }
+          ...issue.sourceHint ? {
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: { uri: issue.sourceHint }
+                }
               }
-            }
-          ],
+            ]
+          } : {},
           properties: {
             issueId: issue.issueId,
             locale: issue.locale,
             route: issue.route,
-            confidence: issue.confidence
+            confidence: issue.confidence,
+            origin: issue.origin,
+            category: issue.category
           }
         }))
       }
@@ -11152,7 +11238,7 @@ function buildSarif(scan) {
 }
 function buildJunit(scan) {
   const cases = scan.issues.map(
-    (issue) => `<testcase classname="${escapeHtml(issue.category)}" name="${escapeHtml(issue.issueId)}"><failure message="${escapeHtml(issue.description)}">${escapeHtml(issue.deterministicPredicate)}</failure></testcase>`
+    (issue) => `<testcase classname="${escapeHtml(issue.ruleId)}" name="${escapeHtml(issue.issueId)}"><failure message="${escapeHtml(issue.description)}">${escapeHtml(issue.deterministicPredicate)}</failure></testcase>`
   ).join("");
   return `<?xml version="1.0" encoding="UTF-8"?><testsuite name="BhashaFix" tests="${scan.issues.length}" failures="${scan.issues.length}">${cases}</testsuite>`;
 }
@@ -11162,6 +11248,7 @@ function buildCsv(scan) {
     "locale",
     "route",
     "category",
+    "ruleId",
     "severity",
     "confidence",
     "description"
@@ -11172,6 +11259,7 @@ function buildCsv(scan) {
       issue.locale,
       issue.route,
       issue.category,
+      issue.ruleId,
       issue.severity,
       issue.confidence,
       issue.description
@@ -11199,7 +11287,10 @@ async function writeReportBundle(outputDirectory, scan, verification) {
 
 // ../verifier/src/index.ts
 async function verifyRepair(projectRoot, baseline) {
-  const scan = await scanDemoProject(projectRoot);
+  const scan = await scanDemoProject(projectRoot, {
+    mode: baseline.origin === "RECORDED_REPLAY" ? "replay" : "live",
+    origin: baseline.origin === "RECORDED_REPLAY" ? "RECORDED_REPLAY" : baseline.origin === "LOCAL_REPOSITORY_SCAN" ? "LOCAL_REPOSITORY_SCAN" : "GUIDED_DEMO"
+  });
   const baselineBlocking = baseline.issues.filter(
     (issue) => issue.severity === "blocking"
   ).length;
