@@ -11,12 +11,20 @@ await mkdir(submission, { recursive: true });
 
 function gitValue(args: string[]) {
   try {
-    return execFileSync("git", args, {
+    return execFileSync(
+      "git",
+      [
+        "-c",
+        `safe.directory=${root.replaceAll("\\", "/")}`,
+        ...args,
+      ],
+      {
       cwd: root,
       encoding: "utf8",
       windowsHide: true,
       stdio: ["ignore", "pipe", "ignore"],
-    }).trim();
+      },
+    ).trim();
   } catch {
     return null;
   }
