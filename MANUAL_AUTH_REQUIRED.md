@@ -7,9 +7,15 @@ the owner:
 ## Publish a public GitHub repository
 
 ```bash
-gh auth login
+gh auth login -h github.com
+gh auth status
 gh repo create bhashafix --public --source . --remote origin --push
 ```
+
+Current audit result: the GitHub app can read repositories for `vaibhav4046`,
+but the local `gh` token is invalid and the app does not expose repository
+creation. Re-authentication is therefore required before the push can be
+truthfully completed.
 
 After publishing, replace the internal `sites` remote only if desired and add
 the real repository URL to the deck/submission form. Do not invent a URL before

@@ -21,7 +21,10 @@ describe("locale engine", () => {
   });
 
   it("covers the representative global script matrix with Intl formatting", () => {
-    expect(REPRESENTATIVE_LOCALE_MATRIX).toHaveLength(13);
+    expect(REPRESENTATIVE_LOCALE_MATRIX).toHaveLength(17);
+    expect(REPRESENTATIVE_LOCALE_MATRIX).toEqual(
+      expect.arrayContaining(["fa-IR", "bn-BD", "vi-VN", "id-ID"]),
+    );
     for (const locale of REPRESENTATIVE_LOCALE_MATRIX) {
       const sample = formatLocaleSample(locale);
       expect(sample.date.length).toBeGreaterThan(2);

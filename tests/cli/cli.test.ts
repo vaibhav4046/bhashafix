@@ -20,10 +20,14 @@ describe("CLI contract", () => {
     expect(await runCli(["--help"], captured.io)).toBe(EXIT.passed);
     for (const command of [
       "init",
+      "doctor",
       "inspect",
+      "locales",
       "crawl",
       "extract",
       "scan",
+      "translate-preview",
+      "issues",
       "translate",
       "diagnose",
       "repair",
@@ -31,7 +35,6 @@ describe("CLI contract", () => {
       "report",
       "ci",
       "mcp",
-      "doctor",
     ]) {
       expect(captured.output.join("\n")).toContain(command);
     }
@@ -54,5 +57,35 @@ describe("CLI contract", () => {
     expect(
       await runCli(["scan", "--quiet", "--project", process.cwd()], captured.io),
     ).toBe(EXIT.blocking);
+  });
+
+  it("lists the global registry and preserves preview placeholders", async () => {
+    const locales = capture();
+    expect(await runCli(["locales", "--json"], locales.io)).toBe(EXIT.passed);
+    const registry = JSON.parse(locales.output.join("\n"));
+    expect(registry.locales).toHaveLength(17);
+    expect(registry.locales.map((item: { canonical: string }) => item.canonical)).toEqual(
+      expect.arrayContaining(["fa-IR", "bn-BD", "vi-VN", "id-ID"]),
+    );
+
+    const preview = capture();
+    expect(
+      await runCli(
+        [
+          "translate-preview",
+          "--json",
+          "--locale",
+          "ar-SA",
+          "--text",
+          "Pay {amount} with AtlasPay",
+        ],
+        preview.io,
+      ),
+    ).toBe(EXIT.passed);
+    const result = JSON.parse(preview.output.join("\n"));
+    expect(result.label).toContain("not the production website");
+    expect(result.placeholders.valid).toBe(true);
+    expect(result.target).toContain("{amount}");
+    expect(result.target).toContain("AtlasPay");
   });
 });

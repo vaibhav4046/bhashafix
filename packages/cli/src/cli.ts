@@ -6,6 +6,17 @@ import { inspectProject, scanDemoProject } from "@bhashafix/core";
 import { loadProjectConfig } from "@bhashafix/config";
 import { fetchWithPolicy } from "@bhashafix/crawler";
 import { extractTextFromHtml, redactSecrets } from "@bhashafix/extractor";
+import {
+  extractProtectedTokens,
+  placeholderMismatch,
+  pseudoLocalise,
+  type PseudoMode,
+} from "@bhashafix/linguistic-engine";
+import {
+  formatLocaleSample,
+  localeProfile,
+  REPRESENTATIVE_LOCALE_MATRIX,
+} from "@bhashafix/locale-engine";
 import { applyRepair, prepareRepair } from "@bhashafix/repair-engine";
 import { writeReportBundle } from "@bhashafix/report";
 import { verifyRepair } from "@bhashafix/verifier";
@@ -37,6 +48,9 @@ type Options = {
   configPath?: string;
   failOn: "blocking" | "warning" | "advisory";
   apply: boolean;
+  text?: string;
+  locale?: string;
+  pseudoMode?: PseudoMode;
 };
 
 const HELP = `BhashaFix — test, repair and prove every language before release
@@ -45,22 +59,27 @@ Usage: bhashafix <command> [options]
 
 Commands:
   init        Create .bhashafix project configuration
+  doctor      Check the local runtime
   inspect     Discover framework and localisation infrastructure
+  locales     List the representative BCP 47 locale registry
   crawl       Crawl a public or explicitly local target
   extract     Extract visible strings and context from a target
   scan        Run deterministic localisation checks
+  translate-preview
+              Generate a protected synthetic localisation preview
+  issues      List evidence-backed issues
   translate   Generate missing translations through a configured provider
-  diagnose    List evidence-backed issues
+  diagnose    Compatibility alias for issues
   repair      Prepare or apply an allowlisted repair
   verify      Rerun identical predicates and check regressions
   report      Export JSON, HTML, SARIF, JUnit and CSV
   ci          Run the severity-aware CI gate
   mcp         Start the local STDIO MCP server
-  doctor      Check the local runtime
 
 Options:
   --json --quiet --verbose --output <path> --changed-only --no-ai
   --dry-run --apply --project <path> --url <url>
+  --text <value> --locale <bcp47> --mode <pseudo-mode>
   --config <path> --fail-on <blocking|warning|advisory>
 
 Exit codes: 0 passed · 1 blocking issues · 2 invalid config ·
@@ -85,6 +104,25 @@ function parseArgs(args: string[]) {
     if (args[index] === "--project" && value) options.project = path.resolve(value);
     if (args[index] === "--url" && value) options.url = value;
     if (args[index] === "--config" && value) options.configPath = value;
+    if (args[index] === "--text" && value) options.text = value;
+    if (args[index] === "--locale" && value) options.locale = value;
+    if (args[index] === "--mode" && value) {
+      const modes = [
+        "expanded-latin",
+        "extreme-expansion",
+        "rtl-mirrored",
+        "accented",
+        "cjk-density",
+        "no-space",
+        "tall-glyph",
+        "emoji-symbol",
+        "long-compound",
+      ] as const;
+      if (!modes.includes(value as (typeof modes)[number])) {
+        throw new Error(`Invalid pseudo-localisation mode "${value}".`);
+      }
+      options.pseudoMode = value as PseudoMode;
+    }
     if (args[index] === "--fail-on" && value) {
       if (!["blocking", "warning", "advisory"].includes(value)) {
         throw new Error(`Invalid --fail-on severity "${value}".`);
@@ -185,6 +223,24 @@ export async function runCli(
       );
       return EXIT.passed;
     }
+    if (command === "locales") {
+      const registry = REPRESENTATIVE_LOCALE_MATRIX.map((locale) => ({
+        ...localeProfile(locale),
+        sample: formatLocaleSample(locale),
+      }));
+      emit(
+        io,
+        options,
+        { count: registry.length, locales: registry },
+        registry
+          .map(
+            (locale) =>
+              `${locale.canonical.padEnd(12)} ${locale.script} ${locale.direction} ${locale.sample.date}`,
+          )
+          .join("\n"),
+      );
+      return EXIT.passed;
+    }
     if (command === "crawl" || command === "extract") {
       if (!options.url) {
         io.error("Provide --url with an absolute target URL.");
@@ -229,7 +285,7 @@ export async function runCli(
         ? EXIT.blocking
         : EXIT.passed;
     }
-    if (command === "diagnose") {
+    if (command === "issues" || command === "diagnose") {
       const scan = await scanDemoProject(options.project);
       emit(
         io,
@@ -243,6 +299,32 @@ export async function runCli(
           .join("\n"),
       );
       return scan.issues.length ? EXIT.blocking : EXIT.passed;
+    }
+    if (command === "translate-preview") {
+      const source = options.text ?? "Pay {amount} securely with AtlasPay";
+      const targetLocale = options.locale ?? "ar-SA";
+      const profile = localeProfile(targetLocale);
+      const mode =
+        options.pseudoMode ??
+        (profile.direction === "rtl" ? "rtl-mirrored" : "expanded-latin");
+      const target = pseudoLocalise(source, mode, ["AtlasPay"]);
+      const preview = {
+        label: "Synthetic localisation preview — not the production website.",
+        source,
+        target,
+        targetLocale: profile.canonical,
+        direction: profile.direction,
+        mode,
+        protectedTokens: extractProtectedTokens(source),
+        placeholders: placeholderMismatch(source, target),
+      };
+      emit(
+        io,
+        options,
+        preview,
+        `${preview.label}\n${preview.targetLocale} · ${preview.direction} · ${preview.mode}\n${preview.target}`,
+      );
+      return preview.placeholders.valid ? EXIT.passed : EXIT.runtime;
     }
     if (command === "repair") {
       const scan = await scanDemoProject(options.project);

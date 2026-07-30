@@ -21,7 +21,7 @@
     "build": "esbuild src/server.ts --bundle --platform=node --format=esm --target=node22 --outfile=dist/server.js --legal-comments=none",
     "typecheck": "tsc --noEmit --moduleResolution bundler --module esnext --target es2022 src/server.ts"
   },
-  "dependencies": {
+  "devDependencies": {
     "@bhashafix/core": "workspace:*",
     "@bhashafix/crawler": "workspace:*",
     "@bhashafix/extractor": "workspace:*",

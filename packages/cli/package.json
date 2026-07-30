@@ -18,16 +18,21 @@
     "access": "public"
   },
   "scripts": {
-    "build": "esbuild src/cli.ts --bundle --platform=node --format=esm --target=node22 --outfile=dist/cli.js --legal-comments=none",
+    "build": "esbuild src/cli.ts --bundle --platform=node --format=esm --target=node22 --outfile=dist/cli.js --legal-comments=none --external:yaml",
     "typecheck": "tsc --noEmit --moduleResolution bundler --module esnext --target es2022 src/cli.ts"
   },
-  "dependencies": {
+  "devDependencies": {
     "@bhashafix/config": "workspace:*",
     "@bhashafix/core": "workspace:*",
     "@bhashafix/crawler": "workspace:*",
     "@bhashafix/extractor": "workspace:*",
+    "@bhashafix/linguistic-engine": "workspace:*",
+    "@bhashafix/locale-engine": "workspace:*",
     "@bhashafix/repair-engine": "workspace:*",
     "@bhashafix/report": "workspace:*",
     "@bhashafix/verifier": "workspace:*"
+  },
+  "dependencies": {
+    "yaml": "2.8.1"
   }
 }

@@ -115,7 +115,7 @@ export function matchTranslationMemory(
   return { match: null, kind: "none" as const };
 }
 
-type PseudoMode =
+export type PseudoMode =
   | "expanded-latin"
   | "extreme-expansion"
   | "rtl-mirrored"

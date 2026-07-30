@@ -1,5 +1,7 @@
 # BhashaFix repository guardrails
 
+- Read `BHASHAFIX_WINNER_GRADE_COMPLETION_PROMPT.md` before release work and
+  treat sections 23–25 as the mandatory hostile-audit contract.
 - Preserve the canonical AtlasPay contract: exactly 10 verified baseline
   failures become 0 blocking failures and the en-GB source regression passes.
 - Never replace deterministic predicates with model confidence, mocked browser

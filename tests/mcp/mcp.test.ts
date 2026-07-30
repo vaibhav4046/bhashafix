@@ -55,14 +55,49 @@ describe("MCP server", () => {
     expect(tools.tools.map((tool) => tool.name)).toEqual(
       expect.arrayContaining([
         "bhashafix_inspect_project",
+        "bhashafix_create_scan",
+        "bhashafix_run_scan",
         "bhashafix_scan_project",
+        "bhashafix_generate_virtual_preview",
         "bhashafix_prepare_repair",
         "bhashafix_apply_repair",
         "bhashafix_verify_repair",
         "bhashafix_generate_report",
       ]),
     );
-    expect(tools.tools).toHaveLength(15);
+    expect(tools.tools).toHaveLength(18);
+
+    const created = parseText(
+      await client.callTool({
+        name: "bhashafix_create_scan",
+        arguments: {
+          mode: "replay",
+          locales: ["ar-SA", "de-DE", "ja-JP", "hi-IN"],
+        },
+      }),
+    );
+    expect(created.executionStarted).toBe(false);
+    const createdRun = parseText(
+      await client.callTool({
+        name: "bhashafix_run_scan",
+        arguments: { scanId: created.scanId },
+      }),
+    );
+    expect(createdRun.scanId).toBe(created.scanId);
+    expect(createdRun.issues).toHaveLength(10);
+
+    const preview = parseText(
+      await client.callTool({
+        name: "bhashafix_generate_virtual_preview",
+        arguments: {
+          strings: ["Pay {amount} with AtlasPay"],
+          targetLocale: "ar-SA",
+          protectedTerms: ["AtlasPay"],
+        },
+      }),
+    );
+    expect(preview.label).toContain("not the production website");
+    expect(preview.valid).toBe(true);
 
     const scan = parseText(
       await client.callTool({

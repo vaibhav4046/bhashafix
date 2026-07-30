@@ -23,14 +23,18 @@
     "test:e2e": "playwright test",
     "test:mcp": "vitest run tests/mcp --config vitest.config.mjs",
     "test:cli": "vitest run tests/cli --config vitest.config.mjs",
-    "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm test:integration && pnpm test:cli && pnpm test:mcp && pnpm build && pnpm test:e2e && pnpm demo:reset && pnpm demo:scan && pnpm demo:repair && pnpm demo:prove",
+    "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm test:integration && pnpm test:cli && pnpm test:mcp && pnpm build && pnpm pack:verify && pnpm mcp:inspect && pnpm mcpc:smoke && pnpm test:e2e && pnpm demo:reset && pnpm demo:scan && pnpm demo:repair && pnpm demo:prove && tsx scripts/release-receipt.ts && pnpm submission:prepare && pnpm pptx:verify && pnpm audit:hostile",
     "demo:reset": "tsx scripts/platform-demo.ts reset",
     "demo:scan": "tsx scripts/platform-demo.ts scan",
     "demo:repair": "tsx scripts/platform-demo.ts repair",
     "demo:prove": "tsx scripts/platform-demo.ts prove",
     "bhashafix": "tsx packages/cli/src/cli.ts",
-    "mcp:inspect": "tsx scripts/mcp-inspect.ts",
+    "pack:verify": "pnpm build:packages && tsx scripts/pack-verify.ts",
+    "mcp:inspect": "pnpm build:packages && tsx scripts/mcp-inspector-smoke.ts && tsx scripts/mcp-inspect.ts",
+    "mcpc:smoke": "pnpm build:packages && tsx scripts/mcpc-smoke.ts",
     "submission:prepare": "tsx scripts/prepare-submission.ts",
+    "pptx:verify": "tsx scripts/validate-pptx.ts",
+    "audit:hostile": "tsx scripts/hostile-audit.ts",
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
@@ -57,8 +61,10 @@
     "zod": "3.25.76"
   },
   "devDependencies": {
+    "@apify/mcpc": "0.5.1",
     "@axe-core/playwright": "4.10.2",
     "@cloudflare/vite-plugin": "1.37.1",
+    "@modelcontextprotocol/inspector": "2.0.0",
     "@playwright/test": "1.55.0",
     "@tailwindcss/postcss": "4.2.1",
     "@types/node": "22.19.19",

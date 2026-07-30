@@ -1,12 +1,16 @@
-import { copyFile } from "node:fs/promises";
+import { copyFile, mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
-import { createMcpServer } from "../packages/mcp/src/server";
+import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 
 const root = process.cwd();
-const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
-const server = createMcpServer(root);
+const serverEntry = path.join(root, "packages/mcp/dist/server.js");
+const clientTransport = new StdioClientTransport({
+  command: process.execPath,
+  args: [serverEntry],
+  cwd: root,
+  stderr: "pipe",
+});
 const client = new Client({ name: "bhashafix-inspector", version: "0.2.0" });
 
 async function resetDemo() {
@@ -41,15 +45,23 @@ function parseText(result: Awaited<ReturnType<Client["callTool"]>>) {
 
 try {
   await resetDemo();
-  await server.connect(serverTransport);
   await client.connect(clientTransport);
   const tools = await client.listTools();
   const resources = await client.listResources();
   const prompts = await client.listPrompts();
+  const request = parseText(
+    await client.callTool({
+      name: "bhashafix_create_scan",
+      arguments: {
+        mode: "live",
+        locales: ["ar-SA", "de-DE", "ja-JP", "hi-IN"],
+      },
+    }),
+  );
   const scan = parseText(
     await client.callTool({
-      name: "bhashafix_scan_project",
-      arguments: { mode: "live" },
+      name: "bhashafix_run_scan",
+      arguments: { scanId: request.scanId },
     }),
   );
   const issueIds = scan.issues.map((issue: { issueId: string }) => issue.issueId);
@@ -79,6 +91,22 @@ try {
   if (verification.status !== "verified") {
     throw new Error(`MCP verification failed: ${JSON.stringify(verification)}`);
   }
+  const receipt = {
+    transport: "spawned STDIO process",
+    serverEntry: "packages/mcp/dist/server.js",
+    tools: tools.tools.length,
+    resources: resources.resources.length,
+    prompts: prompts.prompts.length,
+    baselineBlocking: scan.issues.length,
+    finalBlocking: verification.finalBlocking,
+    sourceLocaleRegression: verification.sourceLocaleRegression,
+    status: verification.status,
+  };
+  await mkdir(path.join(root, "artifacts"), { recursive: true });
+  await writeFile(
+    path.join(root, "artifacts/mcp-stdio-receipt.json"),
+    `${JSON.stringify(receipt, null, 2)}\n`,
+  );
   console.log(
     `MCP tools/list PASS (${tools.tools.length}); resources ${resources.resources.length}; prompts ${prompts.prompts.length}`,
   );
@@ -87,6 +115,5 @@ try {
   );
 } finally {
   await client.close().catch(() => undefined);
-  await server.close().catch(() => undefined);
   await resetDemo();
 }

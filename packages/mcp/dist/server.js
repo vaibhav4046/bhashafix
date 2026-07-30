@@ -6259,7 +6259,7 @@ var require_ajv = __commonJS({
 });
 
 // src/server.ts
-import { createHash as createHash3 } from "node:crypto";
+import { createHash as createHash3, randomUUID } from "node:crypto";
 import { mkdir as mkdir3, readFile as readFile3, writeFile as writeFile3 } from "node:fs/promises";
 import path4 from "node:path";
 import { fileURLToPath } from "node:url";
@@ -6277,6 +6277,7 @@ var TALL_GLYPH_SCRIPTS = /* @__PURE__ */ new Set(["Deva", "Taml", "Thai", "Ethi"
 var COMPACT_SCRIPTS = /* @__PURE__ */ new Set(["Hans", "Hant", "Jpan", "Kore"]);
 var SCRIPT_FONT_STACKS = {
   Arab: '"Noto Sans Arabic", "Segoe UI", sans-serif',
+  Beng: '"Noto Sans Bengali", "Nirmala UI", sans-serif',
   Deva: '"Noto Sans Devanagari", "Nirmala UI", sans-serif',
   Ethi: '"Noto Sans Ethiopic", "Nyala", sans-serif',
   Hans: '"Noto Sans SC", "Microsoft YaHei", sans-serif',
@@ -6324,13 +6325,17 @@ var REPRESENTATIVE_LOCALE_MATRIX = [
   "ta-IN",
   "ar-SA",
   "he-IL",
+  "fa-IR",
   "zh-Hans-CN",
   "zh-Hant-TW",
   "ja-JP",
   "ko-KR",
   "th-TH",
   "uk-UA",
-  "am-ET"
+  "am-ET",
+  "bn-BD",
+  "vi-VN",
+  "id-ID"
 ];
 
 // ../../node_modules/.pnpm/zod@3.25.76/node_modules/zod/v3/external.js
@@ -10516,6 +10521,54 @@ function checkGlossary(source, target, locale, entries) {
     }
   }
   return findings;
+}
+var ACCENTS = {
+  a: "\xE1",
+  e: "\xEB",
+  i: "\xEF",
+  o: "\xF8",
+  u: "\xFC",
+  A: "\xC2",
+  E: "\xCB",
+  I: "\xCF",
+  O: "\xD8",
+  U: "\xDC"
+};
+function pseudoLocalise(input, mode, protectedTerms = []) {
+  const preserved = /* @__PURE__ */ new Map();
+  let cursor = 0;
+  const protect = (value2) => {
+    const key = `\uE000${cursor++}\uE001`;
+    preserved.set(key, value2);
+    return key;
+  };
+  let value = input.replace(TOKEN_PATTERN, protect);
+  for (const term of [...protectedTerms].sort((a, b) => b.length - a.length)) {
+    value = value.split(term).join(protect(term));
+  }
+  if (mode === "accented") {
+    value = [...value].map((char) => ACCENTS[char] ?? char).join("");
+  } else if (mode === "expanded-latin") {
+    value = `[${value.replace(/[aeiou]/gi, (char) => `${char}${char}`)}]`;
+  } else if (mode === "extreme-expansion") {
+    value = `[${value} ${value} ${value}]`;
+  } else if (mode === "rtl-mirrored") {
+    value = `\u202E${value.split(/(\uE000\d+\uE001)/).map(
+      (segment) => preserved.has(segment) ? segment : [...segment].reverse().join("")
+    ).join("")}\u202C`;
+  } else if (mode === "cjk-density") {
+    value = `\u754C${value.replace(/\s+/g, "")}\u6E2C\u8A66`;
+  } else if (mode === "no-space") {
+    value = value.replace(/\s+/g, "");
+  } else if (mode === "tall-glyph") {
+    value = `\u090A\u0901${value}\u091C\u094D\u091E\u0948`;
+  } else if (mode === "emoji-symbol") {
+    value = `\u2691 ${value} \u25C8`;
+  } else if (mode === "long-compound") {
+    value = value.replace(/\s+/g, "") + "Lokalisierungspr\xFCfung";
+  }
+  for (const [key, original] of preserved) value = value.split(key).join(original);
+  return value;
 }
 
 // ../visual-engine/src/index.ts
@@ -15012,6 +15065,24 @@ async function readJson2(file) {
 function scansDirectory(root) {
   return path4.join(root, ".bhashafix", "scans");
 }
+function scanRequestsDirectory(root) {
+  return path4.join(root, ".bhashafix", "scan-requests");
+}
+async function writeScanRequest(root, request) {
+  const directory = scanRequestsDirectory(root);
+  await mkdir3(directory, { recursive: true });
+  await writeFile3(
+    path4.join(directory, `${request.scanId}.json`),
+    `${JSON.stringify(request, null, 2)}
+`
+  );
+}
+async function loadScanRequest(root, scanId) {
+  if (!/^[A-Za-z0-9_-]+$/.test(scanId)) throw new Error("Invalid scan ID.");
+  return await readJson2(
+    path4.join(scanRequestsDirectory(root), `${scanId}.json`)
+  );
+}
 async function writeScan(root, scan) {
   const directory = scansDirectory(root);
   await mkdir3(directory, { recursive: true });
@@ -15082,6 +15153,55 @@ function createMcpServer(projectRoot = process.cwd()) {
     async ({ html, route }) => text({ strings: extractTextFromHtml(html, route) })
   );
   server.registerTool(
+    "bhashafix_create_scan",
+    {
+      description: "Create a validated AtlasPay scan request without claiming that execution has started.",
+      inputSchema: {
+        target: external_exports.literal("atlaspay-demo").default("atlaspay-demo"),
+        mode: external_exports.enum(["live", "replay"]).default("live"),
+        locales: external_exports.array(external_exports.string().min(2).max(64)).max(50).optional(),
+        routes: external_exports.array(external_exports.string().startsWith("/")).max(50).optional()
+      }
+    },
+    async ({ target, mode, locales, routes }) => {
+      const requestedLocales = locales ?? [...REPRESENTATIVE_LOCALE_MATRIX];
+      requestedLocales.forEach(localeProfile);
+      const request = {
+        scanId: `scan_${randomUUID().replaceAll("-", "")}`,
+        createdAt: (/* @__PURE__ */ new Date()).toISOString(),
+        target,
+        mode,
+        requestedLocales,
+        requestedRoutes: routes ?? ["/", "/pricing", "/dashboard", "/checkout", "/settings"],
+        status: "created"
+      };
+      await writeScanRequest(projectRoot, request);
+      return text({
+        ...request,
+        executionStarted: false,
+        coveragePolicy: "The bundled deterministic run executes the complete canonical AtlasPay matrix."
+      });
+    }
+  );
+  server.registerTool(
+    "bhashafix_run_scan",
+    {
+      description: "Execute a previously created scan request and persist genuine deterministic evidence.",
+      inputSchema: { scanId: external_exports.string().min(1) }
+    },
+    async ({ scanId }) => {
+      const request = await loadScanRequest(projectRoot, scanId);
+      const scan = await scanDemoProject(projectRoot, { mode: request.mode });
+      scan.scanId = request.scanId;
+      scan.issues = scan.issues.map((issue) => ({
+        ...issue,
+        scanId: request.scanId
+      }));
+      await writeScan(projectRoot, scan);
+      return text(scan);
+    }
+  );
+  server.registerTool(
     "bhashafix_scan_project",
     {
       description: "Run the deterministic AtlasPay localisation scan and persist its evidence.",
@@ -15143,6 +15263,49 @@ function createMcpServer(projectRoot = process.cwd()) {
         { source, approved: { [locale]: approvedTerm } }
       ]) : []
     })
+  );
+  server.registerTool(
+    "bhashafix_generate_virtual_preview",
+    {
+      description: "Generate a protected deterministic specimen for a sandboxed synthetic localisation preview.",
+      inputSchema: {
+        strings: external_exports.array(external_exports.string().max(1e4)).min(1).max(50),
+        targetLocale: external_exports.string().min(2).max(64),
+        mode: external_exports.enum([
+          "expanded-latin",
+          "extreme-expansion",
+          "rtl-mirrored",
+          "accented",
+          "cjk-density",
+          "no-space",
+          "tall-glyph",
+          "emoji-symbol",
+          "long-compound"
+        ]).optional(),
+        protectedTerms: external_exports.array(external_exports.string().min(1).max(200)).max(100).default([])
+      }
+    },
+    async ({ strings, targetLocale, mode, protectedTerms }) => {
+      const profile = localeProfile(targetLocale);
+      const selectedMode = mode ?? (profile.direction === "rtl" ? "rtl-mirrored" : "expanded-latin");
+      const preview = strings.map((source) => {
+        const target = pseudoLocalise(source, selectedMode, protectedTerms);
+        return {
+          source,
+          target,
+          protectedTokens: extractProtectedTokens(source),
+          placeholders: placeholderMismatch(source, target)
+        };
+      });
+      return text({
+        label: "Synthetic localisation preview \u2014 not the production website.",
+        targetLocale: profile.canonical,
+        direction: profile.direction,
+        mode: selectedMode,
+        strings: preview,
+        valid: preview.every((item) => item.placeholders.valid)
+      });
+    }
   );
   for (const name of [
     "bhashafix_suggest_translation",

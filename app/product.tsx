@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import baselineScan from "../public/replay/baseline-scan.json";
 import repairProof from "../public/replay/repair-proof.json";
 import { pseudoLocalise } from "@bhashafix/linguistic-engine";
+import { localeProfile } from "@bhashafix/locale-engine";
 
 const localeSpecimens = [
   ["en-GB", "Every language.", "Latn"],
@@ -35,6 +36,20 @@ const issueTone: Record<string, string> = {
   "glossary-violation": "Linguistic",
   "wrong-page-lang": "Metadata",
 };
+
+function escapeHtml(value: string) {
+  return value.replace(
+    /[&<>"']/g,
+    (character) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;",
+      })[character] ?? character,
+  );
+}
 
 export function Logo({ wordmark = true }: { wordmark?: boolean }) {
   return (
@@ -224,7 +239,7 @@ export function LandingPage() {
             <span aria-hidden="true">⌁</span>
             <input
               type="url"
-              placeholder="https://your-product.com"
+              placeholder="Paste a public HTTPS website URL"
               aria-label="Public website URL"
               value={url}
               onChange={(event) => setUrl(event.target.value)}
@@ -317,8 +332,9 @@ export function LandingPage() {
           <span>LOCALE-AGNOSTIC BY DESIGN</span>
           <h2>Standards, scripts and evidence.</h2>
           <p>
-            The representative matrix spans Latin, Devanagari, Tamil, Arabic,
-            Hebrew, Han, Japanese, Korean, Thai, Cyrillic and Ethiopic scripts.
+            The representative registry spans Latin, Cyrillic, Arabic, Hebrew,
+            Persian, Devanagari, Bengali, Tamil, Ethiopic, Han, Japanese,
+            Korean, Thai, Vietnamese and Indonesian.
           </p>
         </div>
         <div className="script-stream" aria-label="Representative locales">
@@ -328,6 +344,8 @@ export function LandingPage() {
             "ta-IN",
             "ar-SA",
             "he-IL",
+            "fa-IR",
+            "bn-BD",
             "zh-Hans-CN",
             "zh-Hant-TW",
             "ja-JP",
@@ -335,6 +353,8 @@ export function LandingPage() {
             "th-TH",
             "uk-UA",
             "am-ET",
+            "vi-VN",
+            "id-ID",
           ].map((locale) => (
             <span key={locale}>{locale}</span>
           ))}
@@ -459,6 +479,7 @@ export function NewScanPage() {
     "ar-SA",
     "he-IL",
     "fa-IR",
+    "bn-BD",
     "ja-JP",
     "ko-KR",
     "zh-Hans-CN",
@@ -471,6 +492,8 @@ export function NewScanPage() {
     "am-ET",
     "th-TH",
     "uk-UA",
+    "vi-VN",
+    "id-ID",
   ];
   const visibleLocaleOptions = localeOptions.filter((locale) =>
     locale.toLowerCase().includes(localeQuery.trim().toLowerCase()),
@@ -565,7 +588,7 @@ export function NewScanPage() {
                   Public website URL
                   <input
                     type="url"
-                    placeholder="https://your-product.com"
+                    placeholder="Paste a public HTTPS website URL"
                     value={url}
                     onChange={(event) => setUrl(event.target.value)}
                   />
@@ -1280,8 +1303,8 @@ export function IntegrationsPage() {
         </article>
         <article>
           <i>◇</i><span>MCP · STDIO</span><h2>@bhashafix/mcp</h2>
-          <p>Fifteen strict tools, seven resource patterns and five workflow prompts for coding agents.</p>
-          <pre>{`{\n  "mcpServers": {\n    "bhashafix": {\n      "command": "pnpm",\n      "args": ["mcp:inspect"]\n    }\n  }\n}`}</pre>
+          <p>Eighteen strict tools, seven resource patterns and five workflow prompts for coding agents.</p>
+          <pre>{`{\n  "mcpServers": {\n    "bhashafix": {\n      "command": "node",\n      "args": ["packages/mcp/dist/server.js"]\n    }\n  }\n}`}</pre>
         </article>
         <article id="ci">
           <i>✓</i><span>GITHUB ACTIONS</span><h2>Release gate</h2>
@@ -1329,6 +1352,7 @@ export function DocsPage() {
 
 export function PlaygroundPage() {
   const [source, setSource] = useState("Pay {amount} securely with AtlasPay");
+  const [targetLocale, setTargetLocale] = useState("ar-SA");
   const [mode, setMode] = useState<
     "expanded-latin" | "extreme-expansion" | "rtl-mirrored" | "accented" | "cjk-density" | "no-space" | "tall-glyph" | "emoji-symbol" | "long-compound"
   >("expanded-latin");
@@ -1336,23 +1360,67 @@ export function PlaygroundPage() {
     () => pseudoLocalise(source, mode, ["AtlasPay"]),
     [source, mode],
   );
+  const profile = useMemo(() => {
+    try {
+      return localeProfile(targetLocale);
+    } catch {
+      return null;
+    }
+  }, [targetLocale]);
+  const previewDocument = useMemo(() => {
+    if (!profile) return "";
+    return `<!doctype html>
+<html lang="${escapeHtml(profile.canonical)}" dir="${profile.direction}">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'">
+<style>
+  *{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:32px;background:#fbf8ff;color:#1a1025;font-family:${profile.fontStack}}
+  main{width:min(100%,640px);padding:36px;border:1px solid #d8b4fe;background:white;box-shadow:0 24px 80px rgba(109,40,217,.14)}
+  small{color:#6d28d9;letter-spacing:.12em;text-transform:uppercase}p{font-size:clamp(26px,7vw,54px);line-height:1.25;overflow-wrap:anywhere}
+</style>
+<main><small>${escapeHtml(profile.canonical)} · ${escapeHtml(mode)}</small><p>${escapeHtml(result)}</p></main>
+</html>`;
+  }, [mode, profile, result]);
+  const previewFrame = useRef<HTMLIFrameElement>(null);
+  useEffect(() => {
+    const frame = previewFrame.current;
+    if (!frame || !previewDocument) return;
+    const url = URL.createObjectURL(
+      new Blob([previewDocument], { type: "text/html;charset=utf-8" }),
+    );
+    frame.src = url;
+    return () => URL.revokeObjectURL(url);
+  }, [previewDocument]);
   return (
     <AppShell>
       <section className="page-heading">
-        <div><span>PSEUDO-LOCALISATION</span><h1>Stress strings safely</h1><p>Protected tokens, tags, URLs, emails and project terms remain intact.</p></div>
+        <div><span>SYNTHETIC LOCALISATION PREVIEW</span><h1>Stress strings safely</h1><p>Protected tokens, tags, URLs, emails and project terms remain intact.</p></div>
       </section>
       <section className="playground">
         <div>
           <label className="field">Source text<textarea value={source} onChange={(event) => setSource(event.target.value)} /></label>
+          <label className="field">Target BCP 47 locale<input value={targetLocale} onChange={(event) => setTargetLocale(event.target.value)} aria-invalid={!profile} /></label>
+          {!profile && <p role="alert">Enter a valid BCP 47 locale such as ar-SA or bn-BD.</p>}
           <div className="mode-grid">
             {["expanded-latin", "extreme-expansion", "rtl-mirrored", "accented", "cjk-density", "no-space", "tall-glyph", "emoji-symbol", "long-compound"].map((item) => (
               <button className={mode === item ? "active" : ""} onClick={() => setMode(item as typeof mode)} key={item}>{item}</button>
             ))}
           </div>
         </div>
-        <div className="pseudo-result" dir={mode === "rtl-mirrored" ? "rtl" : "ltr"}>
-          <small>TRANSFORMED SPECIMEN</small>
-          <strong>{result}</strong>
+        <div className="pseudo-result" dir={profile?.direction ?? "ltr"}>
+          <small>SYNTHETIC LOCALISATION PREVIEW — NOT THE PRODUCTION WEBSITE</small>
+          {profile ? (
+            <iframe
+              className="pseudo-frame"
+              ref={previewFrame}
+              title={`Synthetic ${profile.canonical} localisation preview`}
+              sandbox="allow-scripts"
+              referrerPolicy="no-referrer"
+            />
+          ) : (
+            <strong>Waiting for a valid locale.</strong>
+          )}
           <div><span>Protected</span><code>{"{amount}"}</code><code>AtlasPay</code></div>
         </div>
       </section>

@@ -2703,6 +2703,14 @@ pre {
   overflow-wrap: anywhere;
 }
 
+.pseudo-frame {
+  width: 100%;
+  min-height: 340px;
+  margin: 28px 0;
+  border: 1px solid var(--border);
+  background: #fbf8ff;
+}
+
 .pseudo-result > div {
   display: flex;
   gap: 8px;

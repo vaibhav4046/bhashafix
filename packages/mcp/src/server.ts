@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { createHash } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -8,7 +8,10 @@ import { fetchWithPolicy } from "@bhashafix/crawler";
 import { extractTextFromHtml } from "@bhashafix/extractor";
 import {
   checkGlossary,
+  extractProtectedTokens,
   placeholderMismatch,
+  pseudoLocalise,
+  type PseudoMode,
 } from "@bhashafix/linguistic-engine";
 import {
   localeProfile,
@@ -34,6 +37,36 @@ async function readJson(file: string) {
 
 function scansDirectory(root: string) {
   return path.join(root, ".bhashafix", "scans");
+}
+
+function scanRequestsDirectory(root: string) {
+  return path.join(root, ".bhashafix", "scan-requests");
+}
+
+type ScanRequest = {
+  scanId: string;
+  createdAt: string;
+  target: "atlaspay-demo";
+  mode: "live" | "replay";
+  requestedLocales: string[];
+  requestedRoutes: string[];
+  status: "created";
+};
+
+async function writeScanRequest(root: string, request: ScanRequest) {
+  const directory = scanRequestsDirectory(root);
+  await mkdir(directory, { recursive: true });
+  await writeFile(
+    path.join(directory, `${request.scanId}.json`),
+    `${JSON.stringify(request, null, 2)}\n`,
+  );
+}
+
+async function loadScanRequest(root: string, scanId: string) {
+  if (!/^[A-Za-z0-9_-]+$/.test(scanId)) throw new Error("Invalid scan ID.");
+  return (await readJson(
+    path.join(scanRequestsDirectory(root), `${scanId}.json`),
+  )) as ScanRequest;
 }
 
 async function writeScan(root: string, scan: Awaited<ReturnType<typeof scanDemoProject>>) {
@@ -117,6 +150,60 @@ export function createMcpServer(projectRoot = process.cwd()) {
   );
 
   server.registerTool(
+    "bhashafix_create_scan",
+    {
+      description:
+        "Create a validated AtlasPay scan request without claiming that execution has started.",
+      inputSchema: {
+        target: z.literal("atlaspay-demo").default("atlaspay-demo"),
+        mode: z.enum(["live", "replay"]).default("live"),
+        locales: z.array(z.string().min(2).max(64)).max(50).optional(),
+        routes: z.array(z.string().startsWith("/")).max(50).optional(),
+      },
+    },
+    async ({ target, mode, locales, routes }) => {
+      const requestedLocales = locales ?? [...REPRESENTATIVE_LOCALE_MATRIX];
+      requestedLocales.forEach(localeProfile);
+      const request: ScanRequest = {
+        scanId: `scan_${randomUUID().replaceAll("-", "")}`,
+        createdAt: new Date().toISOString(),
+        target,
+        mode,
+        requestedLocales,
+        requestedRoutes: routes ?? ["/", "/pricing", "/dashboard", "/checkout", "/settings"],
+        status: "created",
+      };
+      await writeScanRequest(projectRoot, request);
+      return text({
+        ...request,
+        executionStarted: false,
+        coveragePolicy:
+          "The bundled deterministic run executes the complete canonical AtlasPay matrix.",
+      });
+    },
+  );
+
+  server.registerTool(
+    "bhashafix_run_scan",
+    {
+      description:
+        "Execute a previously created scan request and persist genuine deterministic evidence.",
+      inputSchema: { scanId: z.string().min(1) },
+    },
+    async ({ scanId }) => {
+      const request = await loadScanRequest(projectRoot, scanId);
+      const scan = await scanDemoProject(projectRoot, { mode: request.mode });
+      scan.scanId = request.scanId;
+      scan.issues = scan.issues.map((issue) => ({
+        ...issue,
+        scanId: request.scanId,
+      }));
+      await writeScan(projectRoot, scan);
+      return text(scan);
+    },
+  );
+
+  server.registerTool(
     "bhashafix_scan_project",
     {
       description: "Run the deterministic AtlasPay localisation scan and persist its evidence.",
@@ -185,6 +272,54 @@ export function createMcpServer(projectRoot = process.cwd()) {
             ])
           : [],
       }),
+  );
+
+  server.registerTool(
+    "bhashafix_generate_virtual_preview",
+    {
+      description:
+        "Generate a protected deterministic specimen for a sandboxed synthetic localisation preview.",
+      inputSchema: {
+        strings: z.array(z.string().max(10_000)).min(1).max(50),
+        targetLocale: z.string().min(2).max(64),
+        mode: z
+          .enum([
+            "expanded-latin",
+            "extreme-expansion",
+            "rtl-mirrored",
+            "accented",
+            "cjk-density",
+            "no-space",
+            "tall-glyph",
+            "emoji-symbol",
+            "long-compound",
+          ])
+          .optional(),
+        protectedTerms: z.array(z.string().min(1).max(200)).max(100).default([]),
+      },
+    },
+    async ({ strings, targetLocale, mode, protectedTerms }) => {
+      const profile = localeProfile(targetLocale);
+      const selectedMode: PseudoMode =
+        mode ?? (profile.direction === "rtl" ? "rtl-mirrored" : "expanded-latin");
+      const preview = strings.map((source) => {
+        const target = pseudoLocalise(source, selectedMode, protectedTerms);
+        return {
+          source,
+          target,
+          protectedTokens: extractProtectedTokens(source),
+          placeholders: placeholderMismatch(source, target),
+        };
+      });
+      return text({
+        label: "Synthetic localisation preview — not the production website.",
+        targetLocale: profile.canonical,
+        direction: profile.direction,
+        mode: selectedMode,
+        strings: preview,
+        valid: preview.every((item) => item.placeholders.valid),
+      });
+    },
   );
 
   for (const name of [

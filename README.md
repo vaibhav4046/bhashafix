@@ -98,17 +98,23 @@ pnpm bhashafix scan \
   --viewports mobile,desktop
 ```
 
-Next.js and generic public URLs are the fully supported MVP paths. Vite React,
-Remix, Astro, Nuxt, Vue, SvelteKit, and static HTML discovery return honest
-experimental-support results. Unknown project scripts are reported, never
-silently executed.
+Next.js is the fully supported repository path. The hosted public-URL quick
+scan performs a real SSRF-safe fetch, extraction and deterministic metadata
+inspection for one public route; full browser crawling remains local/worker
+functionality. Vite React, Remix, Astro, Nuxt, Vue, SvelteKit, and static HTML
+discovery return honest experimental-support results. Unknown project scripts
+are reported, never silently executed.
 
 ## CLI
 
 ```bash
 pnpm bhashafix --help
 pnpm bhashafix doctor
+pnpm bhashafix locales --json
+pnpm bhashafix translate-preview --locale ar-SA \
+  --text "Pay {amount} with AtlasPay"
 pnpm bhashafix scan --json --no-ai --output artifacts/baseline.json
+pnpm bhashafix issues --json
 pnpm bhashafix repair --dry-run
 pnpm bhashafix verify --changed-only
 pnpm bhashafix ci \
@@ -158,10 +164,17 @@ Generic client:
 }
 ```
 
-The server exposes 15 strict tools, project/scan/issue/report resources, and five
+The server exposes 18 strict tools, project/scan/issue/report resources, and five
 localisation prompts. Mutation requires an explicit scan ID and issue IDs,
 enforces the project root and path allowlist, rejects symlinks, returns the
 planned unified diff, supports dry run, and never commits automatically.
+
+Validate the built STDIO surface with independent clients:
+
+```bash
+pnpm mcp:inspect
+pnpm mcpc:smoke
+```
 
 ## CI
 
@@ -206,6 +219,9 @@ mode. See [SECURITY.md](SECURITY.md).
 | Next.js repository discovery | Supported |
 | Generic public URL fetch/extraction | Supported with documented limits |
 | BCP 47 + Unicode + `Intl` locale profiles | Supported |
+| Sandboxed synthetic localisation preview | Supported and explicitly labelled |
+| Packed CLI/MCP clean-consumer install | Verified by `pnpm pack:verify` |
+| Official MCP Inspector + MCPC invocation | Verified |
 | Chromium browser verification | Supported |
 | Firefox/WebKit | Environment-dependent |
 | Vite/Remix/Astro/Nuxt/Vue/SvelteKit/static discovery | Experimental |
@@ -220,7 +236,12 @@ provider-independent localisation pipeline. Deterministic engineering checks
 are authoritative. Linguistic judgements include confidence levels and
 human-review gates.
 
-It does not guarantee perfect native-language quality. General coding agents
+The representative registry covers Latin, Cyrillic, Arabic, Hebrew, Persian,
+Devanagari, Bengali, Tamil, Ethiopic, Simplified Chinese, Traditional Chinese,
+Japanese, Korean, Thai, Vietnamese, and Indonesian while the engine remains
+locale-agnostic.
+
+Perfect native-language quality is outside the product claim. General coding agents
 reason broadly; BhashaFix gives them a specialised, reproducible localisation
 harness containing browser evidence, locale constraints, terminology,
 translation memory, and pass/fail verification.
@@ -235,6 +256,9 @@ pnpm test:integration
 pnpm test:cli
 pnpm test:mcp
 pnpm build
+pnpm pack:verify
+pnpm mcp:inspect
+pnpm mcpc:smoke
 pnpm test:e2e
 pnpm verify
 pnpm submission:prepare

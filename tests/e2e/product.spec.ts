@@ -137,9 +137,47 @@ test("proof report exposes verified release evidence and portable exports", asyn
   ).toBeVisible();
   const sourceRegression = page.locator("article").filter({ hasText: "Source regression" });
   await expect(sourceRegression).toContainText("PASS");
-  await expect(page.locator("a[download]")).toHaveCount(7);
+  const downloads = page.locator("a[download]");
+  await expect(downloads).toHaveCount(7);
+  for (const link of await downloads.evaluateAll((items) =>
+    items.map((item) => ({
+      href: (item as HTMLAnchorElement).href,
+      filename: (item as HTMLAnchorElement).download,
+    })),
+  )) {
+    const response = await page.request.get(link.href);
+    expect(response.ok(), `${link.filename} should download`).toBe(true);
+    expect(
+      (await response.body()).byteLength,
+      `${link.filename} should not be empty`,
+    ).toBeGreaterThan(20);
+  }
   await page.screenshot({
     path: path.join(screenshotDir, "05-proof-report.png"),
+    fullPage: true,
+  });
+  expect(consoleErrors).toEqual([]);
+});
+
+test("synthetic localisation preview is isolated, labelled and locale-aware", async ({
+  page,
+}) => {
+  const consoleErrors = collectConsoleErrors(page);
+  await page.goto("/playground");
+  await expect(
+    page.getByText(
+      "SYNTHETIC LOCALISATION PREVIEW — NOT THE PRODUCTION WEBSITE",
+      { exact: true },
+    ),
+  ).toBeVisible();
+  await page.getByLabel("Target BCP 47 locale").fill("bn-BD");
+  const preview = page.frameLocator('iframe[title*="Synthetic bn-BD"]');
+  await expect(preview.locator("html")).toHaveAttribute("lang", "bn-BD");
+  await expect(preview.locator("html")).toHaveAttribute("dir", "ltr");
+  await expect(preview.locator("body")).toContainText("{amount}");
+  await expect(preview.locator("body")).toContainText("AtlasPay");
+  await page.screenshot({
+    path: path.join(screenshotDir, "08-synthetic-preview.png"),
     fullPage: true,
   });
   expect(consoleErrors).toEqual([]);

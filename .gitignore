@@ -48,6 +48,7 @@ next-env.d.ts
 /.bhashafix/prepared-plan.json
 /.bhashafix/rollback/
 /.bhashafix/scans/
+/.bhashafix/scan-requests/
 /artifacts/
 /test-results/
 /playwright-report/

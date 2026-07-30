@@ -22,6 +22,7 @@ const COMPACT_SCRIPTS = new Set(["Hans", "Hant", "Jpan", "Kore"]);
 
 const SCRIPT_FONT_STACKS: Record<string, string> = {
   Arab: '"Noto Sans Arabic", "Segoe UI", sans-serif',
+  Beng: '"Noto Sans Bengali", "Nirmala UI", sans-serif',
   Deva: '"Noto Sans Devanagari", "Nirmala UI", sans-serif',
   Ethi: '"Noto Sans Ethiopic", "Nyala", sans-serif',
   Hans: '"Noto Sans SC", "Microsoft YaHei", sans-serif',
@@ -103,6 +104,7 @@ export const REPRESENTATIVE_LOCALE_MATRIX = [
   "ta-IN",
   "ar-SA",
   "he-IL",
+  "fa-IR",
   "zh-Hans-CN",
   "zh-Hant-TW",
   "ja-JP",
@@ -110,4 +112,7 @@ export const REPRESENTATIVE_LOCALE_MATRIX = [
   "th-TH",
   "uk-UA",
   "am-ET",
+  "bn-BD",
+  "vi-VN",
+  "id-ID",
 ] as const;
