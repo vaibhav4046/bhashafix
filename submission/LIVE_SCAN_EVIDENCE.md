@@ -20,6 +20,29 @@ Generated: 2026-07-30T14:36:30.269Z
 - `/en-US/products/vpn/` — HTTP 200; 172 strings
 - `/en-US/products/monitor/` — HTTP 200; 78 strings
 
+## Production verification
+
+| Field | Verified value |
+| --- | --- |
+| Production URL | `https://bhashafix.vercel.app` |
+| Immutable deployment | `https://bhashafix-qgytrihbx-vaibhav4046s-projects.vercel.app` |
+| Vercel deployment ID | `dpl_AfpuC65KPEjL5g7FUPiWCLkCN9Fw` |
+| Production scan ID | `web-e5972aa9-f17a-4bcf-b61a-9dae1d68d4ee` |
+| Target | `https://www.mozilla.org/` |
+| Origin | `LIVE_PUBLIC_SCAN` |
+| Real routes checked | 5 |
+| Visible strings extracted | 778 |
+| Blocking findings in checks run | 0 |
+| Saved-scan persistence | PASS |
+| Browser-console errors | 0 |
+| Desktop viewport overflow | 0 at 1440 × 900 |
+| Mobile viewport overflow | 0; exact 390 × 844 covered by Playwright |
+
+The production result remained labelled `LIVE_PUBLIC_SCAN`. The AtlasPay
+demonstration remained separately labelled
+`RECORDED_REPLAY · GENUINE ARTIFACTS`, so replay evidence cannot be mistaken for
+a live public-site scan.
+
 ## Actual screenshots
 
 - `submission/screenshots/09-live-public-product.png`
