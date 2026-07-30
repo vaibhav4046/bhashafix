@@ -1,9 +1,9 @@
 {
-  "scanId": "scan_e9c5f17cadce449cae33c97dd2ba29ec",
+  "scanId": "scan_8849c204e7d44055aa2847c27d3c0c45",
   "origin": "GUIDED_DEMO",
   "status": "completed_with_warnings",
-  "startedAt": "2026-07-30T14:11:58.872Z",
-  "completedAt": "2026-07-30T14:11:59.009Z",
+  "startedAt": "2026-07-30T14:35:35.344Z",
+  "completedAt": "2026-07-30T14:35:35.481Z",
   "config": {
     "projectRoot": "<PROJECT_ROOT>",
     "sourceLocale": "en-GB",
@@ -65,7 +65,7 @@
   "issues": [
     {
       "issueId": "BF-VIS-HI-001",
-      "scanId": "scan_e9c5f17cadce449cae33c97dd2ba29ec",
+      "scanId": "scan_8849c204e7d44055aa2847c27d3c0c45",
       "origin": "GUIDED_DEMO",
       "category": "visual",
       "ruleId": "vertical-clipping",
@@ -100,7 +100,7 @@
     },
     {
       "issueId": "BF-VIS-DE-002",
-      "scanId": "scan_e9c5f17cadce449cae33c97dd2ba29ec",
+      "scanId": "scan_8849c204e7d44055aa2847c27d3c0c45",
       "origin": "GUIDED_DEMO",
       "category": "visual",
       "ruleId": "cta-overflow",
@@ -135,7 +135,7 @@
     },
     {
       "issueId": "BF-LOC-AR-003",
-      "scanId": "scan_e9c5f17cadce449cae33c97dd2ba29ec",
+      "scanId": "scan_8849c204e7d44055aa2847c27d3c0c45",
       "origin": "GUIDED_DEMO",
       "category": "locale",
       "ruleId": "wrong-direction",
@@ -168,7 +168,7 @@
     },
     {
       "issueId": "BF-RTL-HE-004",
-      "scanId": "scan_e9c5f17cadce449cae33c97dd2ba29ec",
+      "scanId": "scan_8849c204e7d44055aa2847c27d3c0c45",
       "origin": "GUIDED_DEMO",
       "category": "visual",
       "ruleId": "rtl-icon-order",
@@ -201,7 +201,7 @@
     },
     {
       "issueId": "BF-I18N-JA-005",
-      "scanId": "scan_e9c5f17cadce449cae33c97dd2ba29ec",
+      "scanId": "scan_8849c204e7d44055aa2847c27d3c0c45",
       "origin": "GUIDED_DEMO",
       "category": "linguistic",
       "ruleId": "raw-translation-key",
@@ -234,7 +234,7 @@
     },
     {
       "issueId": "BF-FONT-ZH-006",
-      "scanId": "scan_e9c5f17cadce449cae33c97dd2ba29ec",
+      "scanId": "scan_8849c204e7d44055aa2847c27d3c0c45",
       "origin": "GUIDED_DEMO",
       "category": "visual",
       "ruleId": "font-coverage",
@@ -267,7 +267,7 @@
     },
     {
       "issueId": "BF-VIS-TH-007",
-      "scanId": "scan_e9c5f17cadce449cae33c97dd2ba29ec",
+      "scanId": "scan_8849c204e7d44055aa2847c27d3c0c45",
       "origin": "GUIDED_DEMO",
       "category": "visual",
       "ruleId": "line-breaking",
@@ -300,7 +300,7 @@
     },
     {
       "issueId": "BF-I18N-FR-008",
-      "scanId": "scan_e9c5f17cadce449cae33c97dd2ba29ec",
+      "scanId": "scan_8849c204e7d44055aa2847c27d3c0c45",
       "origin": "GUIDED_DEMO",
       "category": "linguistic",
       "ruleId": "placeholder-mismatch",
@@ -343,7 +343,7 @@
     },
     {
       "issueId": "BF-LING-ES-009",
-      "scanId": "scan_e9c5f17cadce449cae33c97dd2ba29ec",
+      "scanId": "scan_8849c204e7d44055aa2847c27d3c0c45",
       "origin": "GUIDED_DEMO",
       "category": "linguistic",
       "ruleId": "glossary-violation",
@@ -376,7 +376,7 @@
     },
     {
       "issueId": "BF-META-EN-010",
-      "scanId": "scan_e9c5f17cadce449cae33c97dd2ba29ec",
+      "scanId": "scan_8849c204e7d44055aa2847c27d3c0c45",
       "origin": "GUIDED_DEMO",
       "category": "locale",
       "ruleId": "wrong-page-lang",

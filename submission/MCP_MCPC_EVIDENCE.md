@@ -1,6 +1,6 @@
 # MCP and MCPC evidence
 
-Generated: 2026-07-30T14:28:16.424Z
+Generated: 2026-07-30T14:36:30.269Z
 
 | Client | Transport | Tools | Baseline | Final | Result |
 | --- | --- | ---: | ---: | ---: | --- |

@@ -1,6 +1,6 @@
 # CLI packaged execution evidence
 
-Generated: 2026-07-30T14:11:47.378Z
+Generated: 2026-07-30T14:35:24.913Z
 
 The `@bhashafix/cli` tarball was installed in a fresh operating-system
 temporary directory outside the monorepo. Commands executed the resolved
@@ -15,7 +15,7 @@ installed package entry, not TypeScript source.
 | `bhashafix repair --project <fixture> --apply` | 0 | PASS · bounded fixture repair |
 | `bhashafix scan --project <fixture> --json` | 0 | PASS · 0 issues |
 
-Scan origin: `LOCAL_REPOSITORY_SCAN`  
+Scan origin: `LOCAL_REPOSITORY_SCAN`
 Baseline scan ID: `atlaspay-83210b0daea2`
 
 Exit code 1 is the documented successful execution outcome when verified
