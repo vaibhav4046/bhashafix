@@ -1,8 +1,8 @@
-# BhashaFix execution plan
+# BhashaFix winner-grade execution plan
 
-This plan is the release ledger for the global localisation engineering platform.
-It is intentionally ordered around verified product risk rather than visual
-completeness.
+This plan extends the verified `5e8cd36` baseline without discarding its working
+architecture or genuine AtlasPay proof. Exit gates require execution evidence,
+not appearance.
 
 ## Product contract
 
@@ -14,7 +14,80 @@ The implementation remains provider-independent and locale-agnostic. Locale
 behaviour comes from BCP 47 tags, Unicode properties, `Intl`, configuration and
 test fixtures rather than per-language product branches.
 
-## Milestone 0 — preserve the working proof
+## P0.1 — establish and preserve truth
+
+- Commit the baseline audit and exact product truth matrix.
+- Add the locked origin taxonomy to scan, issue and report schemas.
+- Make every live, local, guided, replay and synthetic surface show its origin.
+- Keep replay artifacts visibly separate from user-controlled scans.
+
+Exit gate: schemas reject unsupported origins and all existing proof still
+passes.
+
+## P0.2 — complete the web information architecture
+
+- Add overview, routes and accessibility scan views.
+- Add `/demo`, AtlasPay demo/report, integration-detail, trust and motion-lab
+  routes while preserving legacy URLs.
+- Replace the landing hero with the locked comprehension copy and move AtlasPay
+  proof into a visually separate guided-proof section.
+- Create the complete scalable SVG brand asset family.
+
+Exit gate: every locked route returns 200 or an intentional redirect and has no
+console/hydration error.
+
+## P0.3 — make records and user-owned data real
+
+- Persist completed public scans locally with target, origin, status, routes,
+  locales, issue counts and report link.
+- Add retry, delete and duplicate-configuration actions.
+- Implement glossary CRUD, search, locale filter, validation, import/export and
+  local persistence.
+- Implement translation-memory import, search, filter, approval, export and
+  local persistence.
+
+Exit gate: data survives navigation/reload; browser tests exercise create,
+edit, delete, import and export.
+
+## P0.4 — acceptance fixtures and per-scan reports
+
+- Add clean, deliberately broken and unreachable fixture definitions with
+  exact expected outcomes.
+- Ensure hosted/static findings use the locked issue schema without fabricated
+  source hints or screenshots.
+- Produce genuine per-scan JSON, HTML, CSV, SARIF and JUnit downloads; provide a
+  screenshots ZIP only when real screenshots exist.
+- Expose truthful loading, completed, warning and failure/retry states.
+
+Exit gate: clean is 0 blockers, broken matches the six exact rules and
+unreachable produces no fake report.
+
+## P0.5 — external CLI and MCP proof
+
+- Run packed CLI help, doctor and fixture scan from a clean consumer directory.
+- Save commands, output and exit codes in submission evidence.
+- Externally invoke MCP inspect, create/run scan, issue list, report generation,
+  repair dry run and verification.
+- Save redacted structured outputs under `submission/mcp-output/`.
+
+Exit gate: all calls run through packaged/STDIO boundaries, not internal
+handlers.
+
+## P0.6 — motion, accessibility and hostile release audit
+
+- Add `/motion-lab` and reduced-motion-safe motion primitives.
+- Derive replay console rows and CI summary from generated receipts.
+- Expand browser tests for locked routes, motion remounts, pointer behavior,
+  keyboard access, persistence and downloads.
+- Run the hostile searches, clean install, full verification, pack verification,
+  demo proof, MCP proof and submission preparation.
+- Redeploy Vercel, open the production URL at required viewports and record
+  console/network results.
+
+Exit gate: the completion contract has command receipts and no mandatory gap is
+silently labelled complete.
+
+## Preserved foundation — working proof
 
 - Keep the existing five-to-zero Zariya proof runnable while the new platform
   is built.
@@ -24,7 +97,7 @@ test fixtures rather than per-language product branches.
 
 Exit gate: the existing release verification remains green.
 
-## Milestone 1 — shared workspace and contracts
+## Preserved foundation — shared workspace and contracts
 
 - Convert the repository to a pnpm workspace.
 - Add shared issue, scan, locale, repair, report and provider contracts.
@@ -38,7 +111,7 @@ Exit gate: the existing release verification remains green.
 Exit gate: unit tests cover locale validation, direction, placeholders, ICU,
 glossary, memory, pseudo-localisation, SSRF and repair boundaries.
 
-## Milestone 2 — AtlasPay proof target
+## Preserved foundation — AtlasPay proof target
 
 - Add a five-route startup product fixture.
 - Seed ten independently detectable defects across ten locales and scripts.
@@ -49,7 +122,7 @@ glossary, memory, pseudo-localisation, SSRF and repair boundaries.
 Exit gate: baseline scan detects the expected ten issues; identical verification
 after repair produces zero blocking issues and source-locale regression PASS.
 
-## Milestone 3 — CLI, MCP, reports and CI
+## Preserved foundation — CLI, MCP, reports and CI
 
 - Ship `@bhashafix/cli` with all documented commands, structured output and
   stable exit codes.
@@ -62,7 +135,7 @@ after repair produces zero blocking issues and source-locale regression PASS.
 Exit gate: CLI scan and verify pass; MCP tools/list, scan and verify invocations
 pass; reports validate against their schemas.
 
-## Milestone 4 — complete web product
+## Preserved foundation — web product
 
 - Replace the proof-only shell with the Living Language System.
 - Add landing, new-scan wizard, live scan workspace, issue explorer, linguistic
@@ -76,7 +149,7 @@ Exit gate: the required routes render, interactions are keyboard accessible,
 both themes pass, 390×844 and 1440×900 pass, and production browser consoles
 remain clean.
 
-## Milestone 5 — open-source and submission release
+## Preserved foundation — open-source and submission release
 
 - Add the licence, contribution, conduct, security, architecture, roadmap,
   changelog and agent guidance files.
@@ -94,7 +167,7 @@ enterprise SSO, remote MCP hosting, automatic arbitrary-repository mutation,
 browser extensions, cloud-scale scan orchestration and a translator
 marketplace.
 
-## Milestone 6 — real-user trust hardening
+## Preserved foundation — real-user trust hardening
 
 - Make the first action a real public-site scan instead of a demo-first wizard.
 - Crawl up to five bounded same-origin HTML routes with SSRF and redirect
