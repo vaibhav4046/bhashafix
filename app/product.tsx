@@ -1796,6 +1796,9 @@ export function ScanWorkspace({ section = "Overview" }: { section?: string }) {
   const activeScanId =
     typeof params.scanId === "string" ? params.scanId : "atlaspay-replay";
   const [storedScan, setStoredScan] = useState<LiveScanResult | null>(null);
+  const [loadedScanId, setLoadedScanId] = useState<string | null>(
+    activeScanId === "atlaspay-replay" ? activeScanId : null,
+  );
   const [selectedIssue, setSelectedIssue] = useState(0);
   const [locale, setLocale] = useState("ar-SA");
   const [device, setDevice] = useState("390×844");
@@ -1809,10 +1812,22 @@ export function ScanWorkspace({ section = "Overview" }: { section?: string }) {
           : readStoredScans().find((scan) => scan.scanId === activeScanId) ??
               null,
       );
+      setLoadedScanId(activeScanId);
     });
     return () => window.cancelAnimationFrame(frame);
   }, [activeScanId]);
   if (activeScanId !== "atlaspay-replay") {
+    if (loadedScanId !== activeScanId) {
+      return (
+        <AppShell>
+          <section className="empty-state" role="status">
+            <span>LOADING SAVED SCAN</span>
+            <h1>Opening the scan evidence stored in this browser.</h1>
+            <p>BhashaFix is reading the selected record before deciding whether it exists.</p>
+          </section>
+        </AppShell>
+      );
+    }
     return storedScan ? (
       <LiveStoredWorkspace result={storedScan} section={section} />
     ) : (

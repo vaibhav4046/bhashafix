@@ -232,6 +232,9 @@ test("real public scan UI shows exact routes, evidence and honest coverage", asy
     ),
   ).toEqual([]);
   await page.getByRole("link", { name: "Open saved scan →" }).click();
+  await expect(
+    page.getByText("SCAN NOT AVAILABLE IN THIS BROWSER"),
+  ).toHaveCount(0);
   await expect(page.getByText("LIVE_PUBLIC_SCAN", { exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Checks that ran" })).toBeVisible();
   await page.goto("/scan/web-ui-contract/report");
