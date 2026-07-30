@@ -12,6 +12,12 @@ locale checks, renders browser evidence, prepares an allowlisted repair, reruns
 the identical predicates, protects the source locale, and exports JSON, HTML,
 SARIF, JUnit, CSV, screenshots, and a unified patch.
 
+The hosted product performs a real, robots-aware, same-origin HTTP crawl of up
+to five routes. The submitted release receipt records a live Mozilla scan:
+five fetched routes and 778 deduplicated visible strings. The interface states
+that this hosted path is static HTTP evidence; browser rendering, axe,
+authenticated coverage and automatic repair run locally.
+
 The same core is available through a premium web workspace, `@bhashafix/cli`,
 `@bhashafix/mcp`, and GitHub Actions. No model provider is mandatory. Provider
 output can explain or recommend; it cannot declare a deterministic failure

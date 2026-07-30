@@ -4665,7 +4665,7 @@ var init_src5 = __esm({
   }
 });
 
-// ../crawler/src/index.ts
+// ../crawler/src/policy.ts
 import { lookup } from "node:dns/promises";
 import { isIP } from "node:net";
 function isPrivateAddress(address) {
@@ -4744,8 +4744,8 @@ async function fetchWithPolicy(input, policy) {
   throw new Error("Redirect limit exceeded.");
 }
 var LOCAL_HOSTS, METADATA_HOSTS;
-var init_src6 = __esm({
-  "../crawler/src/index.ts"() {
+var init_policy = __esm({
+  "../crawler/src/policy.ts"() {
     "use strict";
     LOCAL_HOSTS = /* @__PURE__ */ new Set(["localhost", "localhost.localdomain"]);
     METADATA_HOSTS = /* @__PURE__ */ new Set([
@@ -4800,10 +4800,29 @@ function extractTextFromHtml(html, route) {
   return results;
 }
 var SENSITIVE_ATTRIBUTE;
-var init_src7 = __esm({
+var init_src6 = __esm({
   "../extractor/src/index.ts"() {
     "use strict";
     SENSITIVE_ATTRIBUTE = /(authorization|token|secret|password|api[-_]?key|session|cookie)/i;
+  }
+});
+
+// ../crawler/src/hosted-scan.ts
+var init_hosted_scan = __esm({
+  "../crawler/src/hosted-scan.ts"() {
+    "use strict";
+    init_src6();
+    init_src();
+    init_policy();
+  }
+});
+
+// ../crawler/src/index.ts
+var init_src7 = __esm({
+  "../crawler/src/index.ts"() {
+    "use strict";
+    init_policy();
+    init_hosted_scan();
   }
 });
 
@@ -16021,8 +16040,8 @@ var init_server2 = __esm({
   async "../mcp/src/server.ts"() {
     "use strict";
     init_src5();
-    init_src6();
     init_src7();
+    init_src6();
     init_src3();
     init_src();
     init_src8();
@@ -16073,8 +16092,8 @@ async function loadProjectConfig(projectRoot, relativePath = ".bhashafix/config.
 }
 
 // src/cli.ts
-init_src6();
 init_src7();
+init_src6();
 init_src3();
 init_src();
 init_src8();

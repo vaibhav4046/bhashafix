@@ -2,13 +2,13 @@
   "schemaVersion": "1.0",
   "product": "BhashaFix",
   "version": "0.2.0",
-  "generatedAt": "2026-07-30T11:14:13.797Z",
-  "commit": "7ab0754",
+  "generatedAt": "2026-07-30T12:20:18.931Z",
+  "commit": "b188fc8",
   "deployment": "https://bhashafix.vercel.app",
   "repository": null,
   "proof": {
     "schemaVersion": "1.0",
-    "generatedAt": "2026-07-30T11:14:13.797Z",
+    "generatedAt": "2026-07-30T12:20:18.931Z",
     "mode": "genuine deterministic replay artifact",
     "baselineScanId": "atlaspay-83210b0daea2",
     "verificationScanId": "atlaspay-75123a28884f",
@@ -35,6 +35,7 @@
     "JUDGING_CHECKLIST.md",
     "repair-proof.json",
     "repair.patch",
+    "live-public-scan-receipt.json",
     "screenshots/"
   ],
   "claims": {

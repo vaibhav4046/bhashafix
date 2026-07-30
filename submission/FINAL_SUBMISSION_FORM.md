@@ -40,6 +40,12 @@ command gates. Deterministic tests—not a model message—accept each repair.
 
 https://bhashafix.vercel.app
 
+The default flow is a real bounded public-website scan. Paste an HTTPS URL to
+see fetched routes, HTTP status, language/direction metadata, extracted-string
+counts, deterministic findings, and a plain-language ledger of checks that did
+and did not run. AtlasPay replay remains separately labelled as genuine prior
+artifacts for the deterministic 10-to-0 repair proof.
+
 ## Public repository
 
 Not published at artifact-generation time. See `MANUAL_AUTH_REQUIRED.md`; add

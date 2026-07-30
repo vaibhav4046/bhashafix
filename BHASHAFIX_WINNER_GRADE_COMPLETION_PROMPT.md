@@ -84,10 +84,11 @@ Hosted public-URL scans validate URLs, block SSRF and metadata destinations,
 revalidate redirects, limit response size and time, extract visible strings,
 and report deterministic findings.
 
-The Vercel quick scan is deliberately limited to one public route. Full
-Playwright rendering and authenticated scans run locally or in a dedicated
-containerised scanner worker. Public scans diagnose only; they never claim to
-modify a website without repository access.
+The Vercel scan is deliberately limited to a bounded, same-origin static-HTML
+crawl of up to five public routes with robots-policy handling and per-route
+evidence. Full Playwright rendering, accessibility execution and authenticated
+scans run locally or in a dedicated containerised scanner worker. Public scans
+diagnose only; they never claim to modify a website without repository access.
 
 ## 6. Synthetic localisation preview
 

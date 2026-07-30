@@ -1,16 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
-import { fetchWithPolicy } from "@bhashafix/crawler";
-import { extractTextFromHtml } from "@bhashafix/extractor";
+import { runHostedHttpScan } from "@bhashafix/crawler";
 import { localeProfile } from "@bhashafix/locale-engine";
 import { z } from "zod";
 
 export const runtime = "nodejs";
+export const maxDuration = 60;
 
 const InputSchema = z
   .object({
     url: z.string().url().max(2048),
     sourceLocale: z.string().min(2).max(64),
     locales: z.array(z.string().min(2).max(64)).min(1).max(20),
+    maxRoutes: z.number().int().min(1).max(5).optional(),
   })
   .strict();
 
@@ -64,59 +65,7 @@ export async function POST(request: NextRequest) {
 
   activeScans += 1;
   try {
-    const fetched = await fetchWithPolicy(input.url, {
-      hosted: true,
-      allowLocalhost: false,
-      timeoutMs: 12_000,
-      redirectLimit: 4,
-      maxBytes: 1_500_000,
-    });
-    if (fetched.status === 401 || fetched.status === 403) {
-      return NextResponse.json(
-        {
-          error:
-            "The target requires authentication or blocks automation. Use local CLI storage state when authorised.",
-        },
-        { status: 422 },
-      );
-    }
-    const route = new URL(fetched.url).pathname || "/";
-    const strings = extractTextFromHtml(fetched.body, route);
-    const declaredLang =
-      fetched.body.match(/<html[^>]*\blang=["']([^"']+)["']/i)?.[1] ?? null;
-    const issues = strings
-      .filter((item) => /^[a-z][a-z0-9_]*(?:\.[a-z0-9_]+)+$/i.test(item.text))
-      .map((item) => ({
-        category: "raw-translation-key",
-        severity: "blocking",
-        confidence: "verified",
-        route,
-        selector: item.selector,
-        text: item.text,
-      }));
-    if (declaredLang !== input.sourceLocale) {
-      issues.push({
-        category: "wrong-page-lang",
-        severity: "blocking",
-        confidence: "verified",
-        route,
-        selector: "html",
-        text: `expected ${input.sourceLocale}; received ${declaredLang ?? "missing"}`,
-      });
-    }
-    return NextResponse.json({
-      mode: "live public URL inspection",
-      url: fetched.url,
-      status: fetched.status,
-      routes: [route],
-      strings: strings.length,
-      locales: input.locales,
-      issues,
-      limitations: [
-        "This hosted quick scan inspects one public route.",
-        "Full browser, repository and authenticated coverage runs locally.",
-      ],
-    });
+    return NextResponse.json(await runHostedHttpScan(input));
   } catch (error) {
     return NextResponse.json(
       {

@@ -28,6 +28,7 @@
     "demo:scan": "tsx scripts/platform-demo.ts scan",
     "demo:repair": "tsx scripts/platform-demo.ts repair",
     "demo:prove": "tsx scripts/platform-demo.ts prove",
+    "scan:live:smoke": "tsx scripts/live-public-smoke.ts",
     "bhashafix": "tsx packages/cli/src/cli.ts",
     "pack:verify": "pnpm build:packages && tsx scripts/pack-verify.ts",
     "mcp:inspect": "pnpm build:packages && tsx scripts/mcp-inspector-smoke.ts && tsx scripts/mcp-inspect.ts",

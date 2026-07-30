@@ -45,6 +45,31 @@ if (releaseEvidence.status !== "PASS") {
   throw new Error("Submission requires a passing hostile release receipt.");
 }
 
+const livePublicScan = JSON.parse(
+  await readFile(
+    path.join(root, "artifacts/live-public-scan-receipt.json"),
+    "utf8",
+  ),
+) as {
+  status: string;
+  target: string;
+  routesChecked: number;
+  stringsExtracted: number;
+  verifiedBlocking: number;
+  staticHttpOnly: boolean;
+  viewportOverflow: number;
+  consoleErrors: string[];
+};
+if (
+  livePublicScan.status !== "PASS" ||
+  livePublicScan.routesChecked < 2 ||
+  livePublicScan.stringsExtracted < 1 ||
+  livePublicScan.viewportOverflow !== 0 ||
+  livePublicScan.consoleErrors.length !== 0
+) {
+  throw new Error("Submission requires a passing live public-product scan.");
+}
+
 const baseline = await scanDemoProject(root, { mode: "replay" });
 const plan = await prepareRepair(root, baseline);
 await applyRepair(plan);
@@ -107,6 +132,7 @@ const manifest = {
     "JUDGING_CHECKLIST.md",
     "repair-proof.json",
     "repair.patch",
+    "live-public-scan-receipt.json",
     "screenshots/",
   ],
   claims: {
@@ -146,6 +172,7 @@ Generated: ${new Date().toISOString()}
 | --- | --- | --- |
 | Clean packed CLI and MCP install | PASS | ${releaseEvidence.packages.tarballs.join(", ")} |
 | Global locale registry | PASS | ${releaseEvidence.packages.localeRegistry} representative BCP 47 locales |
+| Live public-product scan | PASS | ${livePublicScan.routesChecked} real routes, ${livePublicScan.stringsExtracted} visible strings, ${livePublicScan.verifiedBlocking} blockers in checks run |
 | Baseline deterministic defects | PASS | ${proof.baselineBlocking} |
 | Final blocking defects | PASS | ${proof.finalBlocking} |
 | Source-locale regression | PASS | ${proof.sourceLocaleRegression} |
@@ -161,7 +188,8 @@ Generated: ${new Date().toISOString()}
 | PPTX container and screenshots | PASS | ${screenshots.length} screenshots |
 
 These are release-contract results for the bundled AtlasPay vertical slice.
-They are not a universal translation-quality benchmark.
+The live public scan is bounded static HTTP evidence, not a browser-render or
+universal translation-quality benchmark.
 `;
 
 await writeFile(
@@ -170,6 +198,10 @@ await writeFile(
 );
 await writeFile(path.join(submission, "MCP_MCPC_EVIDENCE.md"), mcpEvidence);
 await writeFile(path.join(submission, "EVAL_RESULTS.md"), evalResults);
+await writeFile(
+  path.join(submission, "live-public-scan-receipt.json"),
+  `${JSON.stringify(livePublicScan, null, 2)}\n`,
+);
 await writeFile(path.join(submission, "repair.patch"), plan.unifiedDiff);
 await writeFile(
   path.join(submission, "repair-proof.json"),

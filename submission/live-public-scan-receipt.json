@@ -1,0 +1,19 @@
+{
+  "generatedAt": "2026-07-30T12:04:26.692Z",
+  "baseUrl": "http://127.0.0.1:3000",
+  "target": "https://www.mozilla.org/en-US/",
+  "mode": "live hosted HTTP scan",
+  "routesChecked": 5,
+  "stringsExtracted": 778,
+  "verifiedBlocking": 0,
+  "warnings": 0,
+  "robotsPolicy": "READ",
+  "staticHttpOnly": true,
+  "viewportOverflow": 0,
+  "consoleErrors": [],
+  "screenshots": [
+    "submission/screenshots/09-live-public-product.png",
+    "submission/screenshots/10-live-public-product-proof.png"
+  ],
+  "status": "PASS"
+}

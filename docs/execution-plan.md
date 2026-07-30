@@ -93,3 +93,19 @@ The release will document, not imitate, multi-tenant accounts, billing,
 enterprise SSO, remote MCP hosting, automatic arbitrary-repository mutation,
 browser extensions, cloud-scale scan orchestration and a translator
 marketplace.
+
+## Milestone 6 — real-user trust hardening
+
+- Make the first action a real public-site scan instead of a demo-first wizard.
+- Crawl up to five bounded same-origin HTML routes with SSRF and redirect
+  validation plus available robots-policy handling.
+- Show each fetched route, static string count, language/direction metadata,
+  measured issue evidence and the exact checks that did and did not run.
+- Keep JavaScript rendering, screenshots, axe, authentication and source repair
+  explicitly local until a dedicated browser worker exists.
+- Reject conservative-predicate false positives such as dotted product brands
+  being mistaken for translation keys.
+
+Exit gate: focused scanner regressions, production build, browser E2E, a real
+five-route public-product scan, the full release gate and production smoke all
+pass without console errors or unsupported coverage claims.

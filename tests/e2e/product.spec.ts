@@ -21,7 +21,7 @@ test("landing page is responsive, themeable and accessible", async ({ page }) =>
   await expect(
     page.getByRole("heading", {
       level: 1,
-      name: "Every language. Every viewport. Evidence before release.",
+      name: "Paste your website. See what breaks in other languages.",
     }),
   ).toBeVisible();
   expect(
@@ -35,7 +35,7 @@ test("landing page is responsive, themeable and accessible", async ({ page }) =>
     fullPage: true,
   });
 
-  await page.getByRole("button", { name: "Use light theme" }).click();
+  await page.getByRole("button", { name: "Toggle color theme" }).click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
   await page.screenshot({
     path: path.join(screenshotDir, "02-landing-light.png"),
@@ -78,15 +78,153 @@ test("mobile and reduced-motion layouts remain usable", async ({ page }) => {
   expect(consoleErrors).toEqual([]);
 });
 
-test("scan wizard accepts arbitrary valid BCP 47 targets", async ({ page }) => {
-  await page.goto("/scan/new");
-  await page.getByRole("button", { name: "Continue →" }).click();
-  await page.getByLabel("Search target locales").fill("zh-Hant");
-  await expect(page.getByRole("button", { name: "zh-Hant-TW" })).toBeVisible();
+test("real public scan UI shows exact routes, evidence and honest coverage", async ({
+  page,
+}) => {
+  const consoleErrors = collectConsoleErrors(page);
+  await page.route("**/api/scan", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        scanId: "web-ui-contract",
+        mode: "live hosted HTTP scan",
+        startedAt: "2026-07-30T12:00:00.000Z",
+        completedAt: "2026-07-30T12:00:01.000Z",
+        target: "https://product.example/",
+        sourceLocale: "en-GB",
+        requestedLocales: ["de-DE", "ar-SA", "ja-JP", "pt-BR"],
+        scope: {
+          maxRoutes: 5,
+          crawlDepth: 1,
+          browserRendered: false,
+          repositoryAccess: false,
+          authenticated: false,
+        },
+        summary: {
+          routesChecked: 2,
+          stringsExtracted: 14,
+          verifiedBlocking: 1,
+          warnings: 1,
+        },
+        routes: [
+          {
+            url: "https://product.example/",
+            route: "/",
+            status: 200,
+            contentType: "text/html",
+            strings: 9,
+            declaredLang: "en",
+            declaredDir: null,
+            title: "Product",
+            issueCount: 0,
+          },
+          {
+            url: "https://product.example/pricing",
+            route: "/pricing",
+            status: 200,
+            contentType: "text/html",
+            strings: 5,
+            declaredLang: null,
+            declaredDir: null,
+            title: "Pricing",
+            issueCount: 2,
+          },
+        ],
+        issues: [
+          {
+            issueId: "web_missing_lang",
+            category: "missing-page-lang",
+            severity: "blocking",
+            confidence: "verified",
+            route: "/pricing",
+            selector: "html",
+            description: "The document does not declare an HTML language.",
+            measuredEvidence: "lang is missing",
+            deterministicPredicate: "html[lang] exists",
+          },
+          {
+            issueId: "web_missing_alt",
+            category: "missing-image-alt",
+            severity: "warning",
+            confidence: "verified",
+            route: "/pricing",
+            selector: "img:not([alt])",
+            description: "1 image omits the alt attribute.",
+            measuredEvidence: "img_without_alt=1",
+            deterministicPredicate: "every img has an alt attribute",
+          },
+        ],
+        robots: {
+          checked: true,
+          policyUrl: "https://product.example/robots.txt",
+          skippedRoutes: 0,
+        },
+        checksRun: [
+          "SSRF, DNS and redirect validation",
+          "same-origin internal-link discovery",
+        ],
+        notRun: [
+          "JavaScript browser rendering",
+          "visual overflow, clipping or overlap",
+        ],
+        limitations: [
+          "This hosted scan checked 2 real HTML routes up to a hard limit of 5.",
+        ],
+      }),
+    });
+  });
 
+  await page.goto("/scan/new");
+  await expect(
+    page.getByRole("heading", { name: "Check a real public website." }),
+  ).toBeVisible();
+  await page.locator(".locale-followup summary").click();
   await page.getByLabel("Custom BCP 47 target locale").fill("pt-br");
   await page.getByRole("button", { name: "Add locale" }).click();
-  await expect(page.getByRole("button", { name: "pt-BR ✓" })).toBeVisible();
+  await expect(page.locator(".locale-followup summary")).toContainText("pt-BR");
+
+  await page.getByPlaceholder("https://www.mozilla.org").fill(
+    "https://product.example",
+  );
+  await page.getByRole("button", { name: "Run real scan →" }).click();
+  await expect(page.getByText("LIVE · REAL HTTP RESPONSES")).toBeVisible();
+  await expect(page.getByText("Routes actually fetched")).toBeVisible();
+  await expect(page.getByRole("cell", { name: "/pricing" })).toBeVisible();
+  await expect(page.getByText("missing page lang")).toBeVisible();
+  await expect(page.getByText("JavaScript browser rendering")).toBeVisible();
+  await expect(
+    page.getByText("No blockers found — not a release guarantee"),
+  ).toHaveCount(0);
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    ),
+  ).toBe(0);
+  const accessibility = await new AxeBuilder({ page }).analyze();
+  expect(
+    accessibility.violations.filter((violation) =>
+      violation.impact === "critical" || violation.impact === "serious",
+    ),
+  ).toEqual([]);
+  expect(consoleErrors).toEqual([]);
+});
+
+test("hosted scan API blocks loopback targets without fabricating a result", async ({
+  request,
+}) => {
+  const response = await request.post("/api/scan", {
+    data: {
+      url: "http://127.0.0.1:3000",
+      sourceLocale: "en-GB",
+      locales: ["de-DE"],
+      maxRoutes: 2,
+    },
+  });
+  expect(response.status()).toBe(422);
+  expect((await response.json()).error).toContain(
+    "Private-network destinations are blocked",
+  );
 });
 
 test("replay workspace presents genuine 10-to-0 evidence and toggles the real fixture", async ({

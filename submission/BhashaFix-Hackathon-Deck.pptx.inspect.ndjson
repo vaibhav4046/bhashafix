@@ -1,4 +1,4 @@
-{"kind":"deck","id":"pr/vxmxs6","name":"Deck"}
+{"kind":"deck","id":"pr/99ffsl","name":"Deck"}
 {"kind":"layout","layoutId":"/ppt/slideMasters/slideMaster1.xml","name":"Master","type":"master"}
 {"kind":"layout","layoutId":"/ppt/slideLayouts/slideLayout1.xml","name":"Title Slide","type":"title"}
 {"kind":"slide","id":"sl/y90nupkv","slide":1,"title":"BhashaFix","textShapes":5}
@@ -10,7 +10,7 @@
 {"kind":"shape","id":"sh/sryl4zqx","slide":1,"bbox":[100,505,300,4]}
 {"kind":"textbox","id":"sh/fu94fe98","slide":1,"text":"10 → 0 · EN-GB PASS","textPreview":"10 → 0 · EN-GB PASS","textChars":19,"textLines":1,"bbox":[100,532,400,40]}
 {"kind":"textbox","id":"sh/utg3698n","slide":1,"text":"OPEN SOURCE · APACHE-2.0","textPreview":"OPEN SOURCE · APACHE-2.0","textChars":24,"textLines":1,"bbox":[100,610,350,22]}
-{"kind":"image","id":"im/jqxw72dk","slide":1,"name":"","alt":"Actual BhashaFix product screenshot: 04-scan-workspace.png","bbox":[0,0,1280,720]}
+{"kind":"image","id":"im/jqxw72dk","slide":1,"name":"","bbox":[0,0,1280,720]}
 {"kind":"notes","id":"nt/y90nupkv","slide":1,"text":"[Sources]\n- BhashaFix deterministic engine and release receipt, generated 30 July 2026.\n- Product claims are implemented and tested in the local BhashaFix repository.\n- Actual local Playwright/browser screenshot: submission/screenshots/04-scan-workspace.png."}
 {"kind":"slide","id":"sl/hwbqtkby","slide":2,"title":"GLOBAL FAILURES ARE ENGINEERING FAILURES","textShapes":14}
 {"kind":"textbox","id":"sh/cnupgny5","slide":2,"text":"GLOBAL FAILURES ARE ENGINEERING FAILURES","textPreview":"GLOBAL FAILURES ARE ENGINEERING FAILURES","textChars":40,"textLines":1,"bbox":[74,52,520,26]}
@@ -29,7 +29,7 @@
 {"kind":"shape","id":"sh/xk7qlczu","slide":2,"bbox":[74,678,1132,1]}
 {"kind":"textbox","id":"sh/ahwrqhgj","slide":2,"text":"BHASHAFIX · CODEX HACKATHON 2026","textPreview":"BHASHAFIX · CODEX HACKATHON 2026","textChars":32,"textLines":1,"bbox":[74,687,420,16]}
 {"kind":"textbox","id":"sh/bip8jmho","slide":2,"text":"02","textPreview":"02","textChars":2,"textLines":1,"bbox":[1164,687,42,16]}
-{"kind":"image","id":"im/mpcv2l0b","slide":2,"name":"","geometry":"roundRect","alt":"Actual BhashaFix product screenshot: 03-landing-mobile.png","bbox":[812,70,322,552]}
+{"kind":"image","id":"im/mpcv2l0b","slide":2,"name":"","geometry":"roundRect","bbox":[812,70,322,552]}
 {"kind":"notes","id":"nt/hwbqtkby","slide":2,"text":"[Sources]\n- BhashaFix deterministic engine and release receipt, generated 30 July 2026.\n- Product claims are implemented and tested in the local BhashaFix repository.\n- Actual local Playwright/browser screenshot: submission/screenshots/03-landing-mobile.png."}
 {"kind":"slide","id":"sl/ofy9wn61","slide":3,"title":"TRANSLATION IS NOT THE RELEASE GATE","textShapes":11}
 {"kind":"textbox","id":"sh/v6l4jq94","slide":3,"text":"TRANSLATION IS NOT THE RELEASE GATE","textPreview":"TRANSLATION IS NOT THE RELEASE GATE","textChars":35,"textLines":1,"bbox":[74,52,520,26]}
@@ -71,7 +71,7 @@
 {"kind":"shape","id":"sh/2xkrih8b","slide":4,"bbox":[74,678,1132,1]}
 {"kind":"textbox","id":"sh/1wbapc7q","slide":4,"text":"BHASHAFIX · CODEX HACKATHON 2026","textPreview":"BHASHAFIX · CODEX HACKATHON 2026","textChars":32,"textLines":1,"bbox":[74,687,420,16]}
 {"kind":"textbox","id":"sh/gv29g7q5","slide":4,"text":"04","textPreview":"04","textChars":2,"textLines":1,"bbox":[1164,687,42,16]}
-{"kind":"image","id":"im/x83qdojq","slide":4,"name":"","geometry":"roundRect","alt":"Actual BhashaFix product screenshot: 07-issue-evidence.png","bbox":[482,176,724,390]}
+{"kind":"image","id":"im/x83qdojq","slide":4,"name":"","geometry":"roundRect","bbox":[482,176,724,390]}
 {"kind":"notes","id":"nt/jyx0ra1s","slide":4,"text":"[Sources]\n- BhashaFix deterministic engine and release receipt, generated 30 July 2026.\n- Product claims are implemented and tested in the local BhashaFix repository.\n- Actual local Playwright/browser screenshot: submission/screenshots/07-issue-evidence.png."}
 {"kind":"slide","id":"sl/i107q5of","slide":5,"title":"ONE ENGINE · FOUR SURFACES","textShapes":25}
 {"kind":"textbox","id":"sh/wve1knyx","slide":5,"text":"ONE ENGINE · FOUR SURFACES","textPreview":"ONE ENGINE · FOUR SURFACES","textChars":26,"textLines":1,"bbox":[74,52,520,26]}
@@ -106,23 +106,23 @@
 {"kind":"textbox","id":"sh/atcjidg7","slide":5,"text":"BHASHAFIX · CODEX HACKATHON 2026","textPreview":"BHASHAFIX · CODEX HACKATHON 2026","textChars":32,"textLines":1,"bbox":[74,687,420,16]}
 {"kind":"textbox","id":"sh/vu5kbihc","slide":5,"text":"05","textPreview":"05","textChars":2,"textLines":1,"bbox":[1164,687,42,16]}
 {"kind":"notes","id":"nt/i107q5of","slide":5,"text":"[Sources]\n- BhashaFix deterministic engine and release receipt, generated 30 July 2026.\n- Official MCP Inspector and MCPC receipts: artifacts/mcp-inspector-receipt.json and artifacts/mcpc-smoke/receipt.json.\n- No external visual asset used."}
-{"kind":"slide","id":"sl/x8f69ofe","slide":6,"title":"THE VERIFIED PROOF","textShapes":13}
-{"kind":"textbox","id":"sh/j6dcr65c","slide":6,"text":"THE VERIFIED PROOF","textPreview":"THE VERIFIED PROOF","textChars":18,"textLines":1,"bbox":[74,52,520,26]}
+{"kind":"slide","id":"sl/x8f69ofe","slide":6,"title":"TWO REAL PROOF MODES","textShapes":13}
+{"kind":"textbox","id":"sh/j6dcr65c","slide":6,"text":"TWO REAL PROOF MODES","textPreview":"TWO REAL PROOF MODES","textChars":20,"textLines":1,"bbox":[74,52,520,26]}
 {"kind":"textbox","id":"sh/yhg7epsj","slide":6,"text":"10","textPreview":"10","textChars":2,"textLines":1,"bbox":[74,118,180,180]}
 {"kind":"textbox","id":"sh/zi98nu94","slide":6,"text":"→","textPreview":"→","textChars":1,"textLines":1,"bbox":[246,160,90,90]}
 {"kind":"textbox","id":"sh/87ipkzal","slide":6,"text":"0","textPreview":"0","textChars":1,"textLines":1,"bbox":[340,118,180,180]}
-{"kind":"textbox","id":"sh/98rqt4r6","slide":6,"text":"blocking failures","textPreview":"blocking failures","textChars":17,"textLines":1,"bbox":[80,292,430,42]}
-{"kind":"textbox","id":"sh/ml07i9sv","slide":6,"text":"Source regression","textPreview":"Source regression","textChars":17,"textLines":1,"bbox":[80,364,260,30]}
-{"kind":"textbox","id":"sh/7m98ru9g","slide":6,"text":"PASS","textPreview":"PASS","textChars":4,"textLines":1,"bbox":[348,358,160,42]}
-{"kind":"textbox","id":"sh/oryp8fah","slide":6,"text":"Changed source files","textPreview":"Changed source files","textChars":20,"textLines":1,"bbox":[80,436,260,30]}
-{"kind":"textbox","id":"sh/pc76hkr2","slide":6,"text":"3","textPreview":"3","textChars":1,"textLines":1,"bbox":[348,424,160,52]}
+{"kind":"textbox","id":"sh/98rqt4r6","slide":6,"text":"AtlasPay blocking failures","textPreview":"AtlasPay blocking failures","textChars":26,"textLines":1,"bbox":[80,292,430,42]}
+{"kind":"textbox","id":"sh/ml07i9sv","slide":6,"text":"Mozilla routes checked","textPreview":"Mozilla routes checked","textChars":22,"textLines":1,"bbox":[80,364,260,30]}
+{"kind":"textbox","id":"sh/7m98ru9g","slide":6,"text":"5","textPreview":"5","textChars":1,"textLines":1,"bbox":[348,358,160,42]}
+{"kind":"textbox","id":"sh/oryp8fah","slide":6,"text":"Mozilla strings extracted","textPreview":"Mozilla strings extracted","textChars":25,"textLines":1,"bbox":[80,436,260,30]}
+{"kind":"textbox","id":"sh/pc76hkr2","slide":6,"text":"778","textPreview":"778","textChars":3,"textLines":1,"bbox":[348,424,160,52]}
 {"kind":"textbox","id":"sh/h4bupgn6","slide":6,"text":"Browser console errors","textPreview":"Browser console errors","textChars":22,"textLines":1,"bbox":[80,510,270,30]}
 {"kind":"textbox","id":"sh/w32twb6l","slide":6,"text":"0","textPreview":"0","textChars":1,"textLines":1,"bbox":[348,498,160,52]}
 {"kind":"shape","id":"sh/u1kbu1ov","slide":6,"bbox":[74,678,1132,1]}
 {"kind":"textbox","id":"sh/5svutgni","slide":6,"text":"BHASHAFIX · CODEX HACKATHON 2026","textPreview":"BHASHAFIX · CODEX HACKATHON 2026","textChars":32,"textLines":1,"bbox":[74,687,420,16]}
 {"kind":"textbox","id":"sh/47mt0b6x","slide":6,"text":"06","textPreview":"06","textChars":2,"textLines":1,"bbox":[1164,687,42,16]}
-{"kind":"image","id":"im/lw3uh4be","slide":6,"name":"","geometry":"roundRect","alt":"Actual BhashaFix product screenshot: 05-proof-report.png","bbox":[548,110,658,411]}
-{"kind":"notes","id":"nt/x8f69ofe","slide":6,"text":"[Sources]\n- BhashaFix deterministic engine and release receipt, generated 30 July 2026.\n- Product claims are implemented and tested in the local BhashaFix repository.\n- Actual local Playwright/browser screenshot: submission/screenshots/05-proof-report.png."}
+{"kind":"image","id":"im/lw3uh4be","slide":6,"name":"","geometry":"roundRect","bbox":[548,110,658,411]}
+{"kind":"notes","id":"nt/x8f69ofe","slide":6,"text":"[Sources]\n- BhashaFix deterministic AtlasPay release proof, generated 30 July 2026.\n- Actual local Playwright/browser proof: submission/screenshots/05-proof-report.png.\n- Live public target scanned on 30 July 2026: https://www.mozilla.org/.\n- Live BhashaFix scan screenshot: submission/screenshots/10-live-public-product-proof.png.\n- Live scan receipt: artifacts/live-public-scan-receipt.json."}
 {"kind":"slide","id":"sl/gnmp4jqx","slide":7,"title":"TECHNICAL ARCHITECTURE","textShapes":25}
 {"kind":"textbox","id":"sh/nyh4jupo","slide":7,"text":"TECHNICAL ARCHITECTURE","textPreview":"TECHNICAL ARCHITECTURE","textChars":22,"textLines":1,"bbox":[74,52,520,26]}
 {"kind":"textbox","id":"sh/cb2tkvap","slide":7,"text":"Determinism surrounds the agent.","textPreview":"Determinism surrounds the agent.","textChars":32,"textLines":1,"bbox":[74,92,820,64]}
@@ -173,7 +173,7 @@
 {"kind":"shape","id":"sh/1k7edwv2","slide":8,"bbox":[74,678,1132,1]}
 {"kind":"textbox","id":"sh/ehgvihwr","slide":8,"text":"BHASHAFIX · CODEX HACKATHON 2026","textPreview":"BHASHAFIX · CODEX HACKATHON 2026","textChars":32,"textLines":1,"bbox":[74,687,420,16]}
 {"kind":"textbox","id":"sh/zipwbmdc","slide":8,"text":"08","textPreview":"08","textChars":2,"textLines":1,"bbox":[1164,687,42,16]}
-{"kind":"image","id":"im/mt47qt0z","slide":8,"name":"","geometry":"roundRect","alt":"Actual BhashaFix product screenshot: 06-bounded-repair.png","bbox":[74,190,688,402]}
+{"kind":"image","id":"im/mt47qt0z","slide":8,"name":"","geometry":"roundRect","bbox":[74,190,688,402]}
 {"kind":"notes","id":"nt/fu1gfa1s","slide":8,"text":"[Sources]\n- BhashaFix deterministic engine and release receipt, generated 30 July 2026.\n- Product claims are implemented and tested in the local BhashaFix repository.\n- Actual local Playwright/browser screenshot: submission/screenshots/06-bounded-repair.png."}
 {"kind":"slide","id":"sl/udsvah03","slide":9,"title":"OPEN-SOURCE ADOPTION","textShapes":16}
 {"kind":"textbox","id":"sh/87a18zqt","slide":9,"text":"OPEN-SOURCE ADOPTION","textPreview":"OPEN-SOURCE ADOPTION","textChars":20,"textLines":1,"bbox":[74,52,520,26]}
@@ -206,5 +206,5 @@
 {"kind":"shape","id":"sh/kzu5c32t","slide":10,"bbox":[100,505,300,4]}
 {"kind":"textbox","id":"sh/725onyl4","slide":10,"text":"10 → 0 · EN-GB PASS","textPreview":"10 → 0 · EN-GB PASS","textChars":19,"textLines":1,"bbox":[100,532,400,40]}
 {"kind":"textbox","id":"sh/m1cnetkj","slide":10,"text":"OPEN SOURCE · APACHE-2.0","textPreview":"OPEN SOURCE · APACHE-2.0","textChars":24,"textLines":1,"bbox":[100,610,350,22]}
-{"kind":"image","id":"im/fip0zylc","slide":10,"name":"","alt":"Actual BhashaFix product screenshot: 04-scan-workspace.png","bbox":[0,0,1280,720]}
+{"kind":"image","id":"im/fip0zylc","slide":10,"name":"","bbox":[0,0,1280,720]}
 {"kind":"notes","id":"nt/m90b6t0r","slide":10,"text":"[Sources]\n- BhashaFix deterministic engine and release receipt, generated 30 July 2026.\n- Product claims are implemented and tested in the local BhashaFix repository.\n- Actual local Playwright/browser screenshot: submission/screenshots/04-scan-workspace.png."}

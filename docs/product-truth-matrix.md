@@ -6,7 +6,7 @@
 | Bounded repository repair | Verified | Unified diff, three allowlisted files, rollback and audit record | Never mutates public websites |
 | Identical-test verification | Verified | 10 blocking to 0; en-GB regression PASS | Model messages are not proof |
 | Web replay | Verified genuine replay | `public/replay/` generated from a real local run | Clearly labelled replay |
-| Public URL quick scan | Working limited release | Hosted SSRF-safe fetch, extraction and deterministic metadata/raw-key checks | One public route; full browser coverage is local/worker work |
+| Public URL scan | Working limited release | Hosted SSRF-safe fetch, bounded same-origin link discovery, robots-policy handling, per-route extraction and deterministic metadata/raw-key/title/image-alt checks | Up to five static HTML routes; JavaScript browser, accessibility and repair coverage is local/worker work |
 | Synthetic localisation preview | Working deterministic preview | Protected-token pseudo-localisation in a sandboxed frame | Not the production website and not human translation |
 | BCP 47 registry | Verified | `Intl.Locale`, plural, date, number and direction tests | No perfect-language-quality claim |
 | Browser evidence | Verified for release browser | Chromium Playwright, axe, console, mobile/desktop/themes/reduced-motion | Firefox/WebKit depend on installed runtimes |

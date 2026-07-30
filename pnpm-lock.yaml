@@ -202,7 +202,14 @@ importers:
         specifier: 3.25.76
         version: 3.25.76
 
-  packages/crawler: {}
+  packages/crawler:
+    dependencies:
+      '@bhashafix/extractor':
+        specifier: workspace:*
+        version: link:../extractor
+      '@bhashafix/locale-engine':
+        specifier: workspace:*
+        version: link:../locale-engine
 
   packages/extractor: {}
 

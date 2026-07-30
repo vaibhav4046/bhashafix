@@ -10782,7 +10782,7 @@ async function inspectProject(projectRoot) {
   };
 }
 
-// ../crawler/src/index.ts
+// ../crawler/src/policy.ts
 import { lookup } from "node:dns/promises";
 import { isIP } from "node:net";
 var LOCAL_HOSTS = /* @__PURE__ */ new Set(["localhost", "localhost.localdomain"]);

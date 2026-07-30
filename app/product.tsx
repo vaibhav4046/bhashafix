@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import baselineScan from "../public/replay/baseline-scan.json";
 import repairProof from "../public/replay/repair-proof.json";
 import { pseudoLocalise } from "@bhashafix/linguistic-engine";
@@ -68,7 +69,6 @@ export function Logo({ wordmark = true }: { wordmark?: boolean }) {
 }
 
 function ThemeToggle() {
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
   useEffect(() => {
     const stored = window.localStorage.getItem("bhashafix-theme");
     const initial = stored === "light" ? "light" : "dark";
@@ -77,7 +77,6 @@ function ThemeToggle() {
   const toggle = () => {
     const next =
       document.documentElement.dataset.theme === "dark" ? "light" : "dark";
-    setTheme(next);
     document.documentElement.dataset.theme = next;
     window.localStorage.setItem("bhashafix-theme", next);
   };
@@ -85,10 +84,10 @@ function ThemeToggle() {
     <button
       className="theme-toggle"
       onClick={toggle}
-      aria-label={`Use ${theme === "dark" ? "light" : "dark"} theme`}
+      aria-label="Toggle color theme"
     >
-      <span>{theme === "dark" ? "☼" : "◐"}</span>
-      {theme}
+      <span>◐</span>
+      theme
     </button>
   );
 }
@@ -216,24 +215,24 @@ export function LandingPage() {
       <section className="landing-hero">
         <div className="hero-copy">
           <span className="eyebrow">
-            <i /> OPEN-SOURCE LOCALISATION ENGINEERING
+            <i /> REAL PUBLIC-WEBSITE CHECKS · NO ACCOUNT
           </span>
           <h1>
-            Every language.
+            Paste your website.
             <br />
-            Every viewport.
+            See what breaks
             <br />
-            <em>Evidence before release.</em>
+            <em>in other languages.</em>
           </h1>
           <p>
-            BhashaFix scans translated products for linguistic, visual,
-            accessibility and locale failures—then verifies the repair.
+            BhashaFix checks the pages your site really serves, follows safe
+            internal links and shows exact evidence. No pretend score.
           </p>
           <form
             className="url-launcher"
             onSubmit={(event) => {
               event.preventDefault();
-              window.location.href = `/scan/new${url ? `?url=${encodeURIComponent(url)}` : ""}`;
+              window.location.href = `/scan/new?url=${encodeURIComponent(url)}&autorun=1`;
             }}
           >
             <span aria-hidden="true">⌁</span>
@@ -243,20 +242,21 @@ export function LandingPage() {
               aria-label="Public website URL"
               value={url}
               onChange={(event) => setUrl(event.target.value)}
+              required
             />
-            <button type="submit">Scan a website →</button>
+            <button type="submit">Run real scan →</button>
           </form>
           <div className="hero-actions">
             <Link className="text-action" href="/docs#repository">
-              ⌘ Connect a repository
+              ⌘ Need browser screenshots and repairs? Run locally
             </Link>
             <Link className="text-action" href="/scan/atlaspay-replay">
-              ▶ Open verified replay
+              ▶ Watch the verified 10 → 0 demo
             </Link>
           </div>
           <div className="proof-line">
             <span>✓</span>
-            Linguistic quality + browser evidence + verified repair
+            Real routes · deterministic evidence · exact scan scope
           </div>
         </div>
         <LanguageStream />
@@ -264,7 +264,7 @@ export function LandingPage() {
 
       <section className="proof-ribbon">
         <div>
-          <span>BASELINE</span>
+          <span>ATLASPAY REPLAY · BASELINE</span>
           <strong>10</strong>
           <small>verified failures</small>
         </div>
@@ -274,7 +274,7 @@ export function LandingPage() {
           <i />
         </div>
         <div>
-          <span>FINAL</span>
+          <span>ATLASPAY REPLAY · FINAL</span>
           <strong className="green">0</strong>
           <small>blocking failures</small>
         </div>
@@ -456,10 +456,80 @@ export function ScanIndexPage() {
   );
 }
 
+type LiveScanResult = {
+  scanId: string;
+  mode: "live hosted HTTP scan";
+  startedAt: string;
+  completedAt: string;
+  target: string;
+  sourceLocale: string;
+  requestedLocales: string[];
+  scope: {
+    maxRoutes: number;
+    crawlDepth: 1;
+    browserRendered: false;
+    repositoryAccess: false;
+    authenticated: false;
+  };
+  summary: {
+    routesChecked: number;
+    stringsExtracted: number;
+    verifiedBlocking: number;
+    warnings: number;
+  };
+  routes: Array<{
+    url: string;
+    route: string;
+    status: number;
+    contentType: string;
+    strings: number;
+    declaredLang: string | null;
+    declaredDir: "ltr" | "rtl" | null;
+    title: string | null;
+    issueCount: number;
+  }>;
+  issues: Array<{
+    issueId: string;
+    category: string;
+    severity: "blocking" | "warning";
+    confidence: "verified";
+    route: string;
+    selector: string;
+    description: string;
+    measuredEvidence: string;
+    deterministicPredicate: string;
+  }>;
+  robots: {
+    checked: boolean;
+    policyUrl: string;
+    skippedRoutes: number;
+  };
+  checksRun: string[];
+  notRun: string[];
+  limitations: string[];
+};
+
+const simpleLocaleOptions = [
+  "de-DE",
+  "fr-FR",
+  "es-MX",
+  "pt-BR",
+  "hi-IN",
+  "ar-SA",
+  "ja-JP",
+  "zh-Hant-TW",
+  "th-TH",
+  "uk-UA",
+] as const;
+
 export function NewScanPage() {
+  const searchParams = useSearchParams();
+  const initialUrl = searchParams.get("url")?.trim() ?? "";
+  const shouldAutoRun = searchParams.get("autorun") === "1";
+  const autoRunStarted = useRef(false);
   const [step, setStep] = useState(0);
-  const [target, setTarget] = useState<"public" | "local" | "demo">("demo");
-  const [url, setUrl] = useState("");
+  const [target, setTarget] = useState<"public" | "local" | "demo">("public");
+  const [url, setUrl] = useState(initialUrl);
   const [sourceLocale, setSourceLocale] = useState("en-GB");
   const [locales, setLocales] = useState([
     "hi-IN",
@@ -470,8 +540,10 @@ export function NewScanPage() {
   const [localeQuery, setLocaleQuery] = useState("");
   const [customLocale, setCustomLocale] = useState("");
   const [localeError, setLocaleError] = useState("");
+  const [maxRoutes, setMaxRoutes] = useState(5);
   const [running, setRunning] = useState(false);
-  const [liveResult, setLiveResult] = useState<string | null>(null);
+  const [liveResult, setLiveResult] = useState<LiveScanResult | null>(null);
+  const [scanError, setScanError] = useState("");
   const steps = ["Target", "Locales", "Coverage", "Guardrails", "Summary"];
   const localeOptions = [
     "hi-IN",
@@ -511,38 +583,215 @@ export function NewScanPage() {
       setLocaleError("Enter a valid BCP 47 locale such as pt-BR.");
     }
   };
-  const run = async () => {
+  const run = useCallback(async (candidateUrl?: string) => {
     if (target === "demo") {
       window.location.href = "/scan/atlaspay-replay";
       return;
     }
     if (target === "local") {
-      setLiveResult(
+      setScanError(
         "Local repository scans run through the CLI so source and credentials remain on your machine.",
       );
       return;
     }
+    const scanUrl = (candidateUrl ?? url).trim();
     setRunning(true);
     setLiveResult(null);
+    setScanError("");
     try {
+      new URL(scanUrl);
+      new Intl.Locale(sourceLocale);
+      if (locales.length === 0) {
+        throw new Error("Choose at least one target locale for the local follow-up.");
+      }
       const response = await fetch("/api/scan", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ url, sourceLocale, locales }),
+        body: JSON.stringify({
+          url: scanUrl,
+          sourceLocale,
+          locales,
+          maxRoutes,
+        }),
       });
-      const payload = await response.json();
+      const payload = (await response.json()) as LiveScanResult & {
+        error?: string;
+      };
       if (!response.ok) throw new Error(payload.error ?? "Scan failed.");
-      setLiveResult(
-        `Live inspection completed: ${payload.routes.length} route, ${payload.strings} visible strings, ${payload.issues.length} deterministic content findings.`,
-      );
+      setLiveResult(payload);
     } catch (error) {
-      setLiveResult(error instanceof Error ? error.message : String(error));
+      setScanError(error instanceof Error ? error.message : String(error));
     } finally {
       setRunning(false);
     }
-  };
+  }, [locales, maxRoutes, sourceLocale, target, url]);
+
+  useEffect(() => {
+    if (!initialUrl) return;
+    if (shouldAutoRun && !autoRunStarted.current) {
+      autoRunStarted.current = true;
+      void run(initialUrl);
+    }
+  }, [initialUrl, run, shouldAutoRun]);
+
+  if (target === "public") {
+    return (
+      <AppShell>
+        <section className="simple-scan">
+          <div className="simple-scan-heading">
+            <span>START WITH THE TRUTH</span>
+            <h1>Check a real public website.</h1>
+            <p>
+              This scan runs here now. Browser screenshots, accessibility and
+              source repairs run locally where Playwright and your repository
+              are available.
+            </p>
+          </div>
+
+          <ScanModeSwitcher target={target} setTarget={setTarget} />
+
+          <form
+            className="real-scan-form"
+            onSubmit={(event) => {
+              event.preventDefault();
+              void run();
+            }}
+          >
+            <div className="real-scan-primary">
+              <label className="field">
+                Website URL
+                <input
+                  type="url"
+                  placeholder="https://www.mozilla.org"
+                  value={url}
+                  onChange={(event) => setUrl(event.target.value)}
+                  required
+                />
+              </label>
+              <label className="field source-locale-field">
+                Page language
+                <input
+                  aria-label="Source locale"
+                  value={sourceLocale}
+                  onChange={(event) => setSourceLocale(event.target.value)}
+                  required
+                />
+              </label>
+              <label className="field route-limit-field">
+                Route limit
+                <select
+                  value={maxRoutes}
+                  onChange={(event) => setMaxRoutes(Number(event.target.value))}
+                >
+                  {[1, 2, 3, 4, 5].map((value) => (
+                    <option value={value} key={value}>
+                      {value}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <button className="button real-scan-submit" disabled={running}>
+                {running ? "Checking the real site…" : "Run real scan →"}
+              </button>
+            </div>
+
+            <details className="locale-followup">
+              <summary>
+                Target locales for the local browser follow-up
+                <span>{locales.join(", ")}</span>
+              </summary>
+              <p>
+                These are recorded, not claimed as tested by the hosted HTTP
+                scan.
+              </p>
+              <div className="locale-options">
+                {simpleLocaleOptions.map((locale) => (
+                  <button
+                    type="button"
+                    className={locales.includes(locale) ? "active" : ""}
+                    onClick={() =>
+                      setLocales((current) =>
+                        current.includes(locale)
+                          ? current.filter((item) => item !== locale)
+                          : [...current, locale],
+                      )
+                    }
+                    key={locale}
+                  >
+                    {locale} {locales.includes(locale) && "✓"}
+                  </button>
+                ))}
+              </div>
+              <div className="custom-locale">
+                <input
+                  aria-label="Custom BCP 47 target locale"
+                  placeholder="Add any BCP 47 locale"
+                  value={customLocale}
+                  onChange={(event) => setCustomLocale(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      event.preventDefault();
+                      addCustomLocale();
+                    }
+                  }}
+                />
+                <button type="button" onClick={addCustomLocale}>
+                  Add locale
+                </button>
+              </div>
+              {localeError && <small className="field-error">{localeError}</small>}
+            </details>
+          </form>
+
+          <div className="scan-truth-strip">
+            <div>
+              <b>Runs now</b>
+              <span>
+                Live fetch · safe links · robots · visible text · lang/dir ·
+                raw keys · titles · image alt
+              </span>
+            </div>
+            <div>
+              <b>Runs locally</b>
+              <span>
+                Playwright · screenshots · overflow · axe · authenticated
+                routes · bounded repair
+              </span>
+            </div>
+          </div>
+
+          {running && (
+            <div className="real-scan-running" role="status">
+              <i />
+              <div>
+                <strong>Fetching and checking the target now</strong>
+                <span>
+                  This reflects the real network request. There are no
+                  simulated pipeline stages.
+                </span>
+              </div>
+            </div>
+          )}
+          {scanError && (
+            <div className="real-scan-error" role="alert">
+              <strong>Scan could not complete</strong>
+              <p>{scanError}</p>
+              <span>
+                The site may block automation, require authentication, or be
+                unavailable. No result was invented.
+              </span>
+            </div>
+          )}
+          {liveResult && <LivePublicScanResult result={liveResult} />}
+        </section>
+      </AppShell>
+    );
+  }
   return (
     <AppShell>
+      <div className="advanced-mode-switcher">
+        <ScanModeSwitcher target={target} setTarget={setTarget} />
+      </div>
       <section className="wizard-shell">
         <aside className="wizard-steps">
           <span>NEW SCAN</span>
@@ -583,17 +832,6 @@ export function NewScanPage() {
                   <b>{target === value ? "Selected ✓" : "Select"}</b>
                 </button>
               ))}
-              {target === "public" && (
-                <label className="field wide">
-                  Public website URL
-                  <input
-                    type="url"
-                    placeholder="Paste a public HTTPS website URL"
-                    value={url}
-                    onChange={(event) => setUrl(event.target.value)}
-                  />
-                </label>
-              )}
             </div>
           )}
           {step === 1 && (
@@ -715,7 +953,11 @@ export function NewScanPage() {
             <div className="run-summary">
               <div>
                 <small>TARGET</small>
-                <strong>{target === "demo" ? "AtlasPay bundled demo" : target === "public" ? url || "Public URL" : "Local repository"}</strong>
+                <strong>
+                  {target === "demo"
+                    ? "AtlasPay bundled demo"
+                    : "Local repository"}
+                </strong>
               </div>
               <div>
                 <small>LOCALES</small>
@@ -729,7 +971,14 @@ export function NewScanPage() {
                 <small>POLICY</small>
                 <strong>No-AI · prepare repairs · bounded crawl</strong>
               </div>
-              {liveResult && <p className="run-result">{liveResult}</p>}
+              {liveResult && (
+                <p className="run-result">
+                  Live HTTP scan: {liveResult.summary.routesChecked} routes,{" "}
+                  {liveResult.summary.stringsExtracted} strings and{" "}
+                  {liveResult.summary.verifiedBlocking} blocking findings in
+                  the checks run.
+                </p>
+              )}
             </div>
           )}
           <div className="wizard-footer">
@@ -748,7 +997,11 @@ export function NewScanPage() {
                 Continue →
               </button>
             ) : (
-              <button className="button" onClick={run} disabled={running}>
+              <button
+                className="button"
+                onClick={() => void run()}
+                disabled={running}
+              >
                 {running ? "Inspecting target…" : "Run scan →"}
               </button>
             )}
@@ -756,6 +1009,213 @@ export function NewScanPage() {
         </section>
       </section>
     </AppShell>
+  );
+}
+
+function ScanModeSwitcher({
+  target,
+  setTarget,
+}: {
+  target: "public" | "local" | "demo";
+  setTarget: (target: "public" | "local" | "demo") => void;
+}) {
+  return (
+    <nav className="scan-mode-switcher" aria-label="Scan type">
+      {[
+        ["public", "Public website", "Real hosted HTTP scan"],
+        ["local", "Local product", "Full browser + repair"],
+        ["demo", "Verified demo", "Real 10 → 0 proof"],
+      ].map(([value, label, detail]) => (
+        <button
+          key={value}
+          className={target === value ? "active" : ""}
+          onClick={() => setTarget(value as typeof target)}
+        >
+          <strong>{label}</strong>
+          <span>{detail}</span>
+        </button>
+      ))}
+    </nav>
+  );
+}
+
+function LivePublicScanResult({ result }: { result: LiveScanResult }) {
+  const completed = new Date(result.completedAt);
+  return (
+    <section className="live-scan-result" aria-labelledby="live-result-title">
+      <header>
+        <div>
+          <span className="live-badge">LIVE · REAL HTTP RESPONSES</span>
+          <h2 id="live-result-title">Here is exactly what BhashaFix found.</h2>
+          <p>
+            {result.target} · completed{" "}
+            {Number.isNaN(completed.getTime())
+              ? result.completedAt
+              : completed.toLocaleTimeString()}
+          </p>
+        </div>
+        <div className="live-result-verdict">
+          <small>BLOCKING IN CHECKS RUN</small>
+          <strong>{result.summary.verifiedBlocking}</strong>
+          <span>
+            {result.summary.verifiedBlocking === 0
+              ? "No blockers found — not a release guarantee"
+              : "Inspect the evidence below"}
+          </span>
+        </div>
+      </header>
+
+      <div className="live-metrics">
+        <article>
+          <small>REAL ROUTES CHECKED</small>
+          <strong>{result.summary.routesChecked}</strong>
+          <span>of {result.scope.maxRoutes} maximum</span>
+        </article>
+        <article>
+          <small>VISIBLE STRINGS</small>
+          <strong>{result.summary.stringsExtracted}</strong>
+          <span>static HTML extraction</span>
+        </article>
+        <article>
+          <small>WARNINGS</small>
+          <strong>{result.summary.warnings}</strong>
+          <span>verified predicates</span>
+        </article>
+        <article>
+          <small>ROBOTS POLICY</small>
+          <strong>{result.robots.checked ? "READ" : "N/A"}</strong>
+          <span>{result.robots.skippedRoutes} route(s) skipped</span>
+        </article>
+      </div>
+
+      <div className="live-result-section">
+        <div className="live-section-title">
+          <span>01</span>
+          <div>
+            <h3>Routes actually fetched</h3>
+            <p>Every row below came from a real bounded HTTP response.</p>
+          </div>
+        </div>
+        <div className="live-route-table" role="table" aria-label="Fetched routes">
+          <div className="live-route-head" role="row">
+            <span role="columnheader">Route</span>
+            <span role="columnheader">HTTP</span>
+            <span role="columnheader">Lang / dir</span>
+            <span role="columnheader">Strings</span>
+            <span role="columnheader">Findings</span>
+          </div>
+          {result.routes.map((route) => (
+            <div className="live-route-row" role="row" key={route.url}>
+              <a href={route.url} target="_blank" rel="noreferrer" role="cell">
+                {route.route}
+              </a>
+              <span role="cell" className={route.status < 400 ? "green" : "red"}>
+                {route.status}
+              </span>
+              <span role="cell">
+                {route.declaredLang ?? "missing"} / {route.declaredDir ?? "auto"}
+              </span>
+              <span role="cell">{route.strings}</span>
+              <strong role="cell">{route.issueCount}</strong>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="live-result-section">
+        <div className="live-section-title">
+          <span>02</span>
+          <div>
+            <h3>Evidence-backed findings</h3>
+            <p>
+              Deterministic means the measured predicate failed—not that a
+              model preferred different wording.
+            </p>
+          </div>
+        </div>
+        {result.issues.length === 0 ? (
+          <div className="no-live-issues">
+            <b>✓ No issues found in the checks that ran.</b>
+            <span>
+              This does not cover browser layout, accessibility, translations
+              generated by JavaScript or authenticated routes.
+            </span>
+          </div>
+        ) : (
+          <div className="live-issue-list">
+            {result.issues.map((issue) => (
+              <article key={issue.issueId}>
+                <div>
+                  <span className={`severity-dot ${issue.severity}`} />
+                  <small>{issue.severity} · verified</small>
+                  <code>{issue.issueId}</code>
+                </div>
+                <h4>{issue.category.replaceAll("-", " ")}</h4>
+                <p>{issue.description}</p>
+                <dl>
+                  <div>
+                    <dt>Route</dt>
+                    <dd>{issue.route}</dd>
+                  </div>
+                  <div>
+                    <dt>Selector</dt>
+                    <dd>{issue.selector}</dd>
+                  </div>
+                  <div>
+                    <dt>Measured evidence</dt>
+                    <dd>{issue.measuredEvidence}</dd>
+                  </div>
+                  <div>
+                    <dt>Predicate</dt>
+                    <dd>{issue.deterministicPredicate}</dd>
+                  </div>
+                </dl>
+              </article>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="truth-ledger">
+        <div>
+          <span>03</span>
+          <h3>What ran</h3>
+          <ul>
+            {result.checksRun.map((check) => (
+              <li key={check}>✓ {check}</li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <span>04</span>
+          <h3>What did not run here</h3>
+          <ul>
+            {result.notRun.map((check) => (
+              <li key={check}>— {check}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      <footer className="live-result-footer">
+        <div>
+          <strong>Want visual and translation proof?</strong>
+          <p>
+            Run BhashaFix locally to render the requested locales{" "}
+            {result.requestedLocales.join(", ")} in Playwright and unlock
+            screenshots, accessibility and bounded source repair.
+          </p>
+        </div>
+        <div>
+          <Link className="button" href="/docs#repository">
+            Run full local scan →
+          </Link>
+          <Link className="button button-secondary" href="/playground">
+            Try synthetic stress preview
+          </Link>
+        </div>
+      </footer>
+    </section>
   );
 }
 

@@ -98,12 +98,21 @@ pnpm bhashafix scan \
   --viewports mobile,desktop
 ```
 
-Next.js is the fully supported repository path. The hosted public-URL quick
-scan performs a real SSRF-safe fetch, extraction and deterministic metadata
-inspection for one public route; full browser crawling remains local/worker
-functionality. Vite React, Remix, Astro, Nuxt, Vue, SvelteKit, and static HTML
-discovery return honest experimental-support results. Unknown project scripts
-are reported, never silently executed.
+Next.js is the fully supported repository path. The hosted public-URL scan
+performs a real SSRF-safe fetch, follows bounded same-origin links, respects an
+available robots policy, and reports per-route static-text, metadata, raw-key,
+title and image-alt evidence for up to five HTML routes. JavaScript browser
+rendering, viewport checks, axe, authenticated coverage and repair remain
+local/worker functionality. Vite React, Remix, Astro, Nuxt, Vue, SvelteKit,
+and static HTML discovery return honest experimental-support results. Unknown
+project scripts are reported, never silently executed.
+
+Run the same public-product smoke used for release evidence against a local
+production build:
+
+```bash
+pnpm scan:live:smoke
+```
 
 ## CLI
 
