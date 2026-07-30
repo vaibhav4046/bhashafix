@@ -162,3 +162,25 @@ The baseline is not a fake product, but it is not complete under the new
 contract. Work should extend the shared engine and preserve the verified
 AtlasPay proof while making origins, persistence, route coverage, fixture
 acceptance and external CLI/MCP evidence explicit.
+
+## Final verification addendum
+
+The baseline gaps above were retained as an audit record and then repaired.
+Final release evidence now records:
+
+- All 23 locked routes present in the production build.
+- A new `LIVE_PUBLIC_SCAN` of Mozilla with five fetched routes and 778 extracted
+  strings.
+- Exact clean/broken/blocked fixture outcomes.
+- Browser-local scan, glossary and translation-memory persistence.
+- Scan-specific live exports and a genuine replay screenshot ZIP.
+- A packaged CLI proof outside the monorepo and complete external STDIO MCP
+  output under `submission/mcp-output/`.
+- AtlasPay 10→0 identical verification with source-locale regression `PASS`.
+- Nine Chromium browser tests covering dark, light, 390×844, 1440×900, reduced
+  motion, keyboard access, downloads and zero console/hydration errors.
+- A visually inspected, template-faithful, screenshot-backed PowerPoint.
+
+The deliberate boundary remains unchanged: Vercel runs a bounded static HTTP
+scan. Full Playwright rendering, axe and source repair require the local CLI or
+a browser-capable worker.

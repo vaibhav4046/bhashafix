@@ -14,6 +14,13 @@ The implementation remains provider-independent and locale-agnostic. Locale
 behaviour comes from BCP 47 tags, Unicode properties, `Intl`, configuration and
 test fixtures rather than per-language product branches.
 
+## Release status
+
+All P0 exit gates below are verified by generated receipts, browser tests,
+fixture acceptance runs, packaged CLI proof and external MCP proof. Hosted
+Playwright execution and GitHub publication remain explicit external
+boundaries, not simulated capabilities.
+
 ## P0.1 — establish and preserve truth
 
 - Commit the baseline audit and exact product truth matrix.

@@ -1,0 +1,11 @@
+{
+  "applied": true,
+  "dryRun": false,
+  "files": [
+    "apps/demo-target/data/layout.json",
+    "apps/demo-target/data/locale-state.json",
+    "apps/demo-target/data/translations.json"
+  ],
+  "rollbackRoot": "<PROJECT_ROOT>\\.bhashafix\\rollback\\scan_e9c5f17cadce449cae33c97dd2ba29ec",
+  "unifiedDiff": "--- a/apps/demo-target/data/layout.json\n+++ b/apps/demo-target/data/layout.json\n@@ hi-IN.heroLineHeight @@\n-28\n+40\n--- a/apps/demo-target/data/layout.json\n+++ b/apps/demo-target/data/layout.json\n@@ de-DE.ctaClientWidth @@\n-160\n+232\n--- a/apps/demo-target/data/locale-state.json\n+++ b/apps/demo-target/data/locale-state.json\n@@ directions.ar-SA @@\n-\"ltr\"\n+\"rtl\"\n--- a/apps/demo-target/data/layout.json\n+++ b/apps/demo-target/data/layout.json\n@@ he-IL.iconOrder @@\n-\"after\"\n+\"before\"\n--- a/apps/demo-target/data/translations.json\n+++ b/apps/demo-target/data/translations.json\n@@ ja-JP.checkout.pay_now @@\n-\"checkout.pay_now\"\n+\"{amount}を支払う\"\n--- a/apps/demo-target/data/layout.json\n+++ b/apps/demo-target/data/layout.json\n@@ zh-Hans-CN.fontCoverage @@\n-false\n+true\n--- a/apps/demo-target/data/layout.json\n+++ b/apps/demo-target/data/layout.json\n@@ th-TH.whiteSpace @@\n-\"nowrap\"\n+\"normal\"\n--- a/apps/demo-target/data/translations.json\n+++ b/apps/demo-target/data/translations.json\n@@ fr-FR.checkout.pay_now @@\n-\"Payer le montant\"\n+\"Payer {amount}\"\n--- a/apps/demo-target/data/translations.json\n+++ b/apps/demo-target/data/translations.json\n@@ es-MX.checkout.term @@\n-\"Finalizar compra\"\n+\"Pagar\"\n--- a/apps/demo-target/data/locale-state.json\n+++ b/apps/demo-target/data/locale-state.json\n@@ pageLang @@\n-\"en\"\n+\"en-GB\""
+}

@@ -1,0 +1,22 @@
+{
+  "scanId": "scan_e9c5f17cadce449cae33c97dd2ba29ec",
+  "createdAt": "2026-07-30T14:11:58.852Z",
+  "target": "atlaspay-demo",
+  "mode": "live",
+  "requestedLocales": [
+    "ar-SA",
+    "de-DE",
+    "ja-JP",
+    "hi-IN"
+  ],
+  "requestedRoutes": [
+    "/",
+    "/pricing",
+    "/dashboard",
+    "/checkout",
+    "/settings"
+  ],
+  "status": "created",
+  "executionStarted": false,
+  "coveragePolicy": "The bundled deterministic run executes the complete canonical AtlasPay matrix."
+}

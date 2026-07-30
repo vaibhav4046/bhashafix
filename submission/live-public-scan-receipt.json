@@ -1,8 +1,37 @@
 {
-  "generatedAt": "2026-07-30T12:04:26.692Z",
+  "generatedAt": "2026-07-30T14:15:04.687Z",
+  "scanId": "web-cf3f08be-2b34-4fb9-9b2f-387fd05a29db",
+  "origin": "LIVE_PUBLIC_SCAN",
   "baseUrl": "http://127.0.0.1:3000",
   "target": "https://www.mozilla.org/en-US/",
   "mode": "live hosted HTTP scan",
+  "routes": [
+    {
+      "route": "/en-US/",
+      "status": 200,
+      "strings": 219
+    },
+    {
+      "route": "/en-US/privacy/websites/cookie-settings/",
+      "status": 200,
+      "strings": 143
+    },
+    {
+      "route": "/en-US/products/",
+      "status": 200,
+      "strings": 166
+    },
+    {
+      "route": "/en-US/products/vpn/",
+      "status": 200,
+      "strings": 172
+    },
+    {
+      "route": "/en-US/products/monitor/",
+      "status": 200,
+      "strings": 78
+    }
+  ],
   "routesChecked": 5,
   "stringsExtracted": 778,
   "verifiedBlocking": 0,
