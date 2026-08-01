@@ -1,10 +1,9 @@
 # BhashaFix — 90 second demonstration
 
-Every value below comes from a recorded run in this repository. Nothing is
-staged, re-enacted or approximated. The receipts are
-`artifacts/nextjs-repair-proof.json`, `artifacts/benchmark.json`,
-`artifacts/real-site-scans.json`, `artifacts/pack-verify/receipt.json` and
-`artifacts/mcp-stdio-receipt.json`.
+Every figure below comes from a recorded run in this repository. The receipts
+are `public/evidence/index.json`, `artifacts/nextjs-repair-proof.json`,
+`artifacts/benchmark.json`, `artifacts/pack-verify/receipt.json` and
+`artifacts/mcp-stdio-receipt.json`. Nothing is re-enacted.
 
 ---
 
@@ -12,155 +11,127 @@ staged, re-enacted or approximated. The receipts are
 
 Open `https://bhashafix.vercel.app`.
 
-> "AI can generate every language. It cannot tell you the product still works
-> in them. BhashaFix renders each locale in a real browser and measures what
-> breaks."
+> "AI can translate every string. It cannot prove the product still works."
 
-The homepage is one input and one action: paste a URL, or connect a project.
-
----
-
-## 0:10 – 0:30 · A real browser scan
-
-Run, from a terminal:
-
-```bash
-pnpm bhashafix scan --url https://en.wikipedia.org/wiki/Localization --locales en-GB,he-IL --routes "/wiki/Localization" --viewports mobile --verbose
-```
-
-Chromium launches. Routes come from the rendered DOM, not from guesswork. Each
-render writes a real PNG and a DOM snapshot, and the scan is persisted under its
-own ID that another process can read back.
-
-Recorded run — `artifacts/real-site-scans.json`:
-
-| Target | Scan ID | Renders | Screenshots | Issues |
-| --- | --- | ---: | ---: | ---: |
-| Wikipedia | `browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a` | 4 | 4 | 16 |
-| MDN Web Docs | `browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6` | 6 | 6 | 9 |
+The homepage leads with the command you run in your own project, not with a
+hosted scan. Browsers, source and repair stay on your machine; the site is the
+console you review the evidence in.
 
 ---
 
-## 0:30 – 0:45 · Two findings, both measured
+## 0:10 – 0:25 · A genuine Chromium scan
 
-**A measured visual failure**, from the Next.js proof run:
+Open **Inspect a real external scan**. Three scans, all produced by the CLI:
+
+| Target | Scan ID | Routes | Screenshots | Issues | Captured |
+| --- | --- | ---: | ---: | ---: | --- |
+| BhashaFix production | `browser-bce30786-6142-49c0-910a-e9d9098e41ff` | 3 | 6 | 10 | 2026-08-01T08:48:36Z |
+| MDN Web Docs | `browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6` | 3 | 6 | 9 | 2026-08-01T08:48:48Z |
+| Wikipedia | `browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a` | 2 | 4 | 16 | 2026-08-01T08:49:15Z |
+
+Real routes, real screenshots, real DOM evidence. Each image carries its
+SHA-256, so the picture on screen is provably the picture the scan captured.
+
+---
+
+## 0:25 – 0:40 · One measured finding
+
+Open a visual failure and a locale-integrity failure side by side.
 
 ```
 BF-VIS-TEXT-OVERFLOW-X  de-DE  [data-testid="cta-primary"]
-  text        "Kostenlos mit Meridian starten"
-  scrollWidth 245
-  clientWidth 168
-  overflowPx  77
-  overflowX   hidden        the German label is clipped
-  predicate   element.scrollWidth <= element.clientWidth + 2
+  plain      The German button label is cut off.
+  measured   scrollWidth 245 · clientWidth 168 · overflowPx 77 · overflow-x hidden
+  predicate  element.scrollWidth <= element.clientWidth + 2
 ```
-
-**A locale-integrity failure**, on the same page set:
 
 ```
 BF-LOC-DIR-MISSING  ar-SA  html
-  declaredDir  "ltr"
-  expectedDir  "rtl"
-  script       Arab
-  predicate    document.documentElement.dir === 'rtl' when the locale script is RTL
+  plain      An Arabic page is laid out left to right.
+  measured   declaredDir "ltr" · expectedDir "rtl" · script Arab
+  predicate  document.documentElement.dir === 'rtl' when the locale script is RTL
 ```
 
-Each carries the number that produced it and the predicate that was evaluated.
-Neither is a model's opinion.
+Each has a beginner explanation and the exact measurement behind it. Neither is
+a model's opinion.
 
 ---
 
-## 0:45 – 1:05 · A real source repair
+## 0:40 – 1:00 · A verified repair
 
-Switch to the Next.js project at `fixtures/nextjs-app`:
+Open the AtlasPay proof, labelled `RECORDED VERIFIED RUN`.
 
-```bash
-pnpm repair:nextjs
+```
+10 blocking defects
+  → real unified diff, git apply --check exits 0
+  → identical predicates rerun
+  → 0 blocking defects
+  → source locale en-GB PASS
 ```
 
-Three bounded strategies touch three real files:
+And the same loop on real Next.js source — `.tsx`, `.css` and a translation
+JSON:
 
 ```diff
---- a/fixtures/nextjs-app/app/[locale]/layout.tsx
-+++ b/fixtures/nextjs-app/app/[locale]/layout.tsx
 -    <html lang="en">
 +    <html lang={locale} dir={textDirection(locale)}>
-
---- a/fixtures/nextjs-app/app/globals.css
-+++ b/fixtures/nextjs-app/app/globals.css
- .cta {
--  width: 168px;
--  white-space: nowrap;
+-  width: 168px; white-space: nowrap;
 +  max-width: 168px;
-
---- a/fixtures/nextjs-app/messages/ja-JP.json
 +  "cta.primary": "無料で始める"
 ```
 
-The patch is a genuine unified diff, not a summary of one:
-
 ```
-$ git apply --check artifacts/nextjs-repair.diff
-$ echo $?
-0
+6 blocking → 0 · source locale 0 → 0 · new blockers 0
+3 files, 10 lines · diff hash f38acc25… · rollback snapshot taken first
+scans browser-08293a6a… → browser-c0101b7e…
 ```
 
-3 files, 10 changed lines, diff hash `f38acc25…`. Dry-run is the default, each
-file is pinned by SHA-256 before it is written, and a rollback snapshot is taken
-first.
+A model cannot mark its own answer correct. BhashaFix reruns the predicates.
 
 ---
 
-## 1:05 – 1:20 · Identical verification
+## 1:00 – 1:15 · Run it yourself
 
-The project is rebuilt and the **same scan configuration** runs again:
+```
+npx @bhashafix/cli scan --url http://localhost:3000 --locales en-GB,de-DE,ar-SA,ja-JP
+```
 
-| | before | after |
-| --- | ---: | ---: |
-| Blocking issues | **6** | **0** |
-| Source locale `en-GB` | 0 blocking | 0 blocking |
-| New blocking issues | — | **0** |
-
-Scan IDs `browser-08293a6a-4b7d-4be0-a7e8-1323900a6284` →
-`browser-c0101b7e-a122-4a36-bf70-3ea2c1ab1137`. Both used the same routes,
-locales, viewport and axe setting, so the comparison is like for like.
+Chromium opens, every locale renders, evidence lands in `.bhashafix/scans/<id>/`
+with a persisted scan ID, and the exit code gates your release. `bhashafix open`
+opens the report.
 
 ---
 
-## 1:20 – 1:30 · One engine, three surfaces
+## 1:15 – 1:25 · The agent gate
 
-**CLI, installed outside the monorepo** — `artifacts/pack-verify/receipt.json`:
+> "Coding agents can generate translations. BhashaFix gives them a release gate
+> they cannot talk their way around."
 
-```
-clean consumer   fresh OS temp directory outside the repository
-cliDoctor        PASS      browser available: true
-fixture scan     10 blocking  →  0 after repair
-```
+From `artifacts/mcp-stdio-receipt.json` — an external client, spawned over
+STDIO against `packages/mcp/dist/bin.js`: 18 tools, 4 resources, 5 prompts.
+The recorded call sequence is on the site: inspect → create scan → run → read
+issues → prepare repair (dry run) → apply approved IDs → rerun predicates. The
+agent cannot finish until verification passes.
 
-**MCP, driven by an external client** — `artifacts/mcp-stdio-receipt.json`:
+---
 
-```
-transport   spawned STDIO process
-server      packages/mcp/dist/bin.js
-tools       18     resources 4     prompts 5
-baseline    10 blocking  →  verified after repair
-```
-
-Close on the measured accuracy, from `artifacts/benchmark.json`:
+## 1:25 – 1:30 · Close
 
 > 70 labelled defects, 12 rule families, 12 locales, 288 real browser renders.
 > Recall 100%. Precision 100%. Zero false positives on the clean variant.
 
-> "AI generates every language. BhashaFix proves the product still works."
+> "AI generates every language. BhashaFix proves the release is safe."
 
 ---
 
-## What the demo deliberately does not claim
+## Stated plainly during the demo
 
-- The hosted Vercel scan is `HTTP_PREFLIGHT`: static HTTP only, no browser. A
-  Vercel function cannot host a render matrix, so browser work runs in the CLI
-  or through a worker at `BHASHAFIX_BROWSER_WS_ENDPOINT`.
-- AtlasPay stays in the product as `RECORDED_REPLAY`. It is a genuine fixture
-  run, but it is not a live scan and is not the headline proof.
-- The real-site scans prove operability, not precision. Those targets carry no
-  ground-truth labels, so no accuracy figure is derived from them.
+- The hosted site does not run a browser. That is the architecture: the engine
+  runs locally, the console reviews portable evidence, and no repository is
+  uploaded.
+- AtlasPay is a recorded fixture run, labelled `RECORDED_REPLAY`. It is genuine,
+  and it is not a live scan.
+- The real-site scans prove operability, not precision — those targets carry no
+  ground-truth labels.
+- Verified repair covers locale JSON, `lang`/`dir`, and bounded layout fixes in
+  the supported Next.js fixture. Broader TSX and CSS repair is experimental.

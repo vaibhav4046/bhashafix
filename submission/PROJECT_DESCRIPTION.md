@@ -1,49 +1,107 @@
 # BhashaFix
 
-AI systems can generate translations, but they cannot see every clipped
-button, broken RTL layout, corrupted placeholder, glossary violation, font
-failure, or accessibility regression. BhashaFix provides the specialised
-testing harness.
+**A local-first localisation release firewall for developers, CI pipelines and
+coding agents, with a web evidence and review console.**
 
-A user enters a public URL or connects a local project. The shared engine
-discovers routes and localisation infrastructure, canonicalises user-selected
-BCP 47 locales, extracts contextual strings, runs deterministic linguistic and
-locale checks, renders browser evidence, prepares an allowlisted repair, reruns
-the identical predicates, protects the source locale, and exports JSON, HTML,
-SARIF, JUnit, CSV, screenshots, and a unified patch.
+## The problem
 
-The hosted product performs a real, robots-aware, same-origin HTTP crawl of up
-to five routes. The submitted release receipt records a live Mozilla scan:
-five fetched routes and 778 deduplicated visible strings. The interface states
-that this hosted path is static HTTP evidence; browser rendering, axe,
-authenticated coverage and automatic repair run locally.
+AI can translate every string in a product in minutes. Teams still ship:
 
-The same core is available through a premium web workspace, `@bhashafix/cli`,
-`@bhashafix/mcp`, and GitHub Actions. No model provider is mandatory. Provider
-output can explain or recommend; it cannot declare a deterministic failure
-fixed.
+- clipped text
+- broken right-to-left layout
+- raw translation keys in the interface
+- invalid or dropped placeholders
+- controls with no accessible name
+- wrong or missing locale metadata
 
-The bundled AtlasPay application contains ten intentional failures across
-Hindi, German, Arabic, Hebrew, Japanese, Simplified Chinese, Thai, French,
-Spanish, and English. The genuine demo sequence is:
+None of those are translation problems. They are rendering problems, and they
+only appear once the translated string meets the actual layout in an actual
+browser.
 
-```text
-10 verified failures
-→ inspect measured evidence
-→ prepare a three-file bounded repair
-→ show the real unified diff
-→ apply
-→ rerun identical checks
-→ 0 blocking failures
-→ en-GB regression PASS
+## The gap
+
+Translation platforms manage the text. Coding agents modify the code. Browser
+testing tools test the interface. No one owns the localisation-specific release
+gate that connects the three — the step that says *this build is safe to ship in
+these twelve languages, and here is the evidence*.
+
+## What BhashaFix does
+
+It runs inside the developer's environment and, for every route × locale ×
+viewport:
+
+```
+Discovers → Renders → Measures → Explains → Repairs → Verifies → Proves
 ```
 
-The hosted demo uses replay artifacts generated from that real run and labels
-them clearly. The local CLI and MCP tests execute the actual scan,
-prepare/apply, and verification functions.
+Every finding carries the number that produced it and the predicate that was
+evaluated. For example:
 
-BhashaFix supports Unicode content and user-selected BCP 47 locales through a
-provider-independent localisation pipeline. Deterministic engineering checks
-are authoritative. Linguistic judgements include confidence levels and
-human-review gates. It does not claim perfect native-language quality or
-unrestricted access to every website or codebase.
+```
+BF-VIS-TEXT-OVERFLOW-X  de-DE  [data-testid="cta-primary"]
+  text        "Kostenlos mit Meridian starten"
+  scrollWidth 245
+  clientWidth 168
+  overflowPx  77
+  predicate   element.scrollWidth <= element.clientWidth + 2
+```
+
+## The differentiator
+
+A model cannot mark its own answer correct. After a repair, BhashaFix reruns the
+same deterministic browser predicates on the rebuilt project and compares like
+for like. A repair is only accepted when the original predicate passes, the
+source locale still passes, and no new blocking issue has appeared.
+
+Measured on the bundled Next.js fixture: 6 blocking issues before, 0 after, the
+source locale unchanged at 0, and 0 new blockers — across two scans with
+identical configuration.
+
+## Architecture, and why it is local-first
+
+```
+CLI  ·  MCP  ·  CI  ·  local or remote browser worker      the engine
+Web console                                                 evidence and review
+```
+
+The hosted site does not run a browser. That is deliberate rather than a
+shortfall: **browsers, source code and repair operations stay inside the
+developer's environment by default.** A portable report can be shared with the
+team, or opened in the web console, without uploading a repository anywhere.
+
+The hosted site does offer a quick HTTP preflight — reachability, language
+metadata and static translation signals — and labels it as exactly that, with no
+browser rendering. Full rendering runs through the CLI, or through a browser
+worker when `BHASHAFIX_BROWSER_WS_ENDPOINT` is configured.
+
+## Measured accuracy
+
+Scored against a labelled corpus, not asserted:
+
+| | |
+| --- | ---: |
+| Labelled defects | 70 |
+| Rule families | 12 |
+| Locales | 12 |
+| Real browser renders per run | 288 |
+| Recall | 100% |
+| Precision | 100% |
+| False positives on the clean variant | 0 |
+
+Two real rule defects were found by scanning public sites and fixed in the
+rules, not worked around: Wikipedia's 1px visually-hidden pattern produced 64
+false "clipped text" findings, and accessible-name computation ignored a
+control's descendant `img[alt]`.
+
+## What it does not claim
+
+- The hosted deployment does not render in a browser.
+- Verified repair covers locale JSON, `lang`/`dir` metadata, and bounded layout
+  fixes in the supported Next.js fixture. Arbitrary TSX and CSS repair, and
+  other frameworks, are experimental.
+- Real-site scans prove operability, not precision — those targets carry no
+  ground-truth labels, so no accuracy figure is derived from them.
+- No model provider is configured; linguistic review is deterministic only.
+- Only Chromium has been exercised. Firefox and WebKit are selectable but
+  unverified.
+- It does not claim native-quality translation in any language.

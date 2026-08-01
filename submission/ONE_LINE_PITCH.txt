@@ -1,1 +1,1 @@
-Test, repair and prove every language before it reaches production.
+A local-first localisation release firewall: it opens real browsers, measures what breaks in every locale, repairs the source, and reruns the same predicates to prove the release is safe.
