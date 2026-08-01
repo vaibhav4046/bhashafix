@@ -1,14 +1,20 @@
 import { expect, test } from "@playwright/test";
 
 /**
- * Smoke the deployed product. Run with:
- *   BHASHAFIX_PRODUCTION_URL=https://bhashafix.vercel.app pnpm exec playwright test tests/e2e/production-smoke.spec.ts
- * Skipped unless that variable is set, so it never runs against localhost by
- * accident and never silently passes on the wrong target.
+ * Smoke the deployed product:
+ *
+ *   BHASHAFIX_PRODUCTION_URL=https://bhashafix.vercel.app pnpm production:smoke
+ *
+ * This lives outside tests/e2e and has its own config so it is never picked up
+ * by the local suite. It fails rather than skipping when the target is absent:
+ * a skipped smoke test reads as a pass and would hide an unverified deploy.
  */
 const productionUrl = process.env.BHASHAFIX_PRODUCTION_URL;
-
-test.skip(!productionUrl, "BHASHAFIX_PRODUCTION_URL is not set.");
+if (!productionUrl) {
+  throw new Error(
+    "BHASHAFIX_PRODUCTION_URL is required. Set it to the deployment you intend to smoke.",
+  );
+}
 
 const ROUTES = ["/", "/scan", "/docs", "/trust", "/integrations"];
 const VIEWPORTS = [
