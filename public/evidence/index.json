@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-01T16:01:46.478Z",
+  "generatedAt": "2026-08-01T16:09:30.606Z",
   "note": "Every entry here was produced by an actual run and copied verbatim. Regenerate with `pnpm evidence:publish`.",
   "realSiteScans": {
     "generatedAt": "2026-08-01T08:49:28.793Z",
@@ -268,7 +268,7 @@
   },
   "atlaspayRepair": {
     "schemaVersion": "1.0",
-    "generatedAt": "2026-08-01T15:58:10.784Z",
+    "generatedAt": "2026-08-01T16:01:47.458Z",
     "origin": "RECORDED_REPLAY",
     "mode": "genuine deterministic replay artifact",
     "baselineScanId": "atlaspay-83210b0daea2",

@@ -1,6 +1,6 @@
 # CLI packaged execution evidence
 
-Generated: 2026-08-01T16:02:02.073Z
+Generated: 2026-08-01T16:05:43.304Z
 
 The `@bhashafix/cli` tarball was installed in a fresh operating-system
 temporary directory outside the monorepo. Commands executed the resolved

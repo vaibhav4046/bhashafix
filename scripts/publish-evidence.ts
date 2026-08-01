@@ -21,9 +21,6 @@ async function readJson<T>(relative: string): Promise<T | null> {
   return raw === null ? null : (JSON.parse(raw) as T);
 }
 
-await rm(outputRoot, { recursive: true, force: true });
-await mkdir(path.join(outputRoot, "scans"), { recursive: true });
-await mkdir(path.join(outputRoot, "mcp"), { recursive: true });
 
 // ---------------------------------------------------------------- real scans
 type RealSiteReceipt = {
@@ -43,10 +40,30 @@ type RealSiteReceipt = {
   }>;
 };
 
+// The real-site scans reach the public internet, so they are deliberately not
+// part of `verify`, and `artifacts/` is gitignored. On a clean checkout there
+// is nothing to regenerate from - but public/evidence is committed, so the
+// evidence itself is present. Verify it and leave it alone rather than
+// deleting real evidence because the source receipt is not on this machine.
 const realSites = await readJson<RealSiteReceipt>("artifacts/real-site-scans.json");
 if (!realSites) {
-  throw new Error("artifacts/real-site-scans.json is missing. Run `pnpm scan:real-sites` first.");
+  const committed = await readJson<{ realSiteScans: { scans: unknown[] }; mcp: { calls: unknown[] } }>(
+    "public/evidence/index.json",
+  );
+  if (!committed) {
+    throw new Error(
+      "No scan receipt in artifacts/ and no committed evidence in public/evidence. Run `pnpm scan:real-sites` to generate it.",
+    );
+  }
+  console.log(
+    `EVIDENCE left unchanged: no artifacts/real-site-scans.json on this machine. The committed evidence holds ${committed.realSiteScans.scans.length} scan(s) and ${committed.mcp.calls.length} MCP call(s). Regenerate with \`pnpm scan:real-sites && pnpm evidence:publish\`.`,
+  );
+  process.exit(0);
 }
+
+await rm(outputRoot, { recursive: true, force: true });
+await mkdir(path.join(outputRoot, "scans"), { recursive: true });
+await mkdir(path.join(outputRoot, "mcp"), { recursive: true });
 
 const published: Array<Record<string, unknown>> = [];
 
