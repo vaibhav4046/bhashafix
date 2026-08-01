@@ -316,7 +316,7 @@ export function LandingPage() {
           every selected locale and viewport, captures evidence, and blocks
           releases when localisation breaks.
         </p>
-        <pre className="ls-command ls-command-lead">
+        <pre tabIndex={0} className="ls-command ls-command-lead">
           npx @bhashafix/cli scan --url http://localhost:3000 --locales
           en-GB,de-DE,ar-SA,ja-JP
         </pre>
@@ -391,7 +391,7 @@ export function LandingPage() {
           <li>
             <p className="ls-eyebrow">C · YOUR MACHINE</p>
             <h3>Run it yourself.</h3>
-            <pre className="ls-command">{CLONE_AND_RUN}</pre>
+            <pre tabIndex={0} className="ls-command">{CLONE_AND_RUN}</pre>
             <p>
               The npm package is not published, so a clone is the shortest path.
               If you want the installed binary instead, the CLI page has the{" "}
@@ -1393,11 +1393,11 @@ export function NewScanPage() {
               </div>
               <div>
                 <small>LOCAL COMMAND</small>
-                <pre>{localCommand}</pre>
+                <pre tabIndex={0}>{localCommand}</pre>
               </div>
               <div>
                 <small>CONFIG FILE</small>
-                <pre>{localConfigFragment}</pre>
+                <pre tabIndex={0}>{localConfigFragment}</pre>
               </div>
               <div>
                 <small>NOT SENT</small>
@@ -3131,7 +3131,7 @@ function RepairsView() {
           <small>Mode selected</small>
           <strong>{mode}</strong>
         </aside>
-        <pre className="patch-viewer">{patch}</pre>
+        <pre tabIndex={0} className="patch-viewer">{patch}</pre>
       </div>
       <div className="repair-verdict">
         <span>✓</span>
@@ -3448,7 +3448,7 @@ export function IntegrationsPage() {
         <article id="cli">
           <i>›_</i><span>CLI</span><h2>@bhashafix/cli</h2>
           <p>Human output, JSON, quiet and verbose modes, stable exit codes and no secret leakage.</p>
-          <pre>{`pnpm bhashafix scan \\\n  --url http://localhost:3000 \\\n  --source-locale en-GB \\\n  --locales hi-IN,ar-SA,ja-JP,de-DE`}</pre>
+          <pre tabIndex={0}>{`pnpm bhashafix scan \\\n  --url http://localhost:3000 \\\n  --source-locale en-GB \\\n  --locales hi-IN,ar-SA,ja-JP,de-DE`}</pre>
         </article>
         <article>
           <i>◇</i><span>MCP · STDIO</span><h2>@bhashafix/mcp</h2>
@@ -3457,12 +3457,12 @@ export function IntegrationsPage() {
             resources and {evidenceIndex.mcp.prompts} workflow prompts for coding
             agents, as listed by the recorded <code>tools/list</code> response.
           </p>
-          <pre>{`{\n  "mcpServers": {\n    "bhashafix": {\n      "command": "node",\n      "args": ["${evidenceIndex.mcp.serverEntry}"]\n    }\n  }\n}`}</pre>
+          <pre tabIndex={0}>{`{\n  "mcpServers": {\n    "bhashafix": {\n      "command": "node",\n      "args": ["${evidenceIndex.mcp.serverEntry}"]\n    }\n  }\n}`}</pre>
         </article>
         <article id="ci">
           <i>✓</i><span>GITHUB ACTIONS</span><h2>Release gate</h2>
           <p>Installs Chromium, runs the identical checks, uploads proof, SARIF, JUnit and screenshots.</p>
-          <pre>{`- run: pnpm install --frozen-lockfile\n- run: pnpm exec playwright install chromium\n- run: pnpm bhashafix ci --fail-on blocking`}</pre>
+          <pre tabIndex={0}>{`- run: pnpm install --frozen-lockfile\n- run: pnpm exec playwright install chromium\n- run: pnpm bhashafix ci --fail-on blocking`}</pre>
         </article>
         <article>
           <i>◎</i><span>PROVIDERS</span><h2>Optional linguistic review</h2>
@@ -3499,7 +3499,7 @@ export function IntegrationDetailPage({
           </p>
           <section>
             <h2>Working setup</h2>
-            <pre>{`pnpm install --frozen-lockfile
+            <pre tabIndex={0}>{`pnpm install --frozen-lockfile
 pnpm exec playwright install chromium
 pnpm bhashafix ci --config .bhashafix/config.yml --fail-on blocking`}</pre>
           </section>
@@ -3570,7 +3570,7 @@ export function DemoPage() {
 
       <section className="ls-section" aria-labelledby="demo-record">
         <h2 id="demo-record">The run record</h2>
-        <div className="ls-scroll">
+        <div className="ls-scroll" tabIndex={0} role="region">
           <table className="ls-table">
             <tbody>
               <tr>
@@ -3747,7 +3747,7 @@ export function TrustPage() {
           <span>BHASHAFIX TRUST CENTRE</span>
           <h1>Know what ran, what moved and what did not.</h1>
           <p className="docs-lede">Every result carries an origin. Public scans never invent source locations or repairs.</p>
-          <section id="scope"><h2>Explicit scan origins</h2><pre>{`LIVE_PUBLIC_BROWSER_SCAN  public target rendered in a real browser\nHTTP_PREFLIGHT            static HTTP only, no browser rendering\nLOCAL_REPOSITORY_SCAN     local target rendered in a real browser\nGUIDED_DEMO\nRECORDED_REPLAY\nSYNTHETIC_LOCALISATION_PREVIEW`}</pre></section>
+          <section id="scope"><h2>Explicit scan origins</h2><pre tabIndex={0}>{`LIVE_PUBLIC_BROWSER_SCAN  public target rendered in a real browser\nHTTP_PREFLIGHT            static HTTP only, no browser rendering\nLOCAL_REPOSITORY_SCAN     local target rendered in a real browser\nGUIDED_DEMO\nRECORDED_REPLAY\nSYNTHETIC_LOCALISATION_PREVIEW`}</pre></section>
           <section id="local-data"><h2>What remains local</h2><p>Repository files, Playwright storage state, provider secrets and repair rollback data remain in the local CLI environment unless the user explicitly chooses another boundary.</p></section>
           <section id="providers"><h2>What reaches model providers</h2><p>Nothing in no-AI mode. When configured, only minimised translatable content and context are sent; credentials, hidden form values and detected secrets are excluded.</p></section>
           <section id="evidence"><h2>How evidence is generated</h2><p>Deterministic rules store the measured value, expected value and predicate. Model suggestions remain advisory and carry confidence plus human-review requirements.</p></section>
@@ -3793,8 +3793,8 @@ export function DocsPage() {
           <span>DOCUMENTATION</span>
           <h1>Verification, not vibes.</h1>
           <p className="docs-lede">BhashaFix is the verification harness between AI-generated translations and production software.</p>
-          <section id="quick-start"><h2>Ten-minute quick start</h2><pre>{`pnpm install\npnpm bhashafix init\npnpm demo:reset\npnpm demo:scan\npnpm demo:repair\npnpm demo:prove`}</pre></section>
-          <section id="website-scan"><h2>Website scan</h2><p>Hosted scans accept public HTTP and HTTPS targets, respect crawl limits and reject private, loopback and metadata destinations.</p><pre>{`pnpm bhashafix scan --url https://example.com \\\n  --source-locale en-GB --locales ar-SA,ja-JP`}</pre></section>
+          <section id="quick-start"><h2>Ten-minute quick start</h2><pre tabIndex={0}>{`pnpm install\npnpm bhashafix init\npnpm demo:reset\npnpm demo:scan\npnpm demo:repair\npnpm demo:prove`}</pre></section>
+          <section id="website-scan"><h2>Website scan</h2><p>Hosted scans accept public HTTP and HTTPS targets, respect crawl limits and reject private, loopback and metadata destinations.</p><pre tabIndex={0}>{`pnpm bhashafix scan --url https://example.com \\\n  --source-locale en-GB --locales ar-SA,ja-JP`}</pre></section>
           <section id="repository-scan"><h2>Repository scan</h2><p>Local scans inspect framework, routes, locale assets and source hints. Unknown scripts are never executed without showing the command.</p></section>
           <section id="cli"><h2>CLI exit codes</h2><p><code>0</code> passed · <code>1</code> blocking · <code>2</code> invalid config · <code>3</code> unavailable · <code>4</code> runtime · <code>5</code> provider unavailable.</p></section>
           <section id="mcp"><h2>MCP safety</h2><p>Repairs require an explicit scan ID, explicit issue IDs, exact path allowlists and the hash of a reviewed diff. Dry-run is the default.</p></section>

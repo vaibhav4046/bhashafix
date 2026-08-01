@@ -185,6 +185,10 @@ describe("browser rule engine", () => {
       "checkout.tsx",
       "styles.css",
       "meridian.example.com",
+      "repair.patch",
+      "pnpm-lock.yaml",
+      "results.sarif",
+      "run.log",
     ]) {
       expect(
         ruleIds(page({ elements: [element({ text, interactive: false })] })),

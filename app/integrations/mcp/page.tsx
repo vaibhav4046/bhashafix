@@ -40,13 +40,13 @@ export default function McpSetupPage() {
 
       <section className="ls-section" aria-labelledby="setup">
         <h2 id="setup">Setup</h2>
-        <pre className="ls-command">{`pnpm install
+        <pre tabIndex={0} className="ls-command">{`pnpm install
 pnpm build:packages`}</pre>
         <p className="ls-note">
           Then register the server with your client. Transport: {mcp.transport}.
           Server entry: <code>{mcp.serverEntry}</code>.
         </p>
-        <pre className="ls-command">{CONFIG}</pre>
+        <pre tabIndex={0} className="ls-command">{CONFIG}</pre>
       </section>
 
       <section className="ls-section" aria-labelledby="surface">
@@ -56,7 +56,7 @@ pnpm build:packages`}</pre>
           {mcp.prompts.length} prompts, listed from the recorded{" "}
           <code>tools/list</code> response.
         </p>
-        <div className="ls-scroll">
+        <div className="ls-scroll" tabIndex={0} role="region">
           <table className="ls-table">
             <caption>Tools</caption>
             <tbody>
@@ -71,7 +71,7 @@ pnpm build:packages`}</pre>
             </tbody>
           </table>
         </div>
-        <div className="ls-scroll">
+        <div className="ls-scroll" tabIndex={0} role="region">
           <table className="ls-table">
             <caption>Resources</caption>
             <tbody>
@@ -88,7 +88,7 @@ pnpm build:packages`}</pre>
             </tbody>
           </table>
         </div>
-        <div className="ls-scroll">
+        <div className="ls-scroll" tabIndex={0} role="region">
           <table className="ls-table">
             <caption>Prompts</caption>
             <tbody>

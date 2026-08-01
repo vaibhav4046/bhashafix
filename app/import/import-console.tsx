@@ -174,7 +174,7 @@ function ReportView({
         </p>
       </header>
 
-      <div className="ls-scroll">
+      <div className="ls-scroll" tabIndex={0} role="region">
         <table className="ls-table">
           <tbody>
             <tr>
@@ -264,7 +264,7 @@ function ReportView({
               {report.repair.files.length} file(s), confined to{" "}
               {report.repair.allowlist.length} allowlisted path(s).
             </p>
-            <pre className="ls-diff">
+            <pre tabIndex={0} className="ls-diff">
               {(report.repair.unifiedDiff ?? "").split("\n").map((line, index) => (
                 <span
                   key={`${index}-${line}`}
@@ -587,7 +587,7 @@ export function ImportConsole() {
         {history.length === 0 ? (
           <p className="ls-note">Nothing imported in this browser yet.</p>
         ) : (
-          <div className="ls-scroll">
+          <div className="ls-scroll" tabIndex={0} role="region">
             <table className="ls-table ls-hash-table">
               <thead>
                 <tr>

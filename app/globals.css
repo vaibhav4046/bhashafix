@@ -100,9 +100,18 @@ pre {
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
   /* Long, unwrappable code lines must scroll inside their own box. Without
      this the page itself scrolls sideways on a narrow viewport, which is the
-     exact defect this product reports as BF-VIS-VIEWPORT-OVERFLOW. */
+     exact defect this product reports as BF-VIS-VIEWPORT-OVERFLOW.
+     A scrollable region also has to be reachable by keyboard, so these carry
+     tabindex="0" in the markup - axe reports scrollable-region-focusable
+     otherwise, which is how this was found on the product's own /trust page. */
   max-width: 100%;
   overflow-x: auto;
+}
+
+pre:focus-visible,
+.ls-scroll:focus-visible {
+  outline: 2px solid var(--saffron-500, #f4c430);
+  outline-offset: 2px;
 }
 
 .global-header {

@@ -5825,6 +5825,7 @@ var init_rules = __esm({
     init_src4();
     RAW_KEY = /^(?:[a-z][a-z0-9]*(?:[_-][a-z0-9]+)*\.){1,}[a-z][a-z0-9]*(?:[_-][a-z0-9]+)*$/i;
     NON_KEY_TRAILING_SEGMENTS = /* @__PURE__ */ new Set([
+      // Hostnames.
       "app",
       "co",
       "com",
@@ -5837,18 +5838,32 @@ var init_rules = __esm({
       "org",
       "test",
       "uk",
+      // File extensions. `repair.patch` on the product's own CLI page was reported
+      // as a translation key until `patch` was listed here.
       "css",
       "csv",
+      "diff",
+      "gz",
       "html",
       "jpeg",
       "jpg",
       "js",
       "json",
       "jsx",
+      "lock",
+      "log",
+      "map",
       "md",
+      "mjs",
+      "patch",
       "pdf",
       "png",
+      "sh",
+      "sql",
       "svg",
+      "sarif",
+      "tar",
+      "toml",
       "ts",
       "tsx",
       "txt",

@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     deploymentHost ? `https://${deploymentHost}` : "http://localhost:3000",
   ),
   title: {
-    default: "BhashaFix — Ship every language without breaking the UI",
+    default: "BhashaFix — prove every language still works before you ship",
     template: "%s — BhashaFix",
   },
   description:
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
         url: "/og.png",
         width: 1200,
         height: 630,
-        alt: "BhashaFix — Ship every language without breaking the UI",
+        alt: "BhashaFix — prove every language still works before you ship",
       },
     ],
   },

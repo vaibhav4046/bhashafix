@@ -275,7 +275,7 @@ export function EvidenceConsole({
 
       <section className="ls-section" aria-labelledby="run-record">
         <h2 id="run-record">The run record</h2>
-        <div className="ls-scroll">
+        <div className="ls-scroll" tabIndex={0} role="region">
           <table className="ls-table">
             <caption>{scan.note}</caption>
             <tbody>
@@ -345,7 +345,7 @@ export function EvidenceConsole({
           A cell counts the issues this run recorded for that pair. Every pair
           below was rendered; nothing is inferred from a pair that was not.
         </p>
-        <div className="ls-scroll">
+        <div className="ls-scroll" tabIndex={0} role="region">
           <table className="ls-matrix">
             <thead>
               <tr>
@@ -475,7 +475,7 @@ export function EvidenceConsole({
             <span>the published index for all three scans</span>
           </li>
         </ul>
-        <div className="ls-scroll">
+        <div className="ls-scroll" tabIndex={0} role="region">
           <table className="ls-table ls-hash-table">
             <thead>
               <tr>

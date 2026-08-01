@@ -80,7 +80,7 @@ export default function CliSetupPage() {
 
       <section className="ls-section" aria-labelledby="one-command">
         <h2 id="one-command">One command, in your project</h2>
-        <pre className="ls-command ls-command-lead">
+        <pre tabIndex={0} className="ls-command ls-command-lead">
           npx @bhashafix/cli scan --url http://localhost:3000 --locales
           en-GB,de-DE,ar-SA,ja-JP
         </pre>
@@ -102,7 +102,7 @@ export default function CliSetupPage() {
             <li key={title}>
               <h3>{title}</h3>
               <p className="ls-note">{note}</p>
-              <pre className="ls-command">{command}</pre>
+              <pre tabIndex={0} className="ls-command">{command}</pre>
             </li>
           ))}
         </ol>
@@ -110,7 +110,7 @@ export default function CliSetupPage() {
 
       <section className="ls-section" aria-labelledby="scope">
         <h2 id="scope">What the local run adds</h2>
-        <div className="ls-scroll">
+        <div className="ls-scroll" tabIndex={0} role="region">
           <table className="ls-table">
             <thead>
               <tr>
@@ -134,7 +134,7 @@ export default function CliSetupPage() {
 
       <section className="ls-section" aria-labelledby="repair">
         <h2 id="repair">Repair and prove</h2>
-        <pre className="ls-command">{`pnpm bhashafix repair --project .          # dry run: writes the diff, changes nothing
+        <pre tabIndex={0} className="ls-command">{`pnpm bhashafix repair --project .          # dry run: writes the diff, changes nothing
 pnpm bhashafix repair --project . --apply  # applies only allowlisted paths
 pnpm bhashafix verify --project .          # reruns the identical predicates`}</pre>
         <p className="ls-note">
