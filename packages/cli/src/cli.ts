@@ -18,6 +18,7 @@ import {
   REPRESENTATIVE_LOCALE_MATRIX,
 } from "@bhashafix/locale-engine";
 import { applyRepair, prepareRepair } from "@bhashafix/repair-engine";
+import { runBrowserProjectScan } from "./browser-scan";
 import { writeReportBundle } from "@bhashafix/report";
 import { verifyRepair } from "@bhashafix/verifier";
 
@@ -69,7 +70,8 @@ Commands:
   locales     List the representative BCP 47 locale registry
   crawl       Crawl a public or explicitly local target
   extract     Extract visible strings and context from a target
-  scan        Run deterministic localisation checks
+  scan        Render a target in a real browser and measure it (--url),
+              or evaluate the bundled fixture project (--project)
   translate-preview
               Generate a protected synthetic localisation preview
   issues      List evidence-backed issues
@@ -226,6 +228,25 @@ async function readBaseline(projectRoot: string) {
   return JSON.parse(await readFile(file, "utf8"));
 }
 
+/** Launch and close a browser so `doctor` reports what actually works here. */
+async function probeBrowser() {
+  try {
+    const { openBrowserSession } = await import("@bhashafix/browser");
+    const session = await openBrowserSession();
+    const engine = session.engine;
+    const remote = session.remote;
+    await session.close();
+    return { available: true, engine, remote, error: null as string | null };
+  } catch (error) {
+    return {
+      available: false,
+      engine: null,
+      remote: false,
+      error: error instanceof Error ? error.message.split("\n")[0] : String(error),
+    };
+  }
+}
+
 async function scanLocalProject(projectRoot: string, options?: Options) {
   const scan = await scanDemoProject(projectRoot, {
     mode: "live",
@@ -333,6 +354,44 @@ export async function runCli(
       return response.status >= 400 ? EXIT.unavailable : EXIT.passed;
     }
     if (command === "scan") {
+      if (options.url) {
+        const outcome = await runBrowserProjectScan({
+          url: options.url,
+          projectRoot: options.project,
+          sourceLocale: options.sourceLocale,
+          locales: options.locales,
+          routes: options.routes,
+          viewports: options.viewports,
+          themes: options.themes,
+          onProgress: options.verbose
+            ? (message) => io.error(`· ${message}`)
+            : undefined,
+        });
+        await writeFile(
+          path.join(options.project, ".bhashafix", "baseline-scan.json"),
+          `${JSON.stringify(outcome.scan, null, 2)}\n`,
+        );
+        if (options.output) {
+          await writeFile(
+            path.resolve(options.output),
+            `${JSON.stringify(outcome.scan, null, 2)}\n`,
+          );
+        }
+        emit(
+          io,
+          options,
+          { ...outcome.scan, artifacts: { directory: outcome.artifactDir, screenshots: outcome.screenshots } },
+          [
+            outcome.scan.scanId,
+            `${outcome.renderCount} browser render(s) on ${outcome.scan.config.browsers[0]}${outcome.remote ? " (remote)" : ""}.`,
+            `${outcome.scan.issues.length} measured issue(s) across ${outcome.scan.routesDiscovered.length} route(s) and ${outcome.scan.localesTested.length} locale(s).`,
+            `${outcome.screenshots.length} screenshot(s) in ${outcome.artifactDir}`,
+          ].join("\n"),
+        );
+        return outcome.scan.issues.some((issue) => issue.severity === "blocking")
+          ? EXIT.blocking
+          : EXIT.passed;
+      }
       const scan = await scanLocalProject(options.project, options);
       await mkdir(path.join(options.project, ".bhashafix"), { recursive: true });
       await writeFile(
@@ -470,17 +529,23 @@ export async function runCli(
     }
     if (command === "doctor") {
       const major = Number(process.versions.node.split(".")[0]);
+      const browser = await probeBrowser();
       const report = {
         node: process.versions.node,
         nodeSupported: major >= 22,
         project: options.project,
         noAiReady: true,
+        browser,
       };
       emit(
         io,
         options,
         report,
-        `Node ${report.node}: ${report.nodeSupported ? "PASS" : "FAIL"}\nNo-AI deterministic mode: PASS`,
+        [
+          `Node ${report.node}: ${report.nodeSupported ? "PASS" : "FAIL"}`,
+          "No-AI deterministic mode: PASS",
+          `Browser rendering: ${browser.available ? `PASS (${browser.engine}${browser.remote ? ", remote" : ", local"})` : `UNAVAILABLE — ${browser.error}`}`,
+        ].join("\n"),
       );
       return report.nodeSupported ? EXIT.passed : EXIT.runtime;
     }

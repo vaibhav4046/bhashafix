@@ -22,6 +22,7 @@
     "typecheck": "tsc --noEmit --moduleResolution bundler --module esnext --target es2022 src/cli.ts"
   },
   "devDependencies": {
+    "@bhashafix/browser": "workspace:*",
     "@bhashafix/config": "workspace:*",
     "@bhashafix/core": "workspace:*",
     "@bhashafix/crawler": "workspace:*",
@@ -33,6 +34,8 @@
     "@bhashafix/verifier": "workspace:*"
   },
   "dependencies": {
+    "@axe-core/playwright": "4.10.2",
+    "playwright": "1.55.0",
     "yaml": "2.8.1"
   }
 }
