@@ -135,7 +135,15 @@ export function collectPageMeasurement(limits: {
     }
     const title = element.getAttribute("title");
     if (title && title.trim()) return title.trim();
-    return (element.textContent ?? "").replace(/\s+/g, " ").trim();
+    const text = (element.textContent ?? "").replace(/\s+/g, " ").trim();
+    if (text) return text;
+    // A control whose only content is an image or icon takes its name from
+    // that descendant. Without this, every icon link looks unnamed.
+    const describedImage = element.querySelector("img[alt]:not([alt=''])");
+    if (describedImage) return (describedImage.getAttribute("alt") ?? "").trim();
+    const svgTitle = element.querySelector("svg > title");
+    if (svgTitle?.textContent?.trim()) return svgTitle.textContent.trim();
+    return "";
   }
 
   function isRendered(element: Element, style: CSSStyleDeclaration): boolean {

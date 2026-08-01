@@ -1,6 +1,23 @@
 # Live public scan evidence
 
-Generated: 2026-08-01T08:10:47.116Z
+Generated: 2026-08-01T08:50:13.708Z
+
+## Browser-backed scans of real public sites
+
+Origin `LOCAL_REPOSITORY_SCAN` — real Chromium renders, real screenshots, persisted scan IDs.
+
+| Target | Scan ID | Routes | Locales | Renders | Screenshots | Issues |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+| BhashaFix production | `browser-bce30786-6142-49c0-910a-e9d9098e41ff` | 3 | 2 | 6 | 6 | 10 |
+| MDN Web Docs | `browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6` | 3 | 2 | 6 | 6 | 9 |
+| Wikipedia | `browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a` | 2 | 2 | 4 | 4 | 16 |
+
+- These targets carry no ground-truth labels, so no precision or recall figure is derived from them.
+- Coverage is deliberately bounded: a handful of routes per site at one viewport.
+- Only publicly reachable pages were requested; no authentication or access control was bypassed.
+
+
+## Hosted HTTP preflight receipt
 
 | Field | Verified value |
 | --- | --- |

@@ -97,6 +97,25 @@ const benchmark = (benchmarkRaw === null ? null : JSON.parse(benchmarkRaw)) as n
   metrics: { recall: number; precision: number; cleanFalsePositives: number };
 };
 
+// Bounded browser-backed scans of permitted public sites, written by
+// `pnpm scan:real-sites`.
+const realSiteRaw = await readFile(
+  path.join(root, "artifacts/real-site-scans.json"),
+  "utf8",
+).catch(() => null);
+const realSiteScans = (realSiteRaw === null ? null : JSON.parse(realSiteRaw)) as null | {
+  limitations: string[];
+  scans: Array<{
+    name: string;
+    scanId: string;
+    routes: string[];
+    locales: string[];
+    renders: number;
+    screenshots: number;
+    issues: number;
+  }>;
+};
+
 const baseline = await scanDemoProject(root, { mode: "replay" });
 const plan = await prepareRepair(root, baseline);
 await applyRepair(plan);
@@ -229,8 +248,30 @@ const liveScanEvidence = `# Live public scan evidence
 Generated: ${new Date().toISOString()}
 
 ${
+  realSiteScans === null
+    ? "No browser-backed real-site scans were recorded in this build. Run `pnpm scan:real-sites`."
+    : `## Browser-backed scans of real public sites
+
+Origin \`LOCAL_REPOSITORY_SCAN\` — real Chromium renders, real screenshots, persisted scan IDs.
+
+| Target | Scan ID | Routes | Locales | Renders | Screenshots | Issues |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+${realSiteScans.scans
+  .map(
+    (scan) =>
+      `| ${scan.name} | \`${scan.scanId}\` | ${scan.routes.length} | ${scan.locales.length} | ${scan.renders} | ${scan.screenshots} | ${scan.issues} |`,
+  )
+  .join("\n")}
+
+${realSiteScans.limitations.map((entry) => `- ${entry}`).join("\n")}
+`
+}
+
+## Hosted HTTP preflight receipt
+
+${
   livePublicScan === null
-    ? "No live public scan ran in this build. `pnpm scan:live:smoke` needs a running server and outbound network, so it is not part of `pnpm verify`, and no receipt was found in `artifacts/`. Nothing about a live scan is claimed here."
+    ? "No hosted HTTP preflight receipt ran in this build. `pnpm scan:live:smoke` needs a running server and outbound network, so it is not part of `pnpm verify`, and no receipt was found in `artifacts/`. Nothing about it is claimed here."
     : `| Field | Verified value |
 | --- | --- |
 | Scan ID | \`${livePublicScan.scanId}\` |

@@ -55,6 +55,20 @@ function looksLikeTranslationKey(text: string): boolean {
 /** Scrollable containers legitimately exceed their client box. */
 const SCROLLABLE = new Set(["auto", "scroll", "overlay"]);
 const OVERFLOW_TOLERANCE_PX = 2;
+/**
+ * Screen-reader-only text uses a 1px clipped box on purpose. Such an element
+ * always "overflows", but nothing is being hidden from a sighted user, so a
+ * box this small cannot evidence a layout failure. Found by scanning
+ * en.wikipedia.org, where this pattern produced 64 false positives.
+ */
+const MIN_VISIBLE_BOX_PX = 8;
+
+function presentsTextVisually(element: ElementMeasurement): boolean {
+  return (
+    element.clientWidth >= MIN_VISIBLE_BOX_PX &&
+    element.clientHeight >= MIN_VISIBLE_BOX_PX
+  );
+}
 
 export function stableIssueId(parts: {
   target: string;
@@ -262,7 +276,7 @@ function visualRules(page: PageMeasurement, context: RuleContext): Issue[] {
 
   for (const element of page.elements) {
     if (!element.text) continue;
-    if (element.clientWidth === 0 || element.clientHeight === 0) continue;
+    if (!presentsTextVisually(element)) continue;
     const overflow = detectElementOverflow({
       clientWidth: element.clientWidth,
       scrollWidth: element.scrollWidth,

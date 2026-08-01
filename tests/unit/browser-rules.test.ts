@@ -131,6 +131,23 @@ describe("browser rule engine", () => {
     );
   });
 
+  it("ignores screen-reader-only text clipped into a 1px box", () => {
+    // The standard visually-hidden pattern. Found on en.wikipedia.org, where it
+    // produced 64 false positives before this guard existed.
+    const srOnly = element({
+      text: "Jump to content",
+      clientWidth: 1,
+      clientHeight: 1,
+      scrollWidth: 52,
+      scrollHeight: 19,
+      overflowX: "hidden",
+      overflowY: "hidden",
+    });
+    const found = ruleIds(page({ elements: [srOnly] }));
+    expect(found).not.toContain("BF-VIS-TEXT-OVERFLOW-X");
+    expect(found).not.toContain("BF-VIS-TEXT-CLIP-Y");
+  });
+
   it("ignores sub-pixel overflow within tolerance", () => {
     const noise = element({ scrollWidth: 145, clientWidth: 144, overflowX: "hidden" });
     expect(ruleIds(page({ elements: [noise] }))).not.toContain("BF-VIS-TEXT-OVERFLOW-X");
