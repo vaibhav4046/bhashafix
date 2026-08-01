@@ -15774,7 +15774,6 @@ async function startMcpServer(projectRoot = process.cwd()) {
   await server.connect(new StdioServerTransport());
   console.error("BhashaFix MCP server running over local STDIO.");
 }
-export {
-  createMcpServer,
-  startMcpServer
-};
+
+// src/bin.ts
+await startMcpServer();

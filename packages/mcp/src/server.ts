@@ -2,7 +2,6 @@
 import { createHash, randomUUID } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { inspectProject, scanDemoProject } from "@bhashafix/core";
 import { fetchWithPolicy } from "@bhashafix/crawler";
 import { extractTextFromHtml } from "@bhashafix/extractor";
@@ -553,9 +552,8 @@ export async function startMcpServer(projectRoot = process.cwd()) {
   console.error("BhashaFix MCP server running over local STDIO.");
 }
 
-const isEntrypoint =
-  process.argv[1] &&
-  path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url));
-if (isEntrypoint) {
-  await startMcpServer();
-}
+// No auto-start on import. Bundlers inline this module into other entrypoints
+// (the CLI does), and an import-time `argv[1]` guard then matches the host
+// bundle and starts a second server on the same stdio pipe — every JSON-RPC
+// call, including apply_repair, would execute twice. The executable entrypoint
+// lives in ./bin.ts instead.
