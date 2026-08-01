@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import repairProof from "../public/replay/repair-proof.json";
 import "./globals.css";
 
 const deploymentHost =
@@ -35,7 +36,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "BhashaFix — Global localisation engineering",
-    description: "10 verified failures → 0 blocking failures · source locale PASS",
+    description: `Recorded AtlasPay replay: ${repairProof.baselineBlocking} verified failures → ${repairProof.finalBlocking} blocking failures · source locale ${repairProof.sourceLocaleRegression}`,
     images: ["/og.png"],
   },
 };

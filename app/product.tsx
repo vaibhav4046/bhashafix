@@ -9,6 +9,36 @@ import replayReport from "../public/replay/report.json";
 import { pseudoLocalise } from "@bhashafix/linguistic-engine";
 import { localeProfile } from "@bhashafix/locale-engine";
 
+/**
+ * Recorded configuration of the bundled AtlasPay replay. Every number the
+ * replay surfaces must come from one of the three imported artifacts above —
+ * never from a literal typed into this file.
+ */
+const replayConfig = baselineScan.config;
+
+/** The eight artifact files the replay run actually wrote to public/replay. */
+const replayArtifacts = [
+  ["JSON report", "/replay/report.json"],
+  ["HTML report", "/replay/report.html"],
+  ["SARIF", "/replay/report.sarif"],
+  ["JUnit XML", "/replay/junit.xml"],
+  ["CSV issues", "/replay/issues.csv"],
+  ["Screenshots ZIP", "/replay/screenshots.zip"],
+  ["Unified patch", "/replay/repair.patch"],
+  ["Proof JSON", "/replay/repair-proof.json"],
+] as const;
+
+const proofDelta = `${repairProof.baselineBlocking} → ${repairProof.finalBlocking}`;
+
+/**
+ * Artifact timestamps are stored as UTC ISO-8601 strings, so slice them rather
+ * than formatting through Date — a locale/timezone format would differ between
+ * the server and client render and produce a hydration error.
+ */
+function artifactClock(iso: string) {
+  return `${iso.slice(11, 23)}Z`;
+}
+
 const localeSpecimens = [
   ["en-GB", "Every language.", "Latn"],
   ["hi-IN", "हर भाषा।", "Deva"],
@@ -204,8 +234,11 @@ function ProofConsole() {
       </div>
       <div className="console-command">
         <span>$</span>
-        <code>bhashafix verify --changed-only</code>
-        <b>10 → 0 · EN-GB PASS</b>
+        <code>bhashafix verify</code>
+        <b>
+          {proofDelta} · {replayConfig.sourceLocale}{" "}
+          {repairProof.sourceLocaleRegression}
+        </b>
       </div>
     </div>
   );
@@ -391,7 +424,7 @@ export function LandingPage() {
             Start a scan →
           </Link>
           <Link className="button button-secondary" href="/scan/atlaspay-replay/report">
-            View 10 → 0 proof
+            View {proofDelta} proof
           </Link>
         </div>
       </section>
@@ -670,7 +703,62 @@ export function NewScanPage() {
   const [running, setRunning] = useState(false);
   const [liveResult, setLiveResult] = useState<LiveScanResult | null>(null);
   const [scanError, setScanError] = useState("");
+  // Local-run configuration. The hosted /api/scan endpoint accepts only
+  // {url, sourceLocale, locales, maxRoutes}, so none of the values below are
+  // sent to it — they compose the local CLI invocation and config file shown
+  // on the Summary step.
+  const [viewports, setViewports] = useState<string[]>(
+    replayConfig.viewports.map((viewport) => viewport.name),
+  );
+  const [themes, setThemes] = useState<string[]>(["light", "dark"]);
+  const [browsers, setBrowsers] = useState<string[]>(["chromium"]);
+  const [maxPages, setMaxPages] = useState(20);
+  const [crawlDepth, setCrawlDepth] = useState(2);
+  const [rateLimitPerSecond, setRateLimitPerSecond] = useState(2);
+  const [repairMode, setRepairMode] = useState<"prepare" | "apply">("prepare");
+  const [allowlist, setAllowlist] = useState(replayConfig.allowlist.join("\n"));
   const steps = ["Target", "Locales", "Coverage", "Guardrails", "Summary"];
+  const toggleIn = (
+    setter: (update: (current: string[]) => string[]) => void,
+    value: string,
+  ) =>
+    setter((current) =>
+      current.includes(value)
+        ? current.filter((item) => item !== value)
+        : [...current, value],
+    );
+  const allowlistPaths = allowlist
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+  const localCommand = [
+    `pnpm bhashafix scan --project . \\`,
+    `  --source-locale ${sourceLocale} \\`,
+    `  --locales ${locales.join(",")} \\`,
+    `  --viewports ${viewports.join(",")} \\`,
+    `  --themes ${themes.join(",")}`,
+    repairMode === "apply"
+      ? `pnpm bhashafix repair --project . --apply`
+      : `pnpm bhashafix repair --project .`,
+    `pnpm bhashafix verify --project .`,
+  ].join("\n");
+  const localConfigFragment = [
+    `# merge into .bhashafix/config.yml`,
+    `sourceLocale: ${sourceLocale}`,
+    `locales: [${locales.join(", ")}]`,
+    `browsers: [${browsers.join(", ")}]`,
+    `viewports: [${viewports.join(", ")}]`,
+    `themes: [${themes.join(", ")}]`,
+    `crawl:`,
+    `  maxPages: ${maxPages}`,
+    `  maxDepth: ${crawlDepth}`,
+    `  rateLimitPerSecond: ${rateLimitPerSecond}`,
+    `repair:`,
+    `  allowlist:`,
+    ...(allowlistPaths.length
+      ? allowlistPaths.map((path) => `    - ${path}`)
+      : ["    # at least one path is required before repair can run"]),
+  ].join("\n");
   const localeOptions = [
     "hi-IN",
     "ta-IN",
@@ -1039,60 +1127,132 @@ export function NewScanPage() {
             </div>
           )}
           {step === 2 && (
-            <div className="coverage-grid">
-              {[
-                ["Routes", "Sitemap + internal links", "5 max for this run"],
-                ["Viewports", "390×844 · 768×1024 · 1440×900", "All selected"],
-                ["Browsers", "Chromium", "Firefox/WebKit optional"],
-                ["Themes", "Light · Dark", "Both selected"],
-                ["Accessibility", "Keyboard · labels · serious axe checks", "Enabled"],
-                ["Stress", "Expansion · RTL · tall glyph · no-space", "Enabled"],
-              ].map(([title, body, status]) => (
-                <label key={title} className="coverage-option">
-                  <input type="checkbox" defaultChecked />
-                  <span>
-                    <strong>{title}</strong>
-                    <small>{body}</small>
-                  </span>
-                  <b>{status}</b>
-                </label>
-              ))}
-            </div>
+            <>
+              <p className="inline-note">
+                Coverage applies to the local browser run. The hosted HTTP scan
+                accepts only a URL, a source locale, target locales and a route
+                limit, so nothing on this step is sent to it. Step 5 shows the
+                exact command and configuration these choices produce.
+              </p>
+              <div className="coverage-grid">
+                {replayConfig.viewports.map((viewport) => (
+                  <label key={viewport.name} className="coverage-option">
+                    <input
+                      type="checkbox"
+                      checked={viewports.includes(viewport.name)}
+                      onChange={() => toggleIn(setViewports, viewport.name)}
+                    />
+                    <span>
+                      <strong>{viewport.name}</strong>
+                      <small>
+                        {viewport.width} × {viewport.height} rendered viewport
+                      </small>
+                    </span>
+                    <b>--viewports</b>
+                  </label>
+                ))}
+                {["light", "dark"].map((themeOption) => (
+                  <label key={themeOption} className="coverage-option">
+                    <input
+                      type="checkbox"
+                      checked={themes.includes(themeOption)}
+                      onChange={() => toggleIn(setThemes, themeOption)}
+                    />
+                    <span>
+                      <strong>{themeOption}</strong>
+                      <small>Colour scheme rendered per route</small>
+                    </span>
+                    <b>--themes</b>
+                  </label>
+                ))}
+                {["chromium", "firefox", "webkit"].map((browserOption) => (
+                  <label key={browserOption} className="coverage-option">
+                    <input
+                      type="checkbox"
+                      checked={browsers.includes(browserOption)}
+                      onChange={() => toggleIn(setBrowsers, browserOption)}
+                    />
+                    <span>
+                      <strong>{browserOption}</strong>
+                      <small>
+                        Requires the matching Playwright runtime installed
+                        locally
+                      </small>
+                    </span>
+                    <b>config.yml</b>
+                  </label>
+                ))}
+              </div>
+              <p className="inline-note">
+                Accessibility is not a toggle: axe runs on every local browser
+                scan and cannot be disabled. Pseudo-localisation stress modes are
+                a separate command (`bhashafix translate-preview --mode`) and are
+                not part of a scan.
+              </p>
+            </>
           )}
           {step === 3 && (
             <div className="guardrail-grid">
               <label className="field">
                 Maximum pages
-                <input type="number" defaultValue="20" min="1" max="100" />
+                <input
+                  type="number"
+                  value={maxPages}
+                  min="1"
+                  max="100"
+                  onChange={(event) =>
+                    setMaxPages(Number(event.target.value) || 1)
+                  }
+                />
               </label>
               <label className="field">
                 Crawl depth
-                <input type="number" defaultValue="2" min="0" max="5" />
+                <input
+                  type="number"
+                  value={crawlDepth}
+                  min="0"
+                  max="5"
+                  onChange={(event) => setCrawlDepth(Number(event.target.value))}
+                />
               </label>
               <label className="field">
                 Requests per second
-                <input type="number" defaultValue="2" min="0.2" max="10" />
+                <input
+                  type="number"
+                  value={rateLimitPerSecond}
+                  min="0.1"
+                  max="10"
+                  step="0.1"
+                  onChange={(event) =>
+                    setRateLimitPerSecond(Number(event.target.value) || 0.1)
+                  }
+                />
               </label>
               <label className="field">
                 Repair mode
-                <select defaultValue="prepare">
-                  <option>suggest</option>
-                  <option value="prepare">prepare</option>
-                  <option>apply</option>
+                <select
+                  value={repairMode}
+                  onChange={(event) =>
+                    setRepairMode(event.target.value as typeof repairMode)
+                  }
+                >
+                  <option value="prepare">prepare (dry run, diff only)</option>
+                  <option value="apply">apply (writes allowlisted files)</option>
                 </select>
               </label>
               <label className="field wide">
                 Path allowlist
-                <textarea defaultValue={"src/locales/**\nsrc/styles/**"} />
+                <textarea
+                  value={allowlist}
+                  onChange={(event) => setAllowlist(event.target.value)}
+                />
               </label>
-              <label className="coverage-option wide">
-                <input type="checkbox" defaultChecked />
-                <span>
-                  <strong>Sensitive-data exclusion</strong>
-                  <small>Redact tokens, secrets and personal form values.</small>
-                </span>
-                <b>Required</b>
-              </label>
+              <p className="inline-note wide">
+                Secret redaction is not optional and has no switch: tokens, bearer
+                credentials and sensitive attribute values are stripped from every
+                extraction and every error message. These guardrails are written to
+                `.bhashafix/config.yml`; the hosted HTTP scan does not read them.
+              </p>
             </div>
           )}
           {step === 4 && (
@@ -1111,11 +1271,34 @@ export function NewScanPage() {
               </div>
               <div>
                 <small>COVERAGE</small>
-                <strong>3 viewports · 2 themes · Chromium · accessibility</strong>
+                <strong>
+                  {viewports.length} viewport(s) · {themes.length} theme(s) ·{" "}
+                  {browsers.join(", ") || "no browser selected"}
+                </strong>
               </div>
               <div>
-                <small>POLICY</small>
-                <strong>No-AI · prepare repairs · bounded crawl</strong>
+                <small>GUARDRAILS</small>
+                <strong>
+                  {maxPages} pages · depth {crawlDepth} · {rateLimitPerSecond}{" "}
+                  req/s · {repairMode} · {allowlistPaths.length} allowlisted
+                  path(s)
+                </strong>
+              </div>
+              <div>
+                <small>LOCAL COMMAND</small>
+                <pre>{localCommand}</pre>
+              </div>
+              <div>
+                <small>CONFIG FILE</small>
+                <pre>{localConfigFragment}</pre>
+              </div>
+              <div>
+                <small>NOT SENT</small>
+                <strong>
+                  Coverage and guardrails configure the local CLI only. The
+                  hosted endpoint on this site accepts a URL, a source locale,
+                  target locales and a route limit, and rejects anything else.
+                </strong>
               </div>
               {liveResult && (
                 <p className="run-result">
@@ -1170,7 +1353,7 @@ function ScanModeSwitcher({
       {[
         ["public", "Public website", "Real hosted HTTP scan"],
         ["local", "Local product", "Full browser + repair"],
-        ["demo", "Verified demo", "Real 10 → 0 proof"],
+        ["demo", "Verified demo", `Recorded ${proofDelta} proof`],
       ].map(([value, label, detail]) => (
         <button
           key={value}
@@ -1409,22 +1592,23 @@ function ScanHeader({ section }: { section: string }) {
 }
 
 function PipelineRail() {
+  // Every row below is counted from the imported replay artifacts. Stages the
+  // artifacts do not record (string extraction, per-viewport render cases,
+  // pseudo-localisation stress passes) are not listed rather than guessed.
   const stages = [
-    ["Discover", `${baselineScan.routesDiscovered.length} routes`, "✓"],
-    ["Extract", "34 strings", "✓"],
-    ["Render", "30 cases", "✓"],
-    ["Stress", "8 modes", "✓"],
-    ["Diagnose", `${baselineScan.issues.length} issues`, "✓"],
-    ["Repair", "3 files", "✓"],
-    ["Verify", `${repairProof.finalBlocking} blocking`, "✓"],
-    ["Prove", "8 artifacts", "✓"],
+    ["Discover", `${baselineScan.routesDiscovered.length} routes`],
+    ["Locales", `${baselineScan.localesTested.length} tested`],
+    ["Diagnose", `${baselineScan.issues.length} issues`],
+    ["Repair", `${replayConfig.allowlist.length} allowlisted files`],
+    ["Verify", `${repairProof.finalBlocking} blocking`],
+    ["Prove", `${replayArtifacts.length} artifacts`],
   ];
   return (
     <aside className="pipeline-rail">
-      <span>PIPELINE</span>
-      {stages.map(([name, detail, state]) => (
+      <span>RECORDED PIPELINE</span>
+      {stages.map(([name, detail]) => (
         <div key={name}>
-          <i>{state}</i>
+          <i>✓</i>
           <span>
             <strong>{name}</strong>
             <small>{detail}</small>
@@ -1433,8 +1617,10 @@ function PipelineRail() {
       ))}
       <section>
         <small>MODE</small>
-        <strong>No-AI deterministic</strong>
-        <p>No provider key required.</p>
+        <strong>
+          {replayConfig.noAi ? "No-AI deterministic" : "Provider-assisted"}
+        </strong>
+        <p>Counted from baseline-scan.json and repair-proof.json.</p>
       </section>
     </aside>
   );
@@ -1884,29 +2070,42 @@ export function ScanWorkspace({ section = "Overview" }: { section?: string }) {
             <RouteLocaleMatrix />
           </div>
           <EvidenceCard issueIndex={selectedIssue} />
+          {/* Recorded artifact timeline. Each row is a timestamp that exists
+              verbatim in the named file under public/replay — the replay does
+              not record per-stage console events, so none are invented here. */}
           <div className="real-console">
             {[
-              ["13:07:12.044", "discover", "5 routes from configured route list", "0"],
-              ["13:07:12.181", "render", "Chromium · 390×844 · ar-SA", "0"],
-              ["13:07:12.296", "diagnose", "BF-LOC-AR-003 wrong-direction", "1"],
-              ["13:07:12.411", "verify", "10 → 0 · source en-GB PASS", "0"],
-            ].map(([time, stage, event, exit]) => (
-              <button
-                onClick={() =>
-                  setSelectedIssue(
-                    Math.min(
-                      baselineScan.issues.length - 1,
-                      stage === "diagnose" ? 2 : selectedIssue,
-                    ),
-                  )
-                }
-                key={time}
-              >
-                <time>{time}</time>
+              [
+                baselineScan.startedAt,
+                "baseline",
+                `${baselineScan.scanId} started`,
+                "baseline-scan.json",
+              ],
+              [
+                baselineScan.completedAt,
+                "baseline",
+                `${baselineScan.issues.length} issues · ${baselineScan.status.replaceAll("_", " ")}`,
+                "baseline-scan.json",
+              ],
+              [
+                replayReport.verification.verifiedAt,
+                "verify",
+                `${proofDelta} · source ${replayConfig.sourceLocale} ${repairProof.sourceLocaleRegression}`,
+                "report.json",
+              ],
+              [
+                repairProof.generatedAt,
+                "prove",
+                `diff within policy: ${String(repairProof.diffWithinPolicy)}`,
+                "repair-proof.json",
+              ],
+            ].map(([iso, stage, detail, source]) => (
+              <div key={`${stage}-${iso}`}>
+                <time dateTime={iso}>{artifactClock(iso)}</time>
                 <b>{stage}</b>
-                <span>{event}</span>
-                <code>exit {exit}</code>
-              </button>
+                <span>{detail}</span>
+                <code>{source}</code>
+              </div>
             ))}
           </div>
         </section>
@@ -1959,28 +2158,49 @@ function AccessibilityView() {
       <div className="review-heading">
         <div>
           <span>RECORDED_REPLAY · ACCESSIBILITY</span>
-          <h2>No accessibility regression after repair.</h2>
+          <h2>Three recorded fields. Three checks that never ran.</h2>
           <p>
-            The AtlasPay verification run recorded zero new serious axe
-            findings, zero console-error delta and keyboard-operable controls.
+            The replay artifact records an accessibility-regression flag, a
+            console-error delta and a source-locale regression result. It does
+            not contain axe output or keyboard-operability evidence, so those
+            rows are marked not run rather than given a number.
           </p>
         </div>
-        <span className="mode-badge">VERIFIED</span>
+        <span className="mode-badge">PARTIAL EVIDENCE</span>
       </div>
       <div className="visual-metrics">
         {[
-          ["Serious axe findings", "0", "PASS"],
-          ["Critical axe findings", "0", "PASS"],
-          ["Console error delta", "0", "PASS"],
-          ["Keyboard controls", "operable", "PASS"],
-          ["Source-locale regression", repairProof.sourceLocaleRegression, "PASS"],
+          [
+            "Accessibility regression",
+            repairProof.accessibilityRegression ? "yes" : "none",
+            "RECORDED",
+          ],
+          [
+            "Console error delta",
+            String(repairProof.consoleErrorDelta),
+            "RECORDED",
+          ],
+          [
+            "Source-locale regression",
+            repairProof.sourceLocaleRegression,
+            "RECORDED",
+          ],
+          ["Serious / critical axe", "not run", "NOT RUN"],
+          ["Keyboard operability", "not run", "NOT RUN"],
         ].map(([label, value, status]) => (
-          <div key={label}><span>{label}</span><strong>{value}</strong><b>{status}</b></div>
+          <div key={label}>
+            <span>{label}</span>
+            <strong>{value}</strong>
+            <b className={status === "NOT RUN" ? "not-run" : undefined}>
+              {status}
+            </b>
+          </div>
         ))}
       </div>
       <p className="trust-claim">
-        This evidence belongs to the bundled AtlasPay browser run. It is not
-        carried into unrelated public URL scans.
+        RECORDED fields are read from repair-proof.json. Axe and keyboard checks
+        run in the local browser scanner, which writes its own artifact; no axe
+        result exists for this bundled replay, and none is substituted here.
       </p>
     </section>
   );
@@ -2091,6 +2311,17 @@ function LinguisticView() {
 function VisualView() {
   const [reveal, setReveal] = useState(52);
   const [locale, setLocale] = useState("hi-IN");
+  // The frames below are live renders of the bundled fixture. This page does
+  // not measure them, so the numbers shown come from the issue the replay
+  // actually recorded for the selected locale — or say so when there is none.
+  const recorded = baselineScan.issues.find((issue) => issue.locale === locale);
+  const direction = (() => {
+    try {
+      return localeProfile(locale).direction;
+    } catch {
+      return "ltr";
+    }
+  })();
   return (
     <section className="visual-page">
       <div className="review-heading">
@@ -2122,54 +2353,88 @@ function VisualView() {
       </div>
       <div className="visual-metrics">
         {[
-          ["Viewport overflow", "0px", "PASS"],
-          ["Element clipping", "0", "PASS"],
-          ["Direction", locale.startsWith("ar") || locale.startsWith("he") ? "rtl" : "ltr", "PASS"],
-          ["Console errors", "0", "PASS"],
-          ["Accessibility delta", "0", "PASS"],
+          ["Locale direction", direction, "LOCALE PROFILE"],
+          ["Recorded issue", recorded?.issueId ?? "none", recorded ? "RECORDED" : "NOT RUN"],
+          ["Recorded rule", recorded?.ruleId ?? "none", recorded ? "RECORDED" : "NOT RUN"],
+          ["Recorded route", recorded?.route ?? "none", recorded ? "RECORDED" : "NOT RUN"],
+          ["Live frame measurement", "not run", "NOT RUN"],
         ].map(([label, value, status]) => (
-          <div key={label}><span>{label}</span><strong>{value}</strong><b>{status}</b></div>
+          <div key={label}>
+            <span>{label}</span>
+            <strong>{value}</strong>
+            <b className={status === "NOT RUN" ? "not-run" : undefined}>
+              {status}
+            </b>
+          </div>
         ))}
       </div>
+      <p className="trust-claim">
+        The two frames above are live renders of the bundled fixture, not
+        screenshots, and this page performs no measurement on them. Overflow,
+        clipping and console measurements come from a local Playwright run.
+        {recorded
+          ? ` The recorded predicate for ${locale} is ${recorded.deterministicPredicate}, measured as ${JSON.stringify(recorded.measuredEvidence)}.`
+          : ` No issue was recorded for ${locale} in this replay.`}
+      </p>
     </section>
   );
 }
 
 function RepairsView() {
   const [patch, setPatch] = useState("Loading generated patch…");
-  const [mode, setMode] = useState<"suggest" | "prepare" | "apply">("prepare");
+  const [patchLoaded, setPatchLoaded] = useState(false);
+  // The engine has exactly two repair paths: a dry run that only emits a diff,
+  // and --apply. There is no "suggest" mode, so none is offered here.
+  const [mode, setMode] = useState<"prepare" | "apply">("prepare");
   useEffect(() => {
     fetch("/replay/repair.patch")
       .then((response) => response.text())
-      .then(setPatch)
+      .then((text) => {
+        setPatch(text);
+        setPatchLoaded(true);
+      })
       .catch(() => setPatch("Generated patch unavailable."));
   }, []);
+  // Counted from the artifact that is actually on screen, not asserted.
+  const patchOperations = patchLoaded
+    ? (patch.match(/^--- a\//gm) ?? []).length
+    : 0;
+  const patchFiles = patchLoaded
+    ? [...new Set(patch.match(/^\+\+\+ b\/(.+)$/gm) ?? [])].length
+    : 0;
   return (
     <section className="repairs-page">
       <div className="review-heading">
         <div>
           <span>BOUNDED REPAIR</span>
           <h2>Diff first. Mutation only by policy.</h2>
-          <p>Ten issue IDs resolve to ten operations across three allowlisted fixture files.</p>
+          <p>
+            {baselineScan.issues.length} recorded issue IDs.{" "}
+            {patchLoaded
+              ? `${patchOperations} operations across ${patchFiles} files in the loaded patch.`
+              : "Loading the generated patch to count its operations."}
+          </p>
         </div>
         <div className="segmented">
-          {(["suggest", "prepare", "apply"] as const).map((item) => (
+          {(["prepare", "apply"] as const).map((item) => (
             <button className={mode === item ? "active" : ""} onClick={() => setMode(item)} key={item}>{item}</button>
           ))}
         </div>
       </div>
       <div className="repair-layout">
         <aside>
-          <span>POLICY CHECKS</span>
+          <span>RECORDED POLICY FACTS</span>
           {[
-            "Explicit scan ID",
-            "10 explicit issue IDs",
-            "3 paths allowlisted",
-            "No symlinks",
-            "No business logic",
-            "Rollback written",
-            "No automatic commit",
+            `Baseline scan ID ${repairProof.baselineScanId}`,
+            `${baselineScan.issues.length} explicit issue IDs`,
+            `${replayConfig.allowlist.length} paths allowlisted`,
+            `Diff within policy: ${String(repairProof.diffWithinPolicy)}`,
           ].map((item) => <div key={item}><i>✓</i>{item}</div>)}
+          <p className="repair-policy-note">
+            Symlink rejection, rollback capture and commit policy are engine
+            behaviours; this replay artifact does not record a result for them,
+            so none is claimed here.
+          </p>
           <small>Mode selected</small>
           <strong>{mode}</strong>
         </aside>
