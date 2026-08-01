@@ -13,7 +13,7 @@
 {"kind":"slide","slide":4}
 {"kind":"textbox","slide":4,"text":"REAL CHROMIUM SCAN · GENERATED THROUGH THE CLI"}
 {"kind":"textbox","slide":4,"text":"Evidence, not adjectives."}
-{"kind":"textbox","slide":4,"text":"BhashaFix production · 3 routes · 6 screenshots · 10 issues\nMDN Web Docs · 3 routes · 6 screenshots · 9 issues\nWikipedia · 2 routes · 4 screenshots · 16 issues\n\nEvery screenshot carries its SHA-256, so the image on screen is provably the image the scan captured."}
+{"kind":"textbox","slide":4,"text":"BhashaFix production · 8 routes · 16 screenshots · 0 issues\nMDN Web Docs · 3 routes · 6 screenshots · 9 issues\nWikipedia · 2 routes · 4 screenshots · 16 issues\n\nEvery screenshot carries its SHA-256, so the image on screen is provably the image the scan captured."}
 {"kind":"slide","slide":5}
 {"kind":"textbox","slide":5,"text":"ONE FINDING"}
 {"kind":"textbox","slide":5,"text":"The number, and the predicate."}
