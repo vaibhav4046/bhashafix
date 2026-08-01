@@ -4350,3 +4350,34 @@ pre {
     width: 100%;
   }
 }
+
+/* Handoff from the hosted HTTP check to a real browser run. */
+.browser-handoff {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  max-width: 100%;
+}
+
+.browser-handoff > span {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--saffron-500, #f4c430);
+}
+
+.browser-handoff > code {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 12.5px;
+  line-height: 1.6;
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.browser-handoff > small {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}

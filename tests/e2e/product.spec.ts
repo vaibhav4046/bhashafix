@@ -211,8 +211,8 @@ test("real public scan UI shows exact routes, evidence and honest coverage", asy
   await page.getByPlaceholder("https://www.mozilla.org").fill(
     "https://product.example",
   );
-  await page.getByRole("button", { name: "Run real scan →" }).click();
-  await expect(page.getByText("HTTP_PREFLIGHT · REAL HTTP RESPONSES")).toBeVisible();
+  await page.getByRole("button", { name: "Check this site →" }).click();
+  await expect(page.getByText("HTTP_PREFLIGHT · REAL HTTP RESPONSES · NO BROWSER")).toBeVisible();
   await expect(page.getByText("Routes actually fetched")).toBeVisible();
   await expect(page.getByRole("cell", { name: "/pricing" })).toBeVisible();
   await expect(page.getByText("missing page lang")).toBeVisible();

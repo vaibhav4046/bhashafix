@@ -273,10 +273,12 @@ export function LandingPage() {
               onChange={(event) => setUrl(event.target.value)}
               required
             />
-            <button type="submit">Run real scan →</button>
+            <button type="submit">Check this site →</button>
           </form>
           <p className="hero-truth">
-            Public URL mode diagnoses rendered pages. Source repair needs
+            Here, a public URL is checked over HTTP: real responses, language
+            metadata and visible text. Rendering every locale in a real browser
+            runs in the CLI or a browser worker, and source repair needs
             repository access.
           </p>
           <ul className="hero-secondary">
@@ -855,7 +857,7 @@ export function NewScanPage() {
                 </select>
               </label>
               <button className="button real-scan-submit" disabled={running}>
-                {running ? "Checking the real site…" : "Run real scan →"}
+                {running ? "Checking the real site…" : "Check this site →"}
               </button>
             </div>
 
@@ -1957,7 +1959,7 @@ function LivePublicScanResult({ result }: { result: LiveScanResult }) {
     <section className="live-scan-result" aria-labelledby="live-result-title">
       <header>
         <div>
-          <span className="live-badge">{result.origin} · REAL HTTP RESPONSES</span>
+          <span className="live-badge">{result.origin} · REAL HTTP RESPONSES · NO BROWSER</span>
           <h2 id="live-result-title">Here is exactly what BhashaFix found.</h2>
           <p>
             {result.target} · completed{" "}
@@ -1965,6 +1967,14 @@ function LivePublicScanResult({ result }: { result: LiveScanResult }) {
               ? result.completedAt
               : completed.toLocaleTimeString()}
           </p>
+        </div>
+        <div className="browser-handoff">
+          <span>RENDER THIS IN A REAL BROWSER</span>
+          <code>{`bhashafix scan --url ${result.target} --locales ${result.requestedLocales.join(",")} --viewports mobile,desktop`}</code>
+          <small>
+            Runs Chromium locally: layout measurement, axe, screenshots and a
+            persisted scan ID. None of that ran here.
+          </small>
         </div>
         <div className="live-result-verdict">
           <small>BLOCKING IN CHECKS RUN</small>
