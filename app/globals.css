@@ -100,6 +100,11 @@ textarea:focus-visible {
 code,
 pre {
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  /* Long, unwrappable code lines must scroll inside their own box. Without
+     this the page itself scrolls sideways on a narrow viewport, which is the
+     exact defect this product reports as BF-VIS-VIEWPORT-OVERFLOW. */
+  max-width: 100%;
+  overflow-x: auto;
 }
 
 .global-header {
