@@ -23,7 +23,7 @@
     "test:e2e": "playwright test",
     "test:mcp": "vitest run tests/mcp --config vitest.config.mjs",
     "test:cli": "vitest run tests/cli --config vitest.config.mjs",
-    "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm test:cli && pnpm test:mcp && pnpm build && pnpm repair:nextjs && pnpm test:integration && pnpm fixtures:clean && pnpm fixtures:broken && pnpm fixtures:failed && pnpm pack:verify && pnpm mcp:inspect && pnpm mcpc:smoke && pnpm test:e2e && pnpm demo:reset && pnpm demo:scan && pnpm demo:repair && pnpm demo:verify && pnpm benchmark && tsx scripts/release-receipt.ts && pnpm evidence:publish && pnpm submission:prepare && pnpm pptx:verify && pnpm audit:hostile",
+    "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm test:cli && pnpm test:mcp && pnpm build && pnpm repair:nextjs && pnpm test:integration && pnpm fixtures:clean && pnpm fixtures:broken && pnpm fixtures:failed && pnpm pack:verify && pnpm mcp:inspect && pnpm mcpc:smoke && pnpm test:e2e && pnpm demo:reset && pnpm demo:scan && pnpm demo:repair && pnpm demo:verify && pnpm benchmark && tsx scripts/release-receipt.ts && pnpm evidence:publish && pnpm submission:prepare && pnpm deck:build && pnpm pptx:verify && pnpm audit:hostile",
     "demo:reset": "tsx scripts/platform-demo.ts reset",
     "demo:scan": "tsx scripts/platform-demo.ts scan",
     "demo:repair": "tsx scripts/platform-demo.ts repair",
@@ -47,7 +47,8 @@
     "worker:browser": "tsx scripts/browser-worker.ts",
     "screenshots:capture": "tsx scripts/capture-submission-screenshots.ts",
     "production:smoke": "playwright test --config playwright.production.config.ts",
-    "evidence:publish": "tsx scripts/publish-evidence.ts"
+    "evidence:publish": "tsx scripts/publish-evidence.ts",
+    "deck:build": "tsx scripts/build-deck.ts"
   },
   "dependencies": {
     "@bhashafix/browser": "workspace:*",
@@ -90,6 +91,7 @@
     "esbuild": "0.27.2",
     "eslint": "9.39.4",
     "eslint-config-next": "16.2.6",
+    "pptxgenjs": "^4.0.1",
     "react-server-dom-webpack": "19.2.6",
     "tailwindcss": "4.2.1",
     "tsx": "4.20.5",
