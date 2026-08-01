@@ -3413,6 +3413,9 @@ pre {
   display: flex;
   flex-direction: column;
   border-left: 1px solid var(--border);
+  /* Grid items default to min-width:auto, so this track refused to shrink
+     below its content and pushed the page past the viewport on mobile. */
+  min-width: 0;
 }
 
 .docs-layout > aside a {
@@ -4082,6 +4085,19 @@ pre {
 
   .docs-layout {
     grid-template-columns: 1fr;
+    /* calc(100% - 80px) leaves too little room on a narrow viewport, and a
+       grid track will not shrink below its content, so the page itself
+       scrolled sideways. Measured on /trust at 390px: 413px document width. */
+    width: calc(100% - 32px);
+    gap: 32px;
+  }
+
+  /* Grid and flex children default to min-width:auto, which prevents long
+     content from shrinking. Without this the track stays wider than the
+     viewport no matter what the container is set to. */
+  .docs-layout > aside,
+  .docs-layout > article {
+    min-width: 0;
   }
 
   .docs-layout > aside {
