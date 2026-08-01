@@ -1,93 +1,47 @@
 # Manual action required
 
-Everything local is complete and `pnpm verify` exits 0. The steps below need an
-account action only the repository owner can take.
+Publication and deployment are done. One item remains, and it is the organiser's
+form, which needs an authenticated human session.
 
-## 1. Publish to GitHub
+## Completed without further action
 
-Run every command below from the repository root.
+| Step | State | Evidence |
+| --- | --- | --- |
+| Public GitHub repository | **done** | <https://github.com/vaibhav4046/bhashafix> |
+| GitHub Actions release gate | **passing** | run `30693952225`, `verify-localisation` green in 6m28s on a clean `ubuntu-latest` runner |
+| Vercel production deploy | **done** | <https://bhashafix.vercel.app> returns 200 and `POST /api/scan` returns a fresh scan ID |
+| Local release chain | **passing** | `pnpm verify` exits 0 across all 24 steps |
 
-The repository now exists and the remote is configured:
+## 1. Submit to the organiser
 
-```
-origin  https://github.com/vaibhav4046/bhashafix.git
-```
+Sign in to the hackathon dashboard, then:
 
-The push was rejected by GitHub, not by git:
+- Copy the final text from `submission/FINAL_SUBMISSION_FORM.md`.
+- Upload `submission/BhashaFix-Hackathon-Deck.pptx`.
+- Repository URL: `https://github.com/vaibhav4046/bhashafix`
+- Live URL: `https://bhashafix.vercel.app`
+- Confirm the exact deadline and timezone in the dashboard before submitting.
 
-```
-! [remote rejected] HEAD -> main (push declined due to email privacy restrictions)
-```
+Record confirmation only after the organiser accepts it. Nothing in this
+repository claims the submission has happened.
 
-Commits authored with a private email address cannot be pushed while
-"Block command line pushes that expose my email" is enabled on the account.
+## 2. Optional — enable browser-backed scanning in production
 
-**Option A — keep the history byte for byte (recommended).** Turn the setting
-off for one push, then turn it back on. Nothing is rewritten, so the Codex
-commits keep their original `codex@openai.com` authorship and their hashes,
-which the submission evidence relies on.
-
-1. Open <https://github.com/settings/emails>
-2. Untick **Block command line pushes that expose my email**
-3. Run:
-
-```powershell
-git push -u origin main
-```
-
-4. Re-tick the setting.
-
-**Option B — rewrite only your own authorship email.** This preserves every
-commit message, date, order and the `codex@openai.com` authorship, but it
-changes commit hashes, including the one recorded in
-`submission/RELEASE_MANIFEST.json`. Re-run `pnpm submission:prepare` afterwards.
+The hosted scan is HTTP-only by design: no browser is bundled into the
+serverless function. To render in a real browser from production, set a
+Playwright-compatible websocket endpoint in the Vercel project:
 
 ```powershell
-git filter-branch --env-filter '
-if [ "$GIT_AUTHOR_EMAIL" = "lalwanivaibhav079@gmail.com" ]; then
-  export GIT_AUTHOR_EMAIL="115102797+vaibhav4046@users.noreply.github.com"
-fi
-if [ "$GIT_COMMITTER_EMAIL" = "lalwanivaibhav079@gmail.com" ]; then
-  export GIT_COMMITTER_EMAIL="115102797+vaibhav4046@users.noreply.github.com"
-fi
-' --tag-name-filter cat -- --branches --tags
-git config user.email "115102797+vaibhav4046@users.noreply.github.com"
-git push -u origin main
-```
-
-After either option, watch the workflow:
-
-```powershell
-gh run watch --repo vaibhav4046/bhashafix
-```
-
-## 2. Redeploy to Vercel
-
-The project is already linked (`.vercel/project.json`, project `bhashafix`).
-Deployment needs an interactive Vercel login in this shell:
-
-```powershell
-pnpm dlx vercel@latest login
-pnpm dlx vercel@latest whoami
+pnpm dlx vercel@latest env add BHASHAFIX_BROWSER_WS_ENDPOINT production
 pnpm dlx vercel@latest --prod
 ```
 
-What the redeploy does and does not change: the hosted scan stays HTTP-only. No
-browser is bundled into the serverless function. Browser rendering runs through
-the local CLI, or through a remote endpoint when `BHASHAFIX_BROWSER_WS_ENDPOINT`
-is set in the project environment.
+Until that variable exists, the hosted path reports `browserRendered: false` and
+lists exactly which checks did not run. It does not pretend otherwise.
 
-## 3. Submit to the organiser
+## 3. Optional — durable hosted scan history
 
-Sign in to the organiser dashboard, copy the final text from
-`submission/FINAL_SUBMISSION_FORM.md`, upload
-`submission/BhashaFix-Hackathon-Deck.pptx`, add the real Vercel and GitHub URLs,
-review and submit. Record confirmation only after the organiser accepts it.
-
-## Not blocked
-
-Nothing else waits on authentication. `pnpm verify` runs the full chain
-locally — lint, typecheck, four test suites, build, fixture acceptance, packed
-CLI install, MCP Inspector, MCPC, Playwright, the demo repair proof, the
-ground-truth benchmark, submission preparation, deck validation and the hostile
-audit — and exits 0.
+Scan persistence is real for the CLI and local runs, backed by SQLite through
+`@bhashafix/persistence`. The hosted deployment has no configured database, so
+its store refuses writes rather than silently dropping records. Adding a
+Postgres driver and `DATABASE_URL` would make hosted scan links shareable.
