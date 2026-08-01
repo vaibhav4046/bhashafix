@@ -5,7 +5,7 @@ import { afterAll, describe, expect, it } from "vitest";
 import type { RenderedRoute } from "../../packages/browser/src/index";
 import { ScanSchema, type Issue, type Scan, type Severity } from "../../packages/shared/src/index";
 import { displayPath } from "../../packages/cli/src/display-path";
-import { resolveReport } from "../../packages/cli/src/open-report";
+import { resolveReport, viewerCommand } from "../../packages/cli/src/open-report";
 import { renderScanReportHtml } from "../../packages/cli/src/report-html";
 import { deriveScanStages } from "../../packages/cli/src/scan-stages";
 import { formatScanSummary } from "../../packages/cli/src/scan-summary";
@@ -362,5 +362,28 @@ describe("report resolution", () => {
     const resolved = await resolveReport(directory, "browser-one");
     expect(resolved?.source).toBe("requested");
     expect(resolved?.scanId).toBe("browser-one");
+  });
+});
+
+describe("platform opener", () => {
+  it("builds the opener invocation for each platform", () => {
+    const target = "C:\repo\.bhashafix\scans\s1\report.html";
+
+    const windows = viewerCommand("win32", target);
+    expect(windows.command).toBe("cmd.exe");
+    // `start` is a cmd builtin, and the path is quoted so a space in the
+    // project directory is not re-parsed as another argument.
+    expect(windows.args).toEqual(["/c", `start "" "${target}"`]);
+    expect(windows.windows).toBe(true);
+
+    const macos = viewerCommand("darwin", "/tmp/report.html");
+    expect(macos.command).toBe("open");
+    expect(macos.args).toEqual(["/tmp/report.html"]);
+    expect(macos.windows).toBe(false);
+
+    const linux = viewerCommand("linux", "/tmp/report.html");
+    expect(linux.command).toBe("xdg-open");
+    expect(linux.args).toEqual(["/tmp/report.html"]);
+    expect(linux.windows).toBe(false);
   });
 });

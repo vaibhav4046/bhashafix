@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-01T16:40:11.914Z",
+  "generatedAt": "2026-08-01T17:41:54.869Z",
   "note": "Every entry here was produced by an actual run and copied verbatim. Regenerate with `pnpm evidence:publish`.",
   "realSiteScans": {
     "generatedAt": "2026-08-01T08:49:28.793Z",
@@ -170,49 +170,57 @@
         "tool": "tools/list",
         "label": "List the tools the server exposes",
         "file": "/evidence/mcp/00-tools.json",
-        "bytes": 3950
+        "bytes": 5024,
+        "sha256": "511ae2c876c3d53b8336ffbd9579640fef08d3229db5269811ace38482416ffe"
       },
       {
         "tool": "bhashafix_inspect_project",
         "label": "Inspect the project",
         "file": "/evidence/mcp/01-inspect-project.json",
-        "bytes": 3003
+        "bytes": 3268,
+        "sha256": "859d445e88b5497822472ac959cfcf3743888c7a5fe556929f4a161a6c17215c"
       },
       {
         "tool": "bhashafix_create_scan",
         "label": "Create a scan",
         "file": "/evidence/mcp/02-create-scan.json",
-        "bytes": 395
+        "bytes": 484,
+        "sha256": "091f4ee1eacf6cab05210165aab9894c5f232126f0dd22a0ba06947b38885a67"
       },
       {
         "tool": "bhashafix_run_scan",
         "label": "Run it",
         "file": "/evidence/mcp/03-run-scan.json",
-        "bytes": 10631
+        "bytes": 13987,
+        "sha256": "915e0c8ac432219ece1f15f3a39521de2fa884a43dcdd2b9666c6e5ab2e4e242"
       },
       {
         "tool": "bhashafix_list_issues",
         "label": "Read the verified issues",
         "file": "/evidence/mcp/04-list-issues.json",
-        "bytes": 9576
+        "bytes": 12415,
+        "sha256": "1c30ba5d81634677fda7128456f0b656cffd76b3ec85d8e0227d9544e87256cb"
       },
       {
         "tool": "bhashafix_prepare_repair",
         "label": "Prepare a repair (dry run)",
         "file": "/evidence/mcp/06-repair-dry-run.json",
-        "bytes": 1803
+        "bytes": 1976,
+        "sha256": "c62cb74438a682c54ec2539d269332efb7d0a905cbb246aab45534e2b6747233"
       },
       {
         "tool": "bhashafix_apply_repair",
         "label": "Apply the approved issue IDs",
         "file": "/evidence/mcp/07-apply-repair.json",
-        "bytes": 1896
+        "bytes": 2073,
+        "sha256": "d87f6f248ae122e1d2639430e9936f245f5155e7753c41ede8aa40014b305118"
       },
       {
         "tool": "bhashafix_verify_repair",
         "label": "Rerun the identical predicates",
         "file": "/evidence/mcp/08-verify-repair.json",
-        "bytes": 365
+        "bytes": 429,
+        "sha256": "9a8f48f85ec8524f7d6af3ae7d6707aebd68689e7879615240f96672891153b4"
       }
     ]
   },
@@ -268,7 +276,7 @@
   },
   "atlaspayRepair": {
     "schemaVersion": "1.0",
-    "generatedAt": "2026-08-01T16:36:42.613Z",
+    "generatedAt": "2026-08-01T16:40:12.786Z",
     "origin": "RECORDED_REPLAY",
     "mode": "genuine deterministic replay artifact",
     "baselineScanId": "atlaspay-83210b0daea2",

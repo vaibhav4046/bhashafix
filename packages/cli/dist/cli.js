@@ -50643,10 +50643,19 @@ async function resolveReport(projectRoot, requestedScanId) {
   }
   return null;
 }
+function viewerCommand(platform, target) {
+  const windows = platform === "win32";
+  if (windows) {
+    return { command: "cmd.exe", args: ["/c", `start "" "${target}"`], windows };
+  }
+  return {
+    command: platform === "darwin" ? "open" : "xdg-open",
+    args: [target],
+    windows
+  };
+}
 async function openInViewer(target) {
-  const windows = process.platform === "win32";
-  const command = windows ? "cmd.exe" : process.platform === "darwin" ? "open" : "xdg-open";
-  const args = windows ? ["/c", `start "" "${target}"`] : [target];
+  const { command, args, windows } = viewerCommand(process.platform, target);
   await new Promise((resolve, reject) => {
     const child = spawn(command, args, {
       detached: !windows,

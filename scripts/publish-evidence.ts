@@ -167,15 +167,17 @@ for (const call of MCP_CALLS) {
     console.warn(`skipping MCP evidence ${call.file}: not on disk`);
     continue;
   }
-  await writeFile(
-    path.join(outputRoot, "mcp", call.file),
-    `${JSON.stringify(payload, null, 2)}\n`,
-  );
+  const written = path.join(outputRoot, "mcp", call.file);
+  await writeFile(written, `${JSON.stringify(payload, null, 2)}\n`);
   mcpCalls.push({
     tool: call.tool,
     label: call.label,
     file: `/evidence/mcp/${call.file}`,
-    bytes: JSON.stringify(payload).length,
+    // Measure the file that actually ships, not the compact serialisation.
+    // The written file is pretty-printed, so the two differed by about a third
+    // and the recorded size described a file nobody could download.
+    bytes: (await stat(written)).size,
+    sha256: await sha256(written),
   });
 }
 

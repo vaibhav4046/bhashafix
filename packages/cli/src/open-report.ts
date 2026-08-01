@@ -108,14 +108,31 @@ export async function resolveReport(
  * command line is passed verbatim with the path quoted; that keeps spaces and
  * shell metacharacters in the project path from being re-parsed.
  */
+export type ViewerCommand = { command: string; args: string[]; windows: boolean };
+
+/**
+ * Build the opener invocation for a platform.
+ *
+ * Split out from the spawn so the macOS and Linux forms can be asserted from
+ * a Windows machine, where they cannot otherwise be exercised.
+ */
+export function viewerCommand(
+  platform: NodeJS.Platform,
+  target: string,
+): ViewerCommand {
+  const windows = platform === "win32";
+  if (windows) {
+    return { command: "cmd.exe", args: ["/c", `start "" "${target}"`], windows };
+  }
+  return {
+    command: platform === "darwin" ? "open" : "xdg-open",
+    args: [target],
+    windows,
+  };
+}
+
 export async function openInViewer(target: string): Promise<void> {
-  const windows = process.platform === "win32";
-  const command = windows
-    ? "cmd.exe"
-    : process.platform === "darwin"
-      ? "open"
-      : "xdg-open";
-  const args = windows ? ["/c", `start "" "${target}"`] : [target];
+  const { command, args, windows } = viewerCommand(process.platform, target);
   await new Promise<void>((resolve, reject) => {
     const child = spawn(command, args, {
       detached: !windows,
