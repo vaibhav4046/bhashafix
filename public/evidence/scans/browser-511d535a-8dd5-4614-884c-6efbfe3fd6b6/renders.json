@@ -1,0 +1,122 @@
+[
+  {
+    "route": "/en-US/docs/Web/HTML",
+    "locale": "en-GB",
+    "viewport": {
+      "name": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    "theme": "light",
+    "url": "https://developer.mozilla.org/en-US/docs/Web/HTML",
+    "status": 200,
+    "renderedAt": "2026-08-01T08:48:50.733Z",
+    "durationMs": 2436,
+    "measuredElements": 205,
+    "consoleErrors": 0,
+    "failedRequests": 0,
+    "axeViolations": 3,
+    "screenshot": "screenshots/2af46bda2ccb.png",
+    "dom": "dom/2af46bda2ccb.html"
+  },
+  {
+    "route": "/en-US/docs/Web/HTML",
+    "locale": "de-DE",
+    "viewport": {
+      "name": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    "theme": "light",
+    "url": "https://developer.mozilla.org/en-US/docs/Web/HTML?locale=de-DE",
+    "status": 200,
+    "renderedAt": "2026-08-01T08:49:02.116Z",
+    "durationMs": 11369,
+    "measuredElements": 205,
+    "consoleErrors": 0,
+    "failedRequests": 0,
+    "axeViolations": 3,
+    "screenshot": "screenshots/167b33589639.png",
+    "dom": "dom/167b33589639.html"
+  },
+  {
+    "route": "/en-US/docs/Web/CSS",
+    "locale": "en-GB",
+    "viewport": {
+      "name": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    "theme": "light",
+    "url": "https://developer.mozilla.org/en-US/docs/Web/CSS",
+    "status": 200,
+    "renderedAt": "2026-08-01T08:49:07.854Z",
+    "durationMs": 5723,
+    "measuredElements": 181,
+    "consoleErrors": 0,
+    "failedRequests": 0,
+    "axeViolations": 2,
+    "screenshot": "screenshots/8532d493caf1.png",
+    "dom": "dom/8532d493caf1.html"
+  },
+  {
+    "route": "/en-US/docs/Web/CSS",
+    "locale": "de-DE",
+    "viewport": {
+      "name": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    "theme": "light",
+    "url": "https://developer.mozilla.org/en-US/docs/Web/CSS?locale=de-DE",
+    "status": 200,
+    "renderedAt": "2026-08-01T08:49:10.420Z",
+    "durationMs": 2554,
+    "measuredElements": 181,
+    "consoleErrors": 0,
+    "failedRequests": 0,
+    "axeViolations": 3,
+    "screenshot": "screenshots/df6a156f7008.png",
+    "dom": "dom/df6a156f7008.html"
+  },
+  {
+    "route": "/en-US/docs/Web/JavaScript",
+    "locale": "en-GB",
+    "viewport": {
+      "name": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    "theme": "light",
+    "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript",
+    "status": 200,
+    "renderedAt": "2026-08-01T08:49:12.788Z",
+    "durationMs": 2358,
+    "measuredElements": 205,
+    "consoleErrors": 0,
+    "failedRequests": 0,
+    "axeViolations": 3,
+    "screenshot": "screenshots/bc3e6871febf.png",
+    "dom": "dom/bc3e6871febf.html"
+  },
+  {
+    "route": "/en-US/docs/Web/JavaScript",
+    "locale": "de-DE",
+    "viewport": {
+      "name": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    "theme": "light",
+    "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript?locale=de-DE",
+    "status": 200,
+    "renderedAt": "2026-08-01T08:49:15.083Z",
+    "durationMs": 2283,
+    "measuredElements": 205,
+    "consoleErrors": 0,
+    "failedRequests": 0,
+    "axeViolations": 3,
+    "screenshot": "screenshots/9c9c78bbffdd.png",
+    "dom": "dom/9c9c78bbffdd.html"
+  }
+]

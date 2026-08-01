@@ -1,0 +1,399 @@
+{
+  "scanId": "browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6",
+  "origin": "LOCAL_REPOSITORY_SCAN",
+  "status": "completed_with_warnings",
+  "startedAt": "2026-08-01T08:48:48.157Z",
+  "completedAt": "2026-08-01T08:49:15.201Z",
+  "config": {
+    "projectRoot": "<local project root>",
+    "url": "https://developer.mozilla.org/en-US/docs/Web/HTML",
+    "sourceLocale": "en-GB",
+    "locales": [
+      "en-GB",
+      "de-DE"
+    ],
+    "routes": [
+      "/en-US/docs/Web/HTML",
+      "/en-US/docs/Web/CSS",
+      "/en-US/docs/Web/JavaScript"
+    ],
+    "viewports": [
+      {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      }
+    ],
+    "browsers": [
+      "chromium"
+    ],
+    "themes": [
+      "light"
+    ],
+    "maxPages": 5,
+    "maxDepth": 1,
+    "rateLimitPerSecond": 2,
+    "noAi": true,
+    "hosted": false,
+    "allowLocalhost": true,
+    "allowlist": []
+  },
+  "issues": [
+    {
+      "issueId": "b717e29545293191",
+      "scanId": "browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6",
+      "origin": "LOCAL_REPOSITORY_SCAN",
+      "category": "accessibility",
+      "ruleId": "BF-A11Y-AXE-ARIA-VALID-ATTR-VALUE",
+      "severity": "blocking",
+      "confidence": "verified",
+      "locale": "en-GB",
+      "route": "/en-US/docs/Web/HTML",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "browser": "chromium",
+      "selector": "mdn-toggle-sidebar,mdn-button[aria-controls=\"main-sidebar\"]",
+      "sourceHint": null,
+      "description": "ARIA attributes must conform to valid values",
+      "whyItMatters": "axe-core reported a serious or critical accessibility failure on the rendered localised page.",
+      "evidence": {
+        "axeRule": "aria-valid-attr-value",
+        "impact": "critical",
+        "nodes": [
+          "mdn-toggle-sidebar,mdn-button[aria-controls=\"main-sidebar\"]"
+        ]
+      },
+      "measuredEvidence": {
+        "axeRule": "aria-valid-attr-value",
+        "impact": "critical",
+        "nodes": [
+          "mdn-toggle-sidebar,mdn-button[aria-controls=\"main-sidebar\"]"
+        ]
+      },
+      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6\\2af46bda2ccb.png",
+      "recommendedAction": "Resolve the axe rule \"aria-valid-attr-value\".",
+      "deterministicPredicate": "axe.run() reports no serious/critical violation of aria-valid-attr-value",
+      "humanReviewRequired": false
+    },
+    {
+      "issueId": "f94da7418029aa0f",
+      "scanId": "browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6",
+      "origin": "LOCAL_REPOSITORY_SCAN",
+      "category": "locale",
+      "ruleId": "BF-LOC-LANG-MISMATCH",
+      "severity": "blocking",
+      "confidence": "verified",
+      "locale": "de-DE",
+      "route": "/en-US/docs/Web/HTML",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "browser": "chromium",
+      "selector": "html",
+      "sourceHint": null,
+      "description": "The page was requested as de-DE but declares en-US.",
+      "whyItMatters": "The served document is not the language the user asked for, so the localisation was not applied.",
+      "evidence": {
+        "declaredLang": "en-US",
+        "requestedLocale": "de-DE",
+        "declaredLanguage": "en",
+        "expectedLanguage": "de"
+      },
+      "measuredEvidence": {
+        "declaredLang": "en-US",
+        "requestedLocale": "de-DE",
+        "declaredLanguage": "en",
+        "expectedLanguage": "de"
+      },
+      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6\\167b33589639.png",
+      "recommendedAction": "Serve the de-DE document or correct the lang attribute.",
+      "deterministicPredicate": "primarySubtag(document.documentElement.lang) === primarySubtag(requestedLocale)",
+      "humanReviewRequired": false
+    },
+    {
+      "issueId": "c2c190a341ca343f",
+      "scanId": "browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6",
+      "origin": "LOCAL_REPOSITORY_SCAN",
+      "category": "accessibility",
+      "ruleId": "BF-A11Y-AXE-ARIA-VALID-ATTR-VALUE",
+      "severity": "blocking",
+      "confidence": "verified",
+      "locale": "de-DE",
+      "route": "/en-US/docs/Web/HTML",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "browser": "chromium",
+      "selector": "mdn-toggle-sidebar,mdn-button[aria-controls=\"main-sidebar\"]",
+      "sourceHint": null,
+      "description": "ARIA attributes must conform to valid values",
+      "whyItMatters": "axe-core reported a serious or critical accessibility failure on the rendered localised page.",
+      "evidence": {
+        "axeRule": "aria-valid-attr-value",
+        "impact": "critical",
+        "nodes": [
+          "mdn-toggle-sidebar,mdn-button[aria-controls=\"main-sidebar\"]"
+        ]
+      },
+      "measuredEvidence": {
+        "axeRule": "aria-valid-attr-value",
+        "impact": "critical",
+        "nodes": [
+          "mdn-toggle-sidebar,mdn-button[aria-controls=\"main-sidebar\"]"
+        ]
+      },
+      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6\\167b33589639.png",
+      "recommendedAction": "Resolve the axe rule \"aria-valid-attr-value\".",
+      "deterministicPredicate": "axe.run() reports no serious/critical violation of aria-valid-attr-value",
+      "humanReviewRequired": false
+    },
+    {
+      "issueId": "8b5b151c2655bef6",
+      "scanId": "browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6",
+      "origin": "LOCAL_REPOSITORY_SCAN",
+      "category": "accessibility",
+      "ruleId": "BF-A11Y-AXE-ARIA-VALID-ATTR-VALUE",
+      "severity": "blocking",
+      "confidence": "verified",
+      "locale": "en-GB",
+      "route": "/en-US/docs/Web/CSS",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "browser": "chromium",
+      "selector": "mdn-toggle-sidebar,mdn-button[aria-controls=\"main-sidebar\"]",
+      "sourceHint": null,
+      "description": "ARIA attributes must conform to valid values",
+      "whyItMatters": "axe-core reported a serious or critical accessibility failure on the rendered localised page.",
+      "evidence": {
+        "axeRule": "aria-valid-attr-value",
+        "impact": "critical",
+        "nodes": [
+          "mdn-toggle-sidebar,mdn-button[aria-controls=\"main-sidebar\"]"
+        ]
+      },
+      "measuredEvidence": {
+        "axeRule": "aria-valid-attr-value",
+        "impact": "critical",
+        "nodes": [
+          "mdn-toggle-sidebar,mdn-button[aria-controls=\"main-sidebar\"]"
+        ]
+      },
+      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6\\8532d493caf1.png",
+      "recommendedAction": "Resolve the axe rule \"aria-valid-attr-value\".",
+      "deterministicPredicate": "axe.run() reports no serious/critical violation of aria-valid-attr-value",
+      "humanReviewRequired": false
+    },
+    {
+      "issueId": "5bf3412ca2054817",
+      "scanId": "browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6",
+      "origin": "LOCAL_REPOSITORY_SCAN",
+      "category": "locale",
+      "ruleId": "BF-LOC-LANG-MISMATCH",
+      "severity": "blocking",
+      "confidence": "verified",
+      "locale": "de-DE",
+      "route": "/en-US/docs/Web/CSS",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "browser": "chromium",
+      "selector": "html",
+      "sourceHint": null,
+      "description": "The page was requested as de-DE but declares en-US.",
+      "whyItMatters": "The served document is not the language the user asked for, so the localisation was not applied.",
+      "evidence": {
+        "declaredLang": "en-US",
+        "requestedLocale": "de-DE",
+        "declaredLanguage": "en",
+        "expectedLanguage": "de"
+      },
+      "measuredEvidence": {
+        "declaredLang": "en-US",
+        "requestedLocale": "de-DE",
+        "declaredLanguage": "en",
+        "expectedLanguage": "de"
+      },
+      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6\\df6a156f7008.png",
+      "recommendedAction": "Serve the de-DE document or correct the lang attribute.",
+      "deterministicPredicate": "primarySubtag(document.documentElement.lang) === primarySubtag(requestedLocale)",
+      "humanReviewRequired": false
+    },
+    {
+      "issueId": "bbb47e449f12910c",
+      "scanId": "browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6",
+      "origin": "LOCAL_REPOSITORY_SCAN",
+      "category": "accessibility",
+      "ruleId": "BF-A11Y-AXE-ARIA-VALID-ATTR-VALUE",
+      "severity": "blocking",
+      "confidence": "verified",
+      "locale": "de-DE",
+      "route": "/en-US/docs/Web/CSS",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "browser": "chromium",
+      "selector": "mdn-toggle-sidebar,mdn-button[aria-controls=\"main-sidebar\"]",
+      "sourceHint": null,
+      "description": "ARIA attributes must conform to valid values",
+      "whyItMatters": "axe-core reported a serious or critical accessibility failure on the rendered localised page.",
+      "evidence": {
+        "axeRule": "aria-valid-attr-value",
+        "impact": "critical",
+        "nodes": [
+          "mdn-toggle-sidebar,mdn-button[aria-controls=\"main-sidebar\"]"
+        ]
+      },
+      "measuredEvidence": {
+        "axeRule": "aria-valid-attr-value",
+        "impact": "critical",
+        "nodes": [
+          "mdn-toggle-sidebar,mdn-button[aria-controls=\"main-sidebar\"]"
+        ]
+      },
+      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6\\df6a156f7008.png",
+      "recommendedAction": "Resolve the axe rule \"aria-valid-attr-value\".",
+      "deterministicPredicate": "axe.run() reports no serious/critical violation of aria-valid-attr-value",
+      "humanReviewRequired": false
+    },
+    {
+      "issueId": "9bc277a9dff44a85",
+      "scanId": "browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6",
+      "origin": "LOCAL_REPOSITORY_SCAN",
+      "category": "accessibility",
+      "ruleId": "BF-A11Y-AXE-ARIA-VALID-ATTR-VALUE",
+      "severity": "blocking",
+      "confidence": "verified",
+      "locale": "en-GB",
+      "route": "/en-US/docs/Web/JavaScript",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "browser": "chromium",
+      "selector": "mdn-toggle-sidebar,mdn-button[aria-controls=\"main-sidebar\"]",
+      "sourceHint": null,
+      "description": "ARIA attributes must conform to valid values",
+      "whyItMatters": "axe-core reported a serious or critical accessibility failure on the rendered localised page.",
+      "evidence": {
+        "axeRule": "aria-valid-attr-value",
+        "impact": "critical",
+        "nodes": [
+          "mdn-toggle-sidebar,mdn-button[aria-controls=\"main-sidebar\"]"
+        ]
+      },
+      "measuredEvidence": {
+        "axeRule": "aria-valid-attr-value",
+        "impact": "critical",
+        "nodes": [
+          "mdn-toggle-sidebar,mdn-button[aria-controls=\"main-sidebar\"]"
+        ]
+      },
+      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6\\bc3e6871febf.png",
+      "recommendedAction": "Resolve the axe rule \"aria-valid-attr-value\".",
+      "deterministicPredicate": "axe.run() reports no serious/critical violation of aria-valid-attr-value",
+      "humanReviewRequired": false
+    },
+    {
+      "issueId": "c9527ed34fdf11ea",
+      "scanId": "browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6",
+      "origin": "LOCAL_REPOSITORY_SCAN",
+      "category": "locale",
+      "ruleId": "BF-LOC-LANG-MISMATCH",
+      "severity": "blocking",
+      "confidence": "verified",
+      "locale": "de-DE",
+      "route": "/en-US/docs/Web/JavaScript",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "browser": "chromium",
+      "selector": "html",
+      "sourceHint": null,
+      "description": "The page was requested as de-DE but declares en-US.",
+      "whyItMatters": "The served document is not the language the user asked for, so the localisation was not applied.",
+      "evidence": {
+        "declaredLang": "en-US",
+        "requestedLocale": "de-DE",
+        "declaredLanguage": "en",
+        "expectedLanguage": "de"
+      },
+      "measuredEvidence": {
+        "declaredLang": "en-US",
+        "requestedLocale": "de-DE",
+        "declaredLanguage": "en",
+        "expectedLanguage": "de"
+      },
+      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6\\9c9c78bbffdd.png",
+      "recommendedAction": "Serve the de-DE document or correct the lang attribute.",
+      "deterministicPredicate": "primarySubtag(document.documentElement.lang) === primarySubtag(requestedLocale)",
+      "humanReviewRequired": false
+    },
+    {
+      "issueId": "9b02a8c2cdc490cd",
+      "scanId": "browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6",
+      "origin": "LOCAL_REPOSITORY_SCAN",
+      "category": "accessibility",
+      "ruleId": "BF-A11Y-AXE-ARIA-VALID-ATTR-VALUE",
+      "severity": "blocking",
+      "confidence": "verified",
+      "locale": "de-DE",
+      "route": "/en-US/docs/Web/JavaScript",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "browser": "chromium",
+      "selector": "mdn-toggle-sidebar,mdn-button[aria-controls=\"main-sidebar\"]",
+      "sourceHint": null,
+      "description": "ARIA attributes must conform to valid values",
+      "whyItMatters": "axe-core reported a serious or critical accessibility failure on the rendered localised page.",
+      "evidence": {
+        "axeRule": "aria-valid-attr-value",
+        "impact": "critical",
+        "nodes": [
+          "mdn-toggle-sidebar,mdn-button[aria-controls=\"main-sidebar\"]"
+        ]
+      },
+      "measuredEvidence": {
+        "axeRule": "aria-valid-attr-value",
+        "impact": "critical",
+        "nodes": [
+          "mdn-toggle-sidebar,mdn-button[aria-controls=\"main-sidebar\"]"
+        ]
+      },
+      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6\\9c9c78bbffdd.png",
+      "recommendedAction": "Resolve the axe rule \"aria-valid-attr-value\".",
+      "deterministicPredicate": "axe.run() reports no serious/critical violation of aria-valid-attr-value",
+      "humanReviewRequired": false
+    }
+  ],
+  "routesDiscovered": [
+    "/en-US/docs/Web/HTML",
+    "/en-US/docs/Web/CSS",
+    "/en-US/docs/Web/JavaScript"
+  ],
+  "localesTested": [
+    "en-GB",
+    "de-DE"
+  ],
+  "engineVersion": "0.2.0",
+  "mode": "live"
+}

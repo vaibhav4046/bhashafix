@@ -1,0 +1,17 @@
+{
+  "scanId": "scan_0ccfa32b7a4748b7909c3e5a232d0944",
+  "verifiedAt": "2026-08-01T14:09:24.255Z",
+  "status": "verified",
+  "baselineBlocking": 10,
+  "finalBlocking": 0,
+  "sourceLocaleRegression": "PASS",
+  "consoleErrorDelta": null,
+  "accessibilityRegression": null,
+  "newBlockingIssues": 0,
+  "diffWithinPolicy": null,
+  "notMeasured": [
+    "consoleErrorDelta",
+    "accessibilityRegression",
+    "diffWithinPolicy"
+  ]
+}

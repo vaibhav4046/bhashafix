@@ -1,0 +1,154 @@
+{
+  "tools": [
+    {
+      "name": "bhashafix_inspect_project",
+      "description": "Inspect framework and localisation infrastructure without executing project scripts."
+    },
+    {
+      "name": "bhashafix_list_locales",
+      "description": "Validate and describe BCP 47 locales using platform standards."
+    },
+    {
+      "name": "bhashafix_crawl_routes",
+      "description": "Crawl a URL under the BhashaFix URL and SSRF policy."
+    },
+    {
+      "name": "bhashafix_extract_strings",
+      "description": "Extract visible strings and context from supplied HTML."
+    },
+    {
+      "name": "bhashafix_create_scan",
+      "description": "Create a validated AtlasPay scan request without claiming that execution has started."
+    },
+    {
+      "name": "bhashafix_run_scan",
+      "description": "Execute a previously created scan request and persist genuine deterministic evidence."
+    },
+    {
+      "name": "bhashafix_scan_project",
+      "description": "Run the deterministic AtlasPay localisation scan and persist its evidence."
+    },
+    {
+      "name": "bhashafix_get_scan",
+      "description": "Read a persisted scan by explicit scan ID."
+    },
+    {
+      "name": "bhashafix_list_issues",
+      "description": "List evidence-backed issues for a persisted scan."
+    },
+    {
+      "name": "bhashafix_get_issue",
+      "description": "Read one issue from an explicit scan."
+    },
+    {
+      "name": "bhashafix_check_translation",
+      "description": "Run deterministic placeholder and optional glossary checks."
+    },
+    {
+      "name": "bhashafix_generate_virtual_preview",
+      "description": "Generate a protected deterministic specimen for a sandboxed synthetic localisation preview."
+    },
+    {
+      "name": "bhashafix_suggest_translation",
+      "description": "Provider-routed linguistic operation. Returns an honest unavailable result when no provider is configured."
+    },
+    {
+      "name": "bhashafix_generate_translation",
+      "description": "Provider-routed linguistic operation. Returns an honest unavailable result when no provider is configured."
+    },
+    {
+      "name": "bhashafix_prepare_repair",
+      "description": "Prepare an allowlisted repair and return its diff without mutation."
+    },
+    {
+      "name": "bhashafix_apply_repair",
+      "description": "Apply explicitly selected allowlisted repairs. Dry-run is the default; mutation requires the exact prepared diff hash."
+    },
+    {
+      "name": "bhashafix_verify_repair",
+      "description": "Rerun identical predicates and return verification status."
+    },
+    {
+      "name": "bhashafix_generate_report",
+      "description": "Generate portable reports for an explicit scan."
+    }
+  ],
+  "resources": [
+    {
+      "name": "project-config",
+      "uri": "bhashafix://project/config",
+      "description": "BhashaFix project config",
+      "mimeType": "text/plain"
+    },
+    {
+      "name": "project-glossary",
+      "uri": "bhashafix://project/glossary",
+      "description": "BhashaFix project glossary",
+      "mimeType": "text/plain"
+    },
+    {
+      "name": "brand-voice",
+      "uri": "bhashafix://project/brand-voice",
+      "description": "BhashaFix brand voice",
+      "mimeType": "text/plain"
+    },
+    {
+      "name": "translation-memory",
+      "uri": "bhashafix://project/translation-memory",
+      "description": "BhashaFix translation memory",
+      "mimeType": "text/plain"
+    }
+  ],
+  "prompts": [
+    {
+      "name": "localise_project",
+      "description": "Inspect the project, identify source and target locales, extract strings, then generate only provider-backed translations and verify the rendered result.",
+      "arguments": [
+        {
+          "name": "project",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "audit_localisation",
+      "description": "Run deterministic localisation checks first, then separate model-assisted findings by confidence and human-review requirement.",
+      "arguments": [
+        {
+          "name": "project",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "repair_verified_issues",
+      "description": "Prepare a repair for explicit verified issue IDs, inspect the unified diff, apply only after confirmation, then rerun identical predicates.",
+      "arguments": [
+        {
+          "name": "project",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "review_translation_quality",
+      "description": "Review meaning, formality, brand voice and context. Treat subjective findings as recommendations with confidence, not facts.",
+      "arguments": [
+        {
+          "name": "project",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "prepare_release_report",
+      "description": "Verify blocking issues, source-locale regression, accessibility and diff policy before generating the release report.",
+      "arguments": [
+        {
+          "name": "project",
+          "required": false
+        }
+      ]
+    }
+  ]
+}

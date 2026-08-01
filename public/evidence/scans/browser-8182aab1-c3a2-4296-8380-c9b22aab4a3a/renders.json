@@ -1,0 +1,82 @@
+[
+  {
+    "route": "/wiki/Localization",
+    "locale": "en-GB",
+    "viewport": {
+      "name": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    "theme": "light",
+    "url": "https://en.wikipedia.org/wiki/Localization",
+    "status": 200,
+    "renderedAt": "2026-08-01T08:49:17.574Z",
+    "durationMs": 2028,
+    "measuredElements": 138,
+    "consoleErrors": 0,
+    "failedRequests": 0,
+    "axeViolations": 1,
+    "screenshot": "screenshots/b43905369c5b.png",
+    "dom": "dom/b43905369c5b.html"
+  },
+  {
+    "route": "/wiki/Localization",
+    "locale": "he-IL",
+    "viewport": {
+      "name": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    "theme": "light",
+    "url": "https://en.wikipedia.org/wiki/Localization?locale=he-IL",
+    "status": 200,
+    "renderedAt": "2026-08-01T08:49:19.599Z",
+    "durationMs": 2011,
+    "measuredElements": 138,
+    "consoleErrors": 0,
+    "failedRequests": 0,
+    "axeViolations": 1,
+    "screenshot": "screenshots/626916722c9b.png",
+    "dom": "dom/626916722c9b.html"
+  },
+  {
+    "route": "/wiki/Internationalization_and_localization",
+    "locale": "en-GB",
+    "viewport": {
+      "name": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    "theme": "light",
+    "url": "https://en.wikipedia.org/wiki/Internationalization_and_localization",
+    "status": 200,
+    "renderedAt": "2026-08-01T08:49:24.032Z",
+    "durationMs": 4421,
+    "measuredElements": 600,
+    "consoleErrors": 0,
+    "failedRequests": 0,
+    "axeViolations": 3,
+    "screenshot": "screenshots/d7b1b2888531.png",
+    "dom": "dom/d7b1b2888531.html"
+  },
+  {
+    "route": "/wiki/Internationalization_and_localization",
+    "locale": "he-IL",
+    "viewport": {
+      "name": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    "theme": "light",
+    "url": "https://en.wikipedia.org/wiki/Internationalization_and_localization?locale=he-IL",
+    "status": 200,
+    "renderedAt": "2026-08-01T08:49:28.578Z",
+    "durationMs": 4531,
+    "measuredElements": 600,
+    "consoleErrors": 0,
+    "failedRequests": 0,
+    "axeViolations": 3,
+    "screenshot": "screenshots/e95e07f75500.png",
+    "dom": "dom/e95e07f75500.html"
+  }
+]

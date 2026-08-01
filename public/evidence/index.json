@@ -1,0 +1,397 @@
+{
+  "generatedAt": "2026-08-01T15:28:00.027Z",
+  "note": "Every entry here was produced by an actual run and copied verbatim. Regenerate with `pnpm evidence:publish`.",
+  "realSiteScans": {
+    "generatedAt": "2026-08-01T08:49:28.793Z",
+    "limitations": [
+      "These targets carry no ground-truth labels, so no precision or recall figure is derived from them.",
+      "Coverage is deliberately bounded: a handful of routes per site at one viewport.",
+      "Only publicly reachable pages were requested; no authentication or access control was bypassed."
+    ],
+    "scans": [
+      {
+        "name": "BhashaFix production",
+        "scanId": "browser-bce30786-6142-49c0-910a-e9d9098e41ff",
+        "origin": "LOCAL_REPOSITORY_SCAN",
+        "target": "https://bhashafix.vercel.app",
+        "note": "The product's own deployment.",
+        "routes": [
+          "/",
+          "/docs",
+          "/trust"
+        ],
+        "locales": [
+          "en-GB",
+          "ar-SA"
+        ],
+        "renders": 6,
+        "issues": 10,
+        "startedAt": "2026-08-01T08:48:36.554Z",
+        "completedAt": "2026-08-01T08:48:48.002Z",
+        "screenshots": [
+          {
+            "file": "screenshots/20f4080953b7.png",
+            "bytes": 182307,
+            "sha256": "6aea3f81c8b12303a3aee16f3f27abefa04b7f18e5d6a6bc16dddcc55127724a"
+          },
+          {
+            "file": "screenshots/5bdf26e63c1d.png",
+            "bytes": 155903,
+            "sha256": "2e1c5854028b32371453eccd92725f2c3c80358633974f16e1f25d1586168ac5"
+          },
+          {
+            "file": "screenshots/81a9669ec542.png",
+            "bytes": 357504,
+            "sha256": "b027792fd43228aaaf4a5989c95e50cfe615386223c2a648eb26099b11e4b345"
+          },
+          {
+            "file": "screenshots/a0ae6988f4da.png",
+            "bytes": 357607,
+            "sha256": "18ad992c60ebb885aa681615f79ebd0c7daa5dd4650250c44bdc7112065480c5"
+          },
+          {
+            "file": "screenshots/bbb411ffa3d7.png",
+            "bytes": 155903,
+            "sha256": "2e1c5854028b32371453eccd92725f2c3c80358633974f16e1f25d1586168ac5"
+          },
+          {
+            "file": "screenshots/c8d1debef99a.png",
+            "bytes": 182307,
+            "sha256": "6aea3f81c8b12303a3aee16f3f27abefa04b7f18e5d6a6bc16dddcc55127724a"
+          }
+        ],
+        "path": "/evidence/scans/browser-bce30786-6142-49c0-910a-e9d9098e41ff"
+      },
+      {
+        "name": "MDN Web Docs",
+        "scanId": "browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6",
+        "origin": "LOCAL_REPOSITORY_SCAN",
+        "target": "https://developer.mozilla.org/en-US/docs/Web/HTML",
+        "note": "Mozilla property, three routes, single viewport.",
+        "routes": [
+          "/en-US/docs/Web/HTML",
+          "/en-US/docs/Web/CSS",
+          "/en-US/docs/Web/JavaScript"
+        ],
+        "locales": [
+          "en-GB",
+          "de-DE"
+        ],
+        "renders": 6,
+        "issues": 9,
+        "startedAt": "2026-08-01T08:48:48.157Z",
+        "completedAt": "2026-08-01T08:49:15.201Z",
+        "screenshots": [
+          {
+            "file": "screenshots/167b33589639.png",
+            "bytes": 614164,
+            "sha256": "8bded80d75b9d8c024c6c0e47a76eab964d2ed8a3260a423fe25684ada3aa618"
+          },
+          {
+            "file": "screenshots/2af46bda2ccb.png",
+            "bytes": 618553,
+            "sha256": "b28686d776baa9bf64bdbe6be05ab975cd94d31393b5347572ac228ae1b1ce77"
+          },
+          {
+            "file": "screenshots/8532d493caf1.png",
+            "bytes": 481425,
+            "sha256": "b4c83de5c5b3fdc186925e0753ff1bda74d6a1760027c89d30ea6c47dabf5868"
+          },
+          {
+            "file": "screenshots/9c9c78bbffdd.png",
+            "bytes": 586699,
+            "sha256": "13b741a7652678359038b43cfb519106b2d801034100bb87086d6ec82cf0ebda"
+          },
+          {
+            "file": "screenshots/bc3e6871febf.png",
+            "bytes": 586699,
+            "sha256": "13b741a7652678359038b43cfb519106b2d801034100bb87086d6ec82cf0ebda"
+          },
+          {
+            "file": "screenshots/df6a156f7008.png",
+            "bytes": 511905,
+            "sha256": "3c4d5c1d8402c086af2a17d089d3629004b62d4c875db9bdae940873c73ee0b4"
+          }
+        ],
+        "path": "/evidence/scans/browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6"
+      },
+      {
+        "name": "Wikipedia",
+        "scanId": "browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a",
+        "origin": "LOCAL_REPOSITORY_SCAN",
+        "target": "https://en.wikipedia.org/wiki/Localization",
+        "note": "Two article routes, single viewport.",
+        "routes": [
+          "/wiki/Localization",
+          "/wiki/Internationalization_and_localization"
+        ],
+        "locales": [
+          "en-GB",
+          "he-IL"
+        ],
+        "renders": 4,
+        "issues": 16,
+        "startedAt": "2026-08-01T08:49:15.382Z",
+        "completedAt": "2026-08-01T08:49:28.689Z",
+        "screenshots": [
+          {
+            "file": "screenshots/626916722c9b.png",
+            "bytes": 232689,
+            "sha256": "81949d074aa3ae0c245bf7a4c14314e4dbb08fd79bc56e3199887b55c953e7fb"
+          },
+          {
+            "file": "screenshots/b43905369c5b.png",
+            "bytes": 232689,
+            "sha256": "81949d074aa3ae0c245bf7a4c14314e4dbb08fd79bc56e3199887b55c953e7fb"
+          },
+          {
+            "file": "screenshots/d7b1b2888531.png",
+            "bytes": 1097176,
+            "sha256": "1c7a23c22f608991f1ba33ac91c07974542cc6a68c64be207588fa3807d724a3"
+          },
+          {
+            "file": "screenshots/e95e07f75500.png",
+            "bytes": 1097176,
+            "sha256": "1c7a23c22f608991f1ba33ac91c07974542cc6a68c64be207588fa3807d724a3"
+          }
+        ],
+        "path": "/evidence/scans/browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a"
+      }
+    ]
+  },
+  "mcp": {
+    "transport": "spawned STDIO process",
+    "serverEntry": "packages/mcp/dist/bin.js",
+    "tools": 18,
+    "resources": 4,
+    "prompts": 5,
+    "calls": [
+      {
+        "tool": "tools/list",
+        "label": "List the tools the server exposes",
+        "file": "/evidence/mcp/00-tools.json",
+        "bytes": 3950
+      },
+      {
+        "tool": "bhashafix_inspect_project",
+        "label": "Inspect the project",
+        "file": "/evidence/mcp/01-inspect-project.json",
+        "bytes": 2865
+      },
+      {
+        "tool": "bhashafix_create_scan",
+        "label": "Create a scan",
+        "file": "/evidence/mcp/02-create-scan.json",
+        "bytes": 395
+      },
+      {
+        "tool": "bhashafix_run_scan",
+        "label": "Run it",
+        "file": "/evidence/mcp/03-run-scan.json",
+        "bytes": 10631
+      },
+      {
+        "tool": "bhashafix_list_issues",
+        "label": "Read the verified issues",
+        "file": "/evidence/mcp/04-list-issues.json",
+        "bytes": 9576
+      },
+      {
+        "tool": "bhashafix_prepare_repair",
+        "label": "Prepare a repair (dry run)",
+        "file": "/evidence/mcp/06-repair-dry-run.json",
+        "bytes": 1803
+      },
+      {
+        "tool": "bhashafix_apply_repair",
+        "label": "Apply the approved issue IDs",
+        "file": "/evidence/mcp/07-apply-repair.json",
+        "bytes": 1896
+      },
+      {
+        "tool": "bhashafix_verify_repair",
+        "label": "Rerun the identical predicates",
+        "file": "/evidence/mcp/08-verify-repair.json",
+        "bytes": 365
+      }
+    ]
+  },
+  "benchmark": {
+    "fixture": {
+      "routes": [
+        "/",
+        "/pricing",
+        "/checkout",
+        "/settings"
+      ],
+      "locales": [
+        "en-GB",
+        "de-DE",
+        "ar-SA",
+        "ja-JP",
+        "hi-IN",
+        "th-TH",
+        "uk-UA",
+        "he-IL",
+        "bn-BD",
+        "ko-KR",
+        "zh-Hans-CN",
+        "am-ET"
+      ],
+      "viewports": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "seededDefects": 70,
+      "ruleFamilies": [
+        "BF-A11Y-IMG-ALT-MISSING",
+        "BF-A11Y-NAME-MISSING",
+        "BF-A11Y-TITLE-MISSING",
+        "BF-LNG-RAW-KEY",
+        "BF-LOC-DIR-MISSING",
+        "BF-LOC-HREFLANG-INVALID",
+        "BF-LOC-LANG-INVALID",
+        "BF-LOC-LANG-MISMATCH",
+        "BF-LOC-LANG-MISSING",
+        "BF-VIS-TEXT-CLIP-Y",
+        "BF-VIS-TEXT-OVERFLOW-X",
+        "BF-VIS-VIEWPORT-OVERFLOW"
+      ],
+      "expectedDetections": 204
+    },
+    "metrics": {
+      "recall": 1,
+      "precision": 1,
+      "cleanFalsePositives": 0
+    }
+  },
+  "atlaspayRepair": {
+    "schemaVersion": "1.0",
+    "generatedAt": "2026-08-01T14:13:24.670Z",
+    "origin": "RECORDED_REPLAY",
+    "mode": "genuine deterministic replay artifact",
+    "baselineScanId": "atlaspay-83210b0daea2",
+    "verificationScanId": "atlaspay-75123a28884f",
+    "baselineBlocking": 10,
+    "finalBlocking": 0,
+    "sourceLocaleRegression": "PASS",
+    "consoleErrorDelta": null,
+    "accessibilityRegression": null,
+    "diffWithinPolicy": null,
+    "status": "verified"
+  },
+  "nextjsRepair": {
+    "scanIds": {
+      "before": "browser-c9fe5e38-b259-46fc-9c5c-bb5a3ab04c00",
+      "after": "browser-b5f52e82-0510-4697-9a52-0809d449546f"
+    },
+    "before": {
+      "scanId": "browser-c9fe5e38-b259-46fc-9c5c-bb5a3ab04c00",
+      "total": 6,
+      "blocking": 6,
+      "byRule": {
+        "BF-LOC-LANG-MISMATCH": 3,
+        "BF-VIS-TEXT-OVERFLOW-X": 1,
+        "BF-LOC-DIR-MISSING": 1,
+        "BF-LNG-RAW-KEY": 1
+      },
+      "blockingByRule": {
+        "BF-LOC-LANG-MISMATCH": 3,
+        "BF-VIS-TEXT-OVERFLOW-X": 1,
+        "BF-LOC-DIR-MISSING": 1,
+        "BF-LNG-RAW-KEY": 1
+      },
+      "byLocale": {
+        "de-DE": 2,
+        "ar-SA": 2,
+        "ja-JP": 2
+      }
+    },
+    "after": {
+      "scanId": "browser-b5f52e82-0510-4697-9a52-0809d449546f",
+      "total": 0,
+      "blocking": 0,
+      "byRule": {},
+      "blockingByRule": {},
+      "byLocale": {}
+    },
+    "assertions": {
+      "sourceLocaleBlockingBefore": 0,
+      "sourceLocaleBlockingAfter": 0,
+      "newBlockingIssues": 0,
+      "repairedRuleBlockingAfter": {
+        "BF-LOC-LANG-MISMATCH": 0,
+        "BF-LOC-DIR-MISSING": 0,
+        "BF-VIS-TEXT-OVERFLOW-X": 0,
+        "BF-LNG-RAW-KEY": 0
+      },
+      "totalBlockingBefore": 6,
+      "totalBlockingAfter": 0
+    },
+    "repair": {
+      "diffHash": "f38acc25039b9150846f284d0dc9a4ef365490ea8174e0098391e0ccefdfd9e2",
+      "changedFiles": 3,
+      "changedLines": 10,
+      "maxChangedFiles": 3,
+      "maxChangedLines": 200,
+      "maxDiffBytes": 20000,
+      "allowlist": [
+        "fixtures/nextjs-app/app/[locale]/layout.tsx",
+        "fixtures/nextjs-app/app/globals.css",
+        "fixtures/nextjs-app/messages/ja-JP.json"
+      ],
+      "files": [
+        "fixtures/nextjs-app/app/[locale]/layout.tsx",
+        "fixtures/nextjs-app/app/globals.css",
+        "fixtures/nextjs-app/messages/ja-JP.json"
+      ],
+      "strategies": [
+        {
+          "ruleId": "BF-LOC-LANG-MISMATCH+BF-LOC-DIR-MISSING",
+          "file": "fixtures/nextjs-app/app/[locale]/layout.tsx",
+          "kind": "jsx-open-tag",
+          "issueIds": [
+            "4a4ffc419a174f9d",
+            "09c081e010834c73",
+            "ae5db8f3812215a3",
+            "4431faa087334847"
+          ],
+          "beforeSha256": "8abafa3e27ff8cddb858fd562d278cb7e387b2a19e1e574830c2a1865c8aa248",
+          "afterSha256": "a9a602d98b206779a995646c69d9e5b6dbf1b861563a1fd04a2b0956bc86a12b"
+        },
+        {
+          "ruleId": "BF-VIS-TEXT-OVERFLOW-X",
+          "file": "fixtures/nextjs-app/app/globals.css",
+          "kind": "css-relax-text-clamp",
+          "issueIds": [
+            "0f7bb3419f6f0a51"
+          ],
+          "beforeSha256": "4c45620a250dc5ad12f08149f51c4d9d96e1bcb596c12f0a6705c026d004b674",
+          "afterSha256": "fa014b19a92c21e946ce3b999d27ec46998615bf1feb698f951f856b17095faa"
+        },
+        {
+          "ruleId": "BF-LNG-RAW-KEY",
+          "file": "fixtures/nextjs-app/messages/ja-JP.json",
+          "kind": "translation-key",
+          "issueIds": [
+            "bd822ff876506401"
+          ],
+          "beforeSha256": "32cac748ea5ec74ae5cdf381f91691e441c206fe191b4f6a4b6180f4d1f92dca",
+          "afterSha256": "fc51fc6cec4b5c888c0ba6abdad75cb3db914fe5f05c933c635ed63338b37b73"
+        }
+      ],
+      "dryRunFirst": true,
+      "gitApplyCheck": {
+        "command": "git apply --check",
+        "exitCode": 0
+      },
+      "rollbackSnapshot": [
+        "fixtures/nextjs-app/app/[locale]/layout.tsx",
+        "fixtures/nextjs-app/app/globals.css",
+        "fixtures/nextjs-app/messages/ja-JP.json"
+      ],
+      "diffPath": "artifacts/nextjs-repair.diff"
+    }
+  }
+}

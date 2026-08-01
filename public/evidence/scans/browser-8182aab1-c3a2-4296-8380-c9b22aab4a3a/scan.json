@@ -1,0 +1,692 @@
+{
+  "scanId": "browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a",
+  "origin": "LOCAL_REPOSITORY_SCAN",
+  "status": "completed_with_warnings",
+  "startedAt": "2026-08-01T08:49:15.382Z",
+  "completedAt": "2026-08-01T08:49:28.689Z",
+  "config": {
+    "projectRoot": "<local project root>",
+    "url": "https://en.wikipedia.org/wiki/Localization",
+    "sourceLocale": "en-GB",
+    "locales": [
+      "en-GB",
+      "he-IL"
+    ],
+    "routes": [
+      "/wiki/Localization",
+      "/wiki/Internationalization_and_localization"
+    ],
+    "viewports": [
+      {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      }
+    ],
+    "browsers": [
+      "chromium"
+    ],
+    "themes": [
+      "light"
+    ],
+    "maxPages": 5,
+    "maxDepth": 1,
+    "rateLimitPerSecond": 2,
+    "noAi": true,
+    "hosted": false,
+    "allowLocalhost": true,
+    "allowlist": []
+  },
+  "issues": [
+    {
+      "issueId": "f1ce72772840d973",
+      "scanId": "browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a",
+      "origin": "LOCAL_REPOSITORY_SCAN",
+      "category": "locale",
+      "ruleId": "BF-LOC-LANG-MISMATCH",
+      "severity": "blocking",
+      "confidence": "verified",
+      "locale": "he-IL",
+      "route": "/wiki/Localization",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "browser": "chromium",
+      "selector": "html",
+      "sourceHint": null,
+      "description": "The page was requested as he-IL but declares en.",
+      "whyItMatters": "The served document is not the language the user asked for, so the localisation was not applied.",
+      "evidence": {
+        "declaredLang": "en",
+        "requestedLocale": "he-IL",
+        "declaredLanguage": "en",
+        "expectedLanguage": "he"
+      },
+      "measuredEvidence": {
+        "declaredLang": "en",
+        "requestedLocale": "he-IL",
+        "declaredLanguage": "en",
+        "expectedLanguage": "he"
+      },
+      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a\\626916722c9b.png",
+      "recommendedAction": "Serve the he-IL document or correct the lang attribute.",
+      "deterministicPredicate": "primarySubtag(document.documentElement.lang) === primarySubtag(requestedLocale)",
+      "humanReviewRequired": false
+    },
+    {
+      "issueId": "bee172eb3bc902be",
+      "scanId": "browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a",
+      "origin": "LOCAL_REPOSITORY_SCAN",
+      "category": "locale",
+      "ruleId": "BF-LOC-DIR-MISSING",
+      "severity": "blocking",
+      "confidence": "verified",
+      "locale": "he-IL",
+      "route": "/wiki/Localization",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "browser": "chromium",
+      "selector": "html",
+      "sourceHint": null,
+      "description": "he-IL is a right-to-left locale but the document direction is \"ltr\".",
+      "whyItMatters": "Reading order, alignment and navigation controls are mirrored incorrectly for right-to-left readers.",
+      "evidence": {
+        "declaredDir": "ltr",
+        "expectedDir": "rtl",
+        "script": "Hebr"
+      },
+      "measuredEvidence": {
+        "declaredDir": "ltr",
+        "expectedDir": "rtl",
+        "script": "Hebr"
+      },
+      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a\\626916722c9b.png",
+      "recommendedAction": "Set <html dir=\"rtl\"> for right-to-left locales.",
+      "deterministicPredicate": "document.documentElement.dir === 'rtl' when locale script is RTL",
+      "humanReviewRequired": false
+    },
+    {
+      "issueId": "a5c6631db039eba0",
+      "scanId": "browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a",
+      "origin": "LOCAL_REPOSITORY_SCAN",
+      "category": "accessibility",
+      "ruleId": "BF-A11Y-NAME-MISSING",
+      "severity": "blocking",
+      "confidence": "verified",
+      "locale": "en-GB",
+      "route": "/wiki/Internationalization_and_localization",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "browser": "chromium",
+      "selector": "#mwBg > tbody > tr:nth-of-type(3) > td > span > a",
+      "sourceHint": null,
+      "description": "The a control has no accessible name.",
+      "whyItMatters": "Screen-reader users cannot identify the control, and icon-only controls are frequently missed during translation.",
+      "evidence": {
+        "selector": "#mwBg > tbody > tr:nth-of-type(3) > td > span > a",
+        "tag": "a",
+        "role": null,
+        "accessibleName": ""
+      },
+      "measuredEvidence": {
+        "selector": "#mwBg > tbody > tr:nth-of-type(3) > td > span > a",
+        "tag": "a",
+        "role": null,
+        "accessibleName": ""
+      },
+      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a\\d7b1b2888531.png",
+      "recommendedAction": "Add a localised aria-label for en-GB.",
+      "deterministicPredicate": "accessibleName(element).trim().length > 0",
+      "humanReviewRequired": false
+    },
+    {
+      "issueId": "1cf4660e7b1cde1a",
+      "scanId": "browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a",
+      "origin": "LOCAL_REPOSITORY_SCAN",
+      "category": "accessibility",
+      "ruleId": "BF-A11Y-IMG-ALT-MISSING",
+      "severity": "serious",
+      "confidence": "verified",
+      "locale": "en-GB",
+      "route": "/wiki/Internationalization_and_localization",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "browser": "chromium",
+      "selector": "tbody > tr:nth-of-type(3) > td > span > a > img",
+      "sourceHint": null,
+      "description": "An image has no alt attribute.",
+      "whyItMatters": "Screen-reader users receive no description, and translated alt text is a common localisation gap.",
+      "evidence": {
+        "selector": "tbody > tr:nth-of-type(3) > td > span > a > img",
+        "rect": {
+          "x": 145,
+          "y": 394,
+          "width": 100,
+          "height": 100
+        }
+      },
+      "measuredEvidence": {
+        "selector": "tbody > tr:nth-of-type(3) > td > span > a > img",
+        "rect": {
+          "x": 145,
+          "y": 394,
+          "width": 100,
+          "height": 100
+        }
+      },
+      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a\\d7b1b2888531.png",
+      "recommendedAction": "Add a localised alt attribute, or alt=\"\" if the image is decorative.",
+      "deterministicPredicate": "img.hasAttribute('alt')",
+      "humanReviewRequired": false
+    },
+    {
+      "issueId": "dfc56544254c0dc5",
+      "scanId": "browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a",
+      "origin": "LOCAL_REPOSITORY_SCAN",
+      "category": "accessibility",
+      "ruleId": "BF-A11Y-NAME-MISSING",
+      "severity": "blocking",
+      "confidence": "verified",
+      "locale": "en-GB",
+      "route": "/wiki/Internationalization_and_localization",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "browser": "chromium",
+      "selector": "#mwWg",
+      "sourceHint": null,
+      "description": "The a control has no accessible name.",
+      "whyItMatters": "Screen-reader users cannot identify the control, and icon-only controls are frequently missed during translation.",
+      "evidence": {
+        "selector": "#mwWg",
+        "tag": "a",
+        "role": null,
+        "accessibleName": ""
+      },
+      "measuredEvidence": {
+        "selector": "#mwWg",
+        "tag": "a",
+        "role": null,
+        "accessibleName": ""
+      },
+      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a\\d7b1b2888531.png",
+      "recommendedAction": "Add a localised aria-label for en-GB.",
+      "deterministicPredicate": "accessibleName(element).trim().length > 0",
+      "humanReviewRequired": false
+    },
+    {
+      "issueId": "108553b785b8994e",
+      "scanId": "browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a",
+      "origin": "LOCAL_REPOSITORY_SCAN",
+      "category": "accessibility",
+      "ruleId": "BF-A11Y-IMG-ALT-MISSING",
+      "severity": "serious",
+      "confidence": "verified",
+      "locale": "en-GB",
+      "route": "/wiki/Internationalization_and_localization",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "browser": "chromium",
+      "selector": "#mwWw",
+      "sourceHint": null,
+      "description": "An image has no alt attribute.",
+      "whyItMatters": "Screen-reader users receive no description, and translated alt text is a common localisation gap.",
+      "evidence": {
+        "selector": "#mwWw",
+        "rect": {
+          "x": 28,
+          "y": 2834,
+          "width": 334,
+          "height": 189
+        }
+      },
+      "measuredEvidence": {
+        "selector": "#mwWw",
+        "rect": {
+          "x": 28,
+          "y": 2834,
+          "width": 334,
+          "height": 189
+        }
+      },
+      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a\\d7b1b2888531.png",
+      "recommendedAction": "Add a localised alt attribute, or alt=\"\" if the image is decorative.",
+      "deterministicPredicate": "img.hasAttribute('alt')",
+      "humanReviewRequired": false
+    },
+    {
+      "issueId": "396ebda09ea670ac",
+      "scanId": "browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a",
+      "origin": "LOCAL_REPOSITORY_SCAN",
+      "category": "accessibility",
+      "ruleId": "BF-A11Y-AXE-IMAGE-ALT",
+      "severity": "blocking",
+      "confidence": "verified",
+      "locale": "en-GB",
+      "route": "/wiki/Internationalization_and_localization",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "browser": "chromium",
+      "selector": "img[data-file-width=\"500\"]",
+      "sourceHint": null,
+      "description": "Images must have alternative text",
+      "whyItMatters": "axe-core reported a serious or critical accessibility failure on the rendered localised page.",
+      "evidence": {
+        "axeRule": "image-alt",
+        "impact": "critical",
+        "nodes": [
+          "img[data-file-width=\"500\"]",
+          "#mwWw"
+        ]
+      },
+      "measuredEvidence": {
+        "axeRule": "image-alt",
+        "impact": "critical",
+        "nodes": [
+          "img[data-file-width=\"500\"]",
+          "#mwWw"
+        ]
+      },
+      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a\\d7b1b2888531.png",
+      "recommendedAction": "Resolve the axe rule \"image-alt\".",
+      "deterministicPredicate": "axe.run() reports no serious/critical violation of image-alt",
+      "humanReviewRequired": false
+    },
+    {
+      "issueId": "8db367f54d1bedad",
+      "scanId": "browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a",
+      "origin": "LOCAL_REPOSITORY_SCAN",
+      "category": "accessibility",
+      "ruleId": "BF-A11Y-AXE-LINK-NAME",
+      "severity": "serious",
+      "confidence": "verified",
+      "locale": "en-GB",
+      "route": "/wiki/Internationalization_and_localization",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "browser": "chromium",
+      "selector": ".sidebar-image > span[typeof=\"mw:File\"] > .mw-file-description",
+      "sourceHint": null,
+      "description": "Links must have discernible text",
+      "whyItMatters": "axe-core reported a serious or critical accessibility failure on the rendered localised page.",
+      "evidence": {
+        "axeRule": "link-name",
+        "impact": "serious",
+        "nodes": [
+          ".sidebar-image > span[typeof=\"mw:File\"] > .mw-file-description",
+          "#mwWg",
+          "#mwAhA",
+          "#mwAjg",
+          "#mwAjo"
+        ]
+      },
+      "measuredEvidence": {
+        "axeRule": "link-name",
+        "impact": "serious",
+        "nodes": [
+          ".sidebar-image > span[typeof=\"mw:File\"] > .mw-file-description",
+          "#mwWg",
+          "#mwAhA",
+          "#mwAjg",
+          "#mwAjo"
+        ]
+      },
+      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a\\d7b1b2888531.png",
+      "recommendedAction": "Resolve the axe rule \"link-name\".",
+      "deterministicPredicate": "axe.run() reports no serious/critical violation of link-name",
+      "humanReviewRequired": false
+    },
+    {
+      "issueId": "cc91e36fd9616930",
+      "scanId": "browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a",
+      "origin": "LOCAL_REPOSITORY_SCAN",
+      "category": "locale",
+      "ruleId": "BF-LOC-LANG-MISMATCH",
+      "severity": "blocking",
+      "confidence": "verified",
+      "locale": "he-IL",
+      "route": "/wiki/Internationalization_and_localization",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "browser": "chromium",
+      "selector": "html",
+      "sourceHint": null,
+      "description": "The page was requested as he-IL but declares en.",
+      "whyItMatters": "The served document is not the language the user asked for, so the localisation was not applied.",
+      "evidence": {
+        "declaredLang": "en",
+        "requestedLocale": "he-IL",
+        "declaredLanguage": "en",
+        "expectedLanguage": "he"
+      },
+      "measuredEvidence": {
+        "declaredLang": "en",
+        "requestedLocale": "he-IL",
+        "declaredLanguage": "en",
+        "expectedLanguage": "he"
+      },
+      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a\\e95e07f75500.png",
+      "recommendedAction": "Serve the he-IL document or correct the lang attribute.",
+      "deterministicPredicate": "primarySubtag(document.documentElement.lang) === primarySubtag(requestedLocale)",
+      "humanReviewRequired": false
+    },
+    {
+      "issueId": "116828978fca67ed",
+      "scanId": "browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a",
+      "origin": "LOCAL_REPOSITORY_SCAN",
+      "category": "locale",
+      "ruleId": "BF-LOC-DIR-MISSING",
+      "severity": "blocking",
+      "confidence": "verified",
+      "locale": "he-IL",
+      "route": "/wiki/Internationalization_and_localization",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "browser": "chromium",
+      "selector": "html",
+      "sourceHint": null,
+      "description": "he-IL is a right-to-left locale but the document direction is \"ltr\".",
+      "whyItMatters": "Reading order, alignment and navigation controls are mirrored incorrectly for right-to-left readers.",
+      "evidence": {
+        "declaredDir": "ltr",
+        "expectedDir": "rtl",
+        "script": "Hebr"
+      },
+      "measuredEvidence": {
+        "declaredDir": "ltr",
+        "expectedDir": "rtl",
+        "script": "Hebr"
+      },
+      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a\\e95e07f75500.png",
+      "recommendedAction": "Set <html dir=\"rtl\"> for right-to-left locales.",
+      "deterministicPredicate": "document.documentElement.dir === 'rtl' when locale script is RTL",
+      "humanReviewRequired": false
+    },
+    {
+      "issueId": "cc4f5c62478f0ffd",
+      "scanId": "browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a",
+      "origin": "LOCAL_REPOSITORY_SCAN",
+      "category": "accessibility",
+      "ruleId": "BF-A11Y-NAME-MISSING",
+      "severity": "blocking",
+      "confidence": "verified",
+      "locale": "he-IL",
+      "route": "/wiki/Internationalization_and_localization",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "browser": "chromium",
+      "selector": "#mwBg > tbody > tr:nth-of-type(3) > td > span > a",
+      "sourceHint": null,
+      "description": "The a control has no accessible name.",
+      "whyItMatters": "Screen-reader users cannot identify the control, and icon-only controls are frequently missed during translation.",
+      "evidence": {
+        "selector": "#mwBg > tbody > tr:nth-of-type(3) > td > span > a",
+        "tag": "a",
+        "role": null,
+        "accessibleName": ""
+      },
+      "measuredEvidence": {
+        "selector": "#mwBg > tbody > tr:nth-of-type(3) > td > span > a",
+        "tag": "a",
+        "role": null,
+        "accessibleName": ""
+      },
+      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a\\e95e07f75500.png",
+      "recommendedAction": "Add a localised aria-label for he-IL.",
+      "deterministicPredicate": "accessibleName(element).trim().length > 0",
+      "humanReviewRequired": false
+    },
+    {
+      "issueId": "1a5ad05e33640984",
+      "scanId": "browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a",
+      "origin": "LOCAL_REPOSITORY_SCAN",
+      "category": "accessibility",
+      "ruleId": "BF-A11Y-IMG-ALT-MISSING",
+      "severity": "serious",
+      "confidence": "verified",
+      "locale": "he-IL",
+      "route": "/wiki/Internationalization_and_localization",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "browser": "chromium",
+      "selector": "tbody > tr:nth-of-type(3) > td > span > a > img",
+      "sourceHint": null,
+      "description": "An image has no alt attribute.",
+      "whyItMatters": "Screen-reader users receive no description, and translated alt text is a common localisation gap.",
+      "evidence": {
+        "selector": "tbody > tr:nth-of-type(3) > td > span > a > img",
+        "rect": {
+          "x": 145,
+          "y": 394,
+          "width": 100,
+          "height": 100
+        }
+      },
+      "measuredEvidence": {
+        "selector": "tbody > tr:nth-of-type(3) > td > span > a > img",
+        "rect": {
+          "x": 145,
+          "y": 394,
+          "width": 100,
+          "height": 100
+        }
+      },
+      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a\\e95e07f75500.png",
+      "recommendedAction": "Add a localised alt attribute, or alt=\"\" if the image is decorative.",
+      "deterministicPredicate": "img.hasAttribute('alt')",
+      "humanReviewRequired": false
+    },
+    {
+      "issueId": "a88fc9015ebdd4e1",
+      "scanId": "browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a",
+      "origin": "LOCAL_REPOSITORY_SCAN",
+      "category": "accessibility",
+      "ruleId": "BF-A11Y-NAME-MISSING",
+      "severity": "blocking",
+      "confidence": "verified",
+      "locale": "he-IL",
+      "route": "/wiki/Internationalization_and_localization",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "browser": "chromium",
+      "selector": "#mwWg",
+      "sourceHint": null,
+      "description": "The a control has no accessible name.",
+      "whyItMatters": "Screen-reader users cannot identify the control, and icon-only controls are frequently missed during translation.",
+      "evidence": {
+        "selector": "#mwWg",
+        "tag": "a",
+        "role": null,
+        "accessibleName": ""
+      },
+      "measuredEvidence": {
+        "selector": "#mwWg",
+        "tag": "a",
+        "role": null,
+        "accessibleName": ""
+      },
+      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a\\e95e07f75500.png",
+      "recommendedAction": "Add a localised aria-label for he-IL.",
+      "deterministicPredicate": "accessibleName(element).trim().length > 0",
+      "humanReviewRequired": false
+    },
+    {
+      "issueId": "a1300cbd2282021d",
+      "scanId": "browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a",
+      "origin": "LOCAL_REPOSITORY_SCAN",
+      "category": "accessibility",
+      "ruleId": "BF-A11Y-IMG-ALT-MISSING",
+      "severity": "serious",
+      "confidence": "verified",
+      "locale": "he-IL",
+      "route": "/wiki/Internationalization_and_localization",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "browser": "chromium",
+      "selector": "#mwWw",
+      "sourceHint": null,
+      "description": "An image has no alt attribute.",
+      "whyItMatters": "Screen-reader users receive no description, and translated alt text is a common localisation gap.",
+      "evidence": {
+        "selector": "#mwWw",
+        "rect": {
+          "x": 28,
+          "y": 2834,
+          "width": 334,
+          "height": 189
+        }
+      },
+      "measuredEvidence": {
+        "selector": "#mwWw",
+        "rect": {
+          "x": 28,
+          "y": 2834,
+          "width": 334,
+          "height": 189
+        }
+      },
+      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a\\e95e07f75500.png",
+      "recommendedAction": "Add a localised alt attribute, or alt=\"\" if the image is decorative.",
+      "deterministicPredicate": "img.hasAttribute('alt')",
+      "humanReviewRequired": false
+    },
+    {
+      "issueId": "592414f00b6823b3",
+      "scanId": "browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a",
+      "origin": "LOCAL_REPOSITORY_SCAN",
+      "category": "accessibility",
+      "ruleId": "BF-A11Y-AXE-IMAGE-ALT",
+      "severity": "blocking",
+      "confidence": "verified",
+      "locale": "he-IL",
+      "route": "/wiki/Internationalization_and_localization",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "browser": "chromium",
+      "selector": "img[data-file-width=\"500\"]",
+      "sourceHint": null,
+      "description": "Images must have alternative text",
+      "whyItMatters": "axe-core reported a serious or critical accessibility failure on the rendered localised page.",
+      "evidence": {
+        "axeRule": "image-alt",
+        "impact": "critical",
+        "nodes": [
+          "img[data-file-width=\"500\"]",
+          "#mwWw"
+        ]
+      },
+      "measuredEvidence": {
+        "axeRule": "image-alt",
+        "impact": "critical",
+        "nodes": [
+          "img[data-file-width=\"500\"]",
+          "#mwWw"
+        ]
+      },
+      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a\\e95e07f75500.png",
+      "recommendedAction": "Resolve the axe rule \"image-alt\".",
+      "deterministicPredicate": "axe.run() reports no serious/critical violation of image-alt",
+      "humanReviewRequired": false
+    },
+    {
+      "issueId": "c1f1a7a94ab7b1ac",
+      "scanId": "browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a",
+      "origin": "LOCAL_REPOSITORY_SCAN",
+      "category": "accessibility",
+      "ruleId": "BF-A11Y-AXE-LINK-NAME",
+      "severity": "serious",
+      "confidence": "verified",
+      "locale": "he-IL",
+      "route": "/wiki/Internationalization_and_localization",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "browser": "chromium",
+      "selector": ".sidebar-image > span[typeof=\"mw:File\"] > .mw-file-description",
+      "sourceHint": null,
+      "description": "Links must have discernible text",
+      "whyItMatters": "axe-core reported a serious or critical accessibility failure on the rendered localised page.",
+      "evidence": {
+        "axeRule": "link-name",
+        "impact": "serious",
+        "nodes": [
+          ".sidebar-image > span[typeof=\"mw:File\"] > .mw-file-description",
+          "#mwWg",
+          "#mwAhA",
+          "#mwAjg",
+          "#mwAjo"
+        ]
+      },
+      "measuredEvidence": {
+        "axeRule": "link-name",
+        "impact": "serious",
+        "nodes": [
+          ".sidebar-image > span[typeof=\"mw:File\"] > .mw-file-description",
+          "#mwWg",
+          "#mwAhA",
+          "#mwAjg",
+          "#mwAjo"
+        ]
+      },
+      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a\\e95e07f75500.png",
+      "recommendedAction": "Resolve the axe rule \"link-name\".",
+      "deterministicPredicate": "axe.run() reports no serious/critical violation of link-name",
+      "humanReviewRequired": false
+    }
+  ],
+  "routesDiscovered": [
+    "/wiki/Localization",
+    "/wiki/Internationalization_and_localization"
+  ],
+  "localesTested": [
+    "en-GB",
+    "he-IL"
+  ],
+  "engineVersion": "0.2.0",
+  "mode": "live"
+}
