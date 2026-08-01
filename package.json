@@ -41,7 +41,8 @@
     "submission:prepare": "tsx scripts/prepare-submission.ts",
     "pptx:verify": "tsx scripts/validate-pptx.ts",
     "audit:hostile": "tsx scripts/hostile-audit.ts",
-    "db:generate": "drizzle-kit generate"
+    "db:generate": "drizzle-kit generate",
+    "scan:real-sites": "tsx scripts/real-site-scans.ts"
   },
   "dependencies": {
     "@bhashafix/browser": "workspace:*",
@@ -53,6 +54,7 @@
     "@bhashafix/linguistic-engine": "workspace:*",
     "@bhashafix/locale-engine": "workspace:*",
     "@bhashafix/mcp": "workspace:*",
+    "@bhashafix/persistence": "workspace:*",
     "@bhashafix/providers": "workspace:*",
     "@bhashafix/repair-engine": "workspace:*",
     "@bhashafix/report": "workspace:*",

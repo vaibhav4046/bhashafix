@@ -35,6 +35,9 @@ importers:
       '@bhashafix/mcp':
         specifier: workspace:*
         version: link:packages/mcp
+      '@bhashafix/persistence':
+        specifier: workspace:*
+        version: link:packages/persistence
       '@bhashafix/providers':
         specifier: workspace:*
         version: link:packages/providers
@@ -195,6 +198,9 @@ importers:
       '@bhashafix/locale-engine':
         specifier: workspace:*
         version: link:../locale-engine
+      '@bhashafix/persistence':
+        specifier: workspace:*
+        version: link:../persistence
       '@bhashafix/repair-engine':
         specifier: workspace:*
         version: link:../repair-engine
@@ -273,6 +279,15 @@ importers:
       '@modelcontextprotocol/sdk':
         specifier: 1.17.5
         version: 1.17.5
+      zod:
+        specifier: 3.25.76
+        version: 3.25.76
+
+  packages/persistence:
+    dependencies:
+      '@bhashafix/shared':
+        specifier: workspace:*
+        version: link:../shared
       zod:
         specifier: 3.25.76
         version: 3.25.76

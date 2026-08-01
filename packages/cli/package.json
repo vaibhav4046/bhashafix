@@ -29,6 +29,7 @@
     "@bhashafix/extractor": "workspace:*",
     "@bhashafix/linguistic-engine": "workspace:*",
     "@bhashafix/locale-engine": "workspace:*",
+    "@bhashafix/persistence": "workspace:*",
     "@bhashafix/repair-engine": "workspace:*",
     "@bhashafix/report": "workspace:*",
     "@bhashafix/verifier": "workspace:*"

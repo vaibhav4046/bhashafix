@@ -1,9 +1,10 @@
-import { randomUUID } from "node:crypto";
-import { mkdir, writeFile } from "node:fs/promises";
+import { createHash, randomUUID } from "node:crypto";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { discoverRoutes, runBrowserScan } from "@bhashafix/browser";
 import { validateTargetUrl } from "@bhashafix/crawler";
 import { localeProfile } from "@bhashafix/locale-engine";
+import { createScanStore, type ScanStore } from "@bhashafix/persistence";
 import { DEFAULT_VIEWPORTS, ScanSchema, type Scan } from "@bhashafix/shared";
 
 export type BrowserScanOptions = {
@@ -27,6 +28,7 @@ export type BrowserScanOutcome = {
   renderCount: number;
   remote: boolean;
   discoveredRoutes: number;
+  persistence: { driver: string; durable: boolean };
 };
 
 function selectViewports(names?: string[]) {
@@ -162,6 +164,10 @@ export async function runBrowserProjectScan(
     )}\n`,
   );
 
+  const store = await createScanStore({ projectRoot: options.projectRoot });
+  await persistScan(store, scan, result.renders, artifactDir);
+  await store.close();
+
   return {
     scan,
     artifactDir,
@@ -169,5 +175,66 @@ export async function runBrowserProjectScan(
     renderCount: result.coverage.renderCount,
     remote: result.remote,
     discoveredRoutes,
+    persistence: { driver: store.driver, durable: store.durable },
   };
+}
+
+async function sha256File(file: string) {
+  return createHash("sha256").update(await readFile(file)).digest("hex");
+}
+
+/** Record the scan, its stage events and every artifact in the durable store. */
+async function persistScan(
+  store: ScanStore,
+  scan: Scan,
+  renders: Array<{
+    request: { route: string; locale: string; viewport: { name: string } };
+    screenshotPath: string | null;
+    domPath: string | null;
+    renderedAt: string;
+    durationMs: number;
+  }>,
+  artifactDir: string,
+) {
+  if (!store.durable) return;
+  await store.saveScan(scan);
+  await store.appendEvent({
+    scanId: scan.scanId,
+    at: scan.startedAt,
+    stage: "rendering",
+    message: `Rendered ${renders.length} page(s) in a real browser.`,
+    detail: { artifactDir },
+  });
+  for (const render of renders) {
+    await store.appendEvent({
+      scanId: scan.scanId,
+      at: render.renderedAt,
+      stage: "checking",
+      message: `${render.request.route} · ${render.request.locale} · ${render.request.viewport.name}`,
+      detail: { durationMs: render.durationMs },
+    });
+    for (const [kind, file] of [
+      ["screenshot", render.screenshotPath],
+      ["dom", render.domPath],
+    ] as const) {
+      if (!file) continue;
+      const bytes = await readFile(file);
+      await store.saveArtifact({
+        scanId: scan.scanId,
+        kind,
+        route: render.request.route,
+        locale: render.request.locale,
+        viewport: render.request.viewport.name,
+        filePath: path.relative(path.dirname(artifactDir), file).replaceAll("\\", "/"),
+        byteLength: bytes.byteLength,
+        sha256: await sha256File(file),
+      });
+    }
+  }
+  await store.appendEvent({
+    scanId: scan.scanId,
+    at: scan.completedAt,
+    stage: scan.status,
+    message: `${scan.issues.length} measured issue(s).`,
+  });
 }

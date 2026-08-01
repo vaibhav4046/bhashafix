@@ -57,6 +57,7 @@ type Options = {
   text?: string;
   locale?: string;
   pseudoMode?: PseudoMode;
+  scanId?: string;
 };
 
 const HELP = `BhashaFix — test, repair and prove every language before release
@@ -74,6 +75,7 @@ Commands:
               or evaluate the bundled fixture project (--project)
   translate-preview
               Generate a protected synthetic localisation preview
+  scans       List persisted scans, or show one with --scan <id>
   issues      List evidence-backed issues
   translate   Generate missing translations through a configured provider
   diagnose    Compatibility alias for issues
@@ -89,7 +91,7 @@ Options:
   --source-locale <bcp47> --locales <bcp47,bcp47>
   --routes </,/pricing> --viewports <mobile,desktop>
   --themes <light,dark>
-  --text <value> --locale <bcp47> --mode <pseudo-mode>
+  --text <value> --locale <bcp47> --mode <pseudo-mode> --scan <id>
   --config <path> --fail-on <blocking|warning|advisory>
 
 Exit codes: 0 passed · 1 blocking issues · 2 invalid config ·
@@ -139,6 +141,7 @@ function parseArgs(args: string[]) {
       }
       options.themes = themes as Array<"light" | "dark">;
     }
+    if (args[index] === "--scan" && value) options.scanId = value;
     if (args[index] === "--config" && value) options.configPath = value;
     if (args[index] === "--text" && value) options.text = value;
     if (args[index] === "--locale" && value) options.locale = value;
@@ -410,6 +413,48 @@ export async function runCli(
       return scan.issues.some((issue) => issue.severity === "blocking")
         ? EXIT.blocking
         : EXIT.passed;
+    }
+    if (command === "scans") {
+      const { createScanStore } = await import("@bhashafix/persistence");
+      const store = await createScanStore({ projectRoot: options.project });
+      try {
+        if (options.scanId) {
+          const record = await store.getScan(options.scanId);
+          if (!record) {
+            io.error(`No stored scan with id ${options.scanId}.`);
+            return EXIT.invalidConfig;
+          }
+          emit(
+            io,
+            options,
+            record,
+            [
+              `${record.summary.scanId} · ${record.summary.origin} · ${record.summary.status}`,
+              `target ${record.summary.target}`,
+              `${record.summary.issueCount} issue(s), ${record.summary.blockingCount} blocking`,
+              `${record.artifacts.length} artifact(s), ${record.events.length} event(s)`,
+            ].join("\n"),
+          );
+          return EXIT.passed;
+        }
+        const scans = await store.listScans();
+        emit(
+          io,
+          options,
+          { driver: store.driver, durable: store.durable, scans },
+          scans.length === 0
+            ? `No stored scans (${store.driver}).`
+            : scans
+                .map(
+                  (scan) =>
+                    `${scan.scanId}  ${scan.status.padEnd(24)} ${String(scan.blockingCount).padStart(3)} blocking  ${scan.target}`,
+                )
+                .join("\n"),
+        );
+        return EXIT.passed;
+      } finally {
+        await store.close();
+      }
     }
     if (command === "issues" || command === "diagnose") {
       const scan = await scanLocalProject(options.project, options);

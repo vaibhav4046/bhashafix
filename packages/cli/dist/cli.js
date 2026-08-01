@@ -533,8 +533,8 @@ var init_parseUtil = __esm({
     init_errors();
     init_en();
     makeIssue = (params) => {
-      const { data, path: path9, errorMaps, issueData } = params;
-      const fullPath = [...path9, ...issueData.path || []];
+      const { data, path: path10, errorMaps, issueData } = params;
+      const fullPath = [...path10, ...issueData.path || []];
       const fullIssue = {
         ...issueData,
         path: fullPath
@@ -842,11 +842,11 @@ var init_types = __esm({
     init_parseUtil();
     init_util();
     ParseInputLazyPath = class {
-      constructor(parent, value, path9, key) {
+      constructor(parent, value, path10, key) {
         this._cachedPath = [];
         this.parent = parent;
         this.data = value;
-        this._path = path9;
+        this._path = path10;
         this._key = key;
       }
       get path() {
@@ -7806,7 +7806,7 @@ var require_axe = __commonJS({
                 return lastId;
               },
               delete: function _delete(id2) {
-                var index = 0, set2 = map, i2, args = cache2[id2], length = args.length, path9 = [];
+                var index = 0, set2 = map, i2, args = cache2[id2], length = args.length, path10 = [];
                 if (length === 0) {
                   delete set2[length];
                 } else if (set2 = set2[length]) {
@@ -7815,7 +7815,7 @@ var require_axe = __commonJS({
                     if (i2 === -1) {
                       return;
                     }
-                    path9.push(set2, i2);
+                    path10.push(set2, i2);
                     set2 = set2[1][i2];
                     ++index;
                   }
@@ -7826,9 +7826,9 @@ var require_axe = __commonJS({
                   id2 = set2[1][i2];
                   set2[0].splice(i2, 1);
                   set2[1].splice(i2, 1);
-                  while (!set2[0].length && path9.length) {
-                    i2 = path9.pop();
-                    set2 = path9.pop();
+                  while (!set2[0].length && path10.length) {
+                    i2 = path10.pop();
+                    set2 = path10.pop();
                     set2[0].splice(i2, 1);
                     set2[1].splice(i2, 1);
                   }
@@ -7914,13 +7914,13 @@ var require_axe = __commonJS({
                 return lastId;
               },
               delete: function _delete(id2) {
-                var index = 0, set2 = map, i2, path9 = [], args = cache2[id2];
+                var index = 0, set2 = map, i2, path10 = [], args = cache2[id2];
                 while (index < length - 1) {
                   i2 = indexOf.call(set2[0], args[index]);
                   if (i2 === -1) {
                     return;
                   }
-                  path9.push(set2, i2);
+                  path10.push(set2, i2);
                   set2 = set2[1][i2];
                   ++index;
                 }
@@ -7931,9 +7931,9 @@ var require_axe = __commonJS({
                 id2 = set2[1][i2];
                 set2[0].splice(i2, 1);
                 set2[1].splice(i2, 1);
-                while (!set2[0].length && path9.length) {
-                  i2 = path9.pop();
-                  set2 = path9.pop();
+                while (!set2[0].length && path10.length) {
+                  i2 = path10.pop();
+                  set2 = path10.pop();
                   set2[0].splice(i2, 1);
                   set2[1].splice(i2, 1);
                 }
@@ -9332,8 +9332,8 @@ var require_axe = __commonJS({
             CssSelectorParser4.prototype.parse = function(str2) {
               return parser_context_1.parseCssSelector(str2, 0, this.pseudos, this.attrEqualityMods, this.ruleNestingOperators, this.substitutesEnabled);
             };
-            CssSelectorParser4.prototype.render = function(path9) {
-              return render_1.renderEntity(path9).trim();
+            CssSelectorParser4.prototype.render = function(path10) {
+              return render_1.renderEntity(path10).trim();
             };
             return CssSelectorParser4;
           })();
@@ -10689,14 +10689,14 @@ var require_axe = __commonJS({
         });
         var require_get_built_in = __commonJS2(function(exports2, module2) {
           "use strict";
-          var path9 = require_path();
+          var path10 = require_path();
           var global2 = require_global();
           var isCallable = require_is_callable2();
           var aFunction = function aFunction2(variable) {
             return isCallable(variable) ? variable : void 0;
           };
           module2.exports = function(namespace, method) {
-            return arguments.length < 2 ? aFunction(path9[namespace]) || aFunction(global2[namespace]) : path9[namespace] && path9[namespace][method] || global2[namespace] && global2[namespace][method];
+            return arguments.length < 2 ? aFunction(path10[namespace]) || aFunction(global2[namespace]) : path10[namespace] && path10[namespace][method] || global2[namespace] && global2[namespace][method];
           };
         });
         var require_object_is_prototype_of = __commonJS2(function(exports2, module2) {
@@ -11114,7 +11114,7 @@ var require_axe = __commonJS({
           var isCallable = require_is_callable2();
           var getOwnPropertyDescriptor = require_object_get_own_property_descriptor().f;
           var isForced = require_is_forced();
-          var path9 = require_path();
+          var path10 = require_path();
           var bind = require_function_bind_context();
           var createNonEnumerableProperty = require_create_non_enumerable_property();
           var hasOwn2 = require_has_own_property();
@@ -11142,7 +11142,7 @@ var require_axe = __commonJS({
             var STATIC = options.stat;
             var PROTO = options.proto;
             var nativeSource = GLOBAL ? global2 : STATIC ? global2[TARGET] : (global2[TARGET] || {}).prototype;
-            var target = GLOBAL ? path9 : path9[TARGET] || createNonEnumerableProperty(path9, TARGET, {})[TARGET];
+            var target = GLOBAL ? path10 : path10[TARGET] || createNonEnumerableProperty(path10, TARGET, {})[TARGET];
             var targetPrototype = target.prototype;
             var FORCED, USE_NATIVE, VIRTUAL_PROTOTYPE;
             var key2, sourceProperty, targetProperty, nativeProperty, resultProperty, descriptor;
@@ -11177,10 +11177,10 @@ var require_axe = __commonJS({
               createNonEnumerableProperty(target, key2, resultProperty);
               if (PROTO) {
                 VIRTUAL_PROTOTYPE = TARGET + "Prototype";
-                if (!hasOwn2(path9, VIRTUAL_PROTOTYPE)) {
-                  createNonEnumerableProperty(path9, VIRTUAL_PROTOTYPE, {});
+                if (!hasOwn2(path10, VIRTUAL_PROTOTYPE)) {
+                  createNonEnumerableProperty(path10, VIRTUAL_PROTOTYPE, {});
                 }
-                createNonEnumerableProperty(path9[VIRTUAL_PROTOTYPE], key2, sourceProperty);
+                createNonEnumerableProperty(path10[VIRTUAL_PROTOTYPE], key2, sourceProperty);
                 if (options.real && targetPrototype && (FORCED || !targetPrototype[key2])) {
                   createNonEnumerableProperty(targetPrototype, key2, sourceProperty);
                 }
@@ -11202,8 +11202,8 @@ var require_axe = __commonJS({
         var require_has_own = __commonJS2(function(exports2, module2) {
           "use strict";
           require_es_object_has_own();
-          var path9 = require_path();
-          module2.exports = path9.Object.hasOwn;
+          var path10 = require_path();
+          module2.exports = path10.Object.hasOwn;
         });
         var require_has_own2 = __commonJS2(function(exports2, module2) {
           "use strict";
@@ -11426,8 +11426,8 @@ var require_axe = __commonJS({
         var require_values = __commonJS2(function(exports2, module2) {
           "use strict";
           require_es_object_values();
-          var path9 = require_path();
-          module2.exports = path9.Object.values;
+          var path10 = require_path();
+          module2.exports = path10.Object.values;
         });
         var require_values2 = __commonJS2(function(exports2, module2) {
           "use strict";
@@ -12292,8 +12292,8 @@ var require_axe = __commonJS({
           "use strict";
           require_es_string_iterator();
           require_es_array_from();
-          var path9 = require_path();
-          module2.exports = path9.Array.from;
+          var path10 = require_path();
+          module2.exports = path10.Array.from;
         });
         var require_from3 = __commonJS2(function(exports2, module2) {
           "use strict";
@@ -13090,7 +13090,7 @@ var require_axe = __commonJS({
         }
         function uriParser(url) {
           var original = url;
-          var protocol = "", domain = "", port = "", path9 = "", query = "", hash = "";
+          var protocol = "", domain = "", port = "", path10 = "", query = "", hash = "";
           if (url.includes("#")) {
             var _splitString = splitString(url, url.indexOf("#"));
             var _splitString2 = _slicedToArray(_splitString, 2);
@@ -13128,13 +13128,13 @@ var require_axe = __commonJS({
             domain = _splitString10[0];
             port = _splitString10[1];
           }
-          path9 = url;
+          path10 = url;
           return {
             original,
             protocol,
             domain,
             port,
-            path: path9,
+            path: path10,
             query,
             hash
           };
@@ -13146,8 +13146,8 @@ var require_axe = __commonJS({
             return;
           }
           var currentDomain = options.currentDomain, _options$maxLength = options.maxLength, maxLength = _options$maxLength === void 0 ? 25 : _options$maxLength;
-          var _uriParser = uriParser(uri), path9 = _uriParser.path, domain = _uriParser.domain, hash = _uriParser.hash;
-          var pathEnd = path9.substr(path9.substr(0, path9.length - 2).lastIndexOf("/") + 1);
+          var _uriParser = uriParser(uri), path10 = _uriParser.path, domain = _uriParser.domain, hash = _uriParser.hash;
+          var pathEnd = path10.substr(path10.substr(0, path10.length - 2).lastIndexOf("/") + 1);
           if (hash) {
             if (pathEnd && (pathEnd + hash).length <= maxLength) {
               return trimRight(pathEnd + hash);
@@ -13156,11 +13156,11 @@ var require_axe = __commonJS({
             } else {
               return;
             }
-          } else if (domain && domain.length < maxLength && path9.length <= 1) {
-            return trimRight(domain + path9);
+          } else if (domain && domain.length < maxLength && path10.length <= 1) {
+            return trimRight(domain + path10);
           }
-          if (path9 === "/" + pathEnd && domain && currentDomain && domain !== currentDomain && (domain + path9).length <= maxLength) {
-            return trimRight(domain + path9);
+          if (path10 === "/" + pathEnd && domain && currentDomain && domain !== currentDomain && (domain + path10).length <= maxLength) {
+            return trimRight(domain + path10);
           }
           var lastDotIndex = pathEnd.lastIndexOf(".");
           if ((lastDotIndex === -1 || lastDotIndex > 1) && (lastDotIndex !== -1 || pathEnd.length > 2) && pathEnd.length <= maxLength && !pathEnd.match(/index(\.[a-zA-Z]{2-4})?/) && !isMostlyNumbers(pathEnd)) {
@@ -13480,20 +13480,20 @@ var require_axe = __commonJS({
         function _getAncestry(elm, options) {
           return _getShadowSelector(generateAncestry, elm, options);
         }
-        function getXPathArray(node, path9) {
+        function getXPathArray(node, path10) {
           var sibling, count;
           if (!node) {
             return [];
           }
-          if (!path9 && node.nodeType === 9) {
-            path9 = [{
+          if (!path10 && node.nodeType === 9) {
+            path10 = [{
               str: "html"
             }];
-            return path9;
+            return path10;
           }
-          path9 = path9 || [];
+          path10 = path10 || [];
           if (node.parentNode && node.parentNode !== node) {
-            path9 = getXPathArray(node.parentNode, path9);
+            path10 = getXPathArray(node.parentNode, path10);
           }
           if (node.previousSibling) {
             count = 1;
@@ -13529,9 +13529,9 @@ var require_axe = __commonJS({
             if (count > 1) {
               element.count = count;
             }
-            path9.push(element);
+            path10.push(element);
           }
-          return path9;
+          return path10;
         }
         function xpathToString(xpathArray) {
           return xpathArray.reduce(function(str2, elm) {
@@ -39123,9 +39123,256 @@ var init_src9 = __esm({
   }
 });
 
+// ../persistence/src/index.ts
+var src_exports2 = {};
+__export(src_exports2, {
+  SqliteScanStore: () => SqliteScanStore,
+  UnavailableScanStore: () => UnavailableScanStore,
+  createScanStore: () => createScanStore,
+  scanStorePath: () => scanStorePath
+});
+import path5 from "node:path";
+import { mkdir as mkdir3 } from "node:fs/promises";
+function summarise(scan) {
+  return {
+    scanId: scan.scanId,
+    origin: scan.origin,
+    status: scan.status,
+    target: scan.config.url ?? scan.config.projectRoot,
+    startedAt: scan.startedAt,
+    completedAt: scan.completedAt,
+    issueCount: scan.issues.length,
+    blockingCount: scan.issues.filter((issue) => issue.severity === "blocking").length,
+    routeCount: scan.routesDiscovered.length,
+    localeCount: scan.localesTested.length
+  };
+}
+function scanStorePath(projectRoot) {
+  return path5.join(projectRoot, ".bhashafix", "scans.sqlite");
+}
+async function createScanStore(options = {}) {
+  const projectRoot = options.projectRoot ?? process.cwd();
+  if (options.driver === "unavailable") {
+    return new UnavailableScanStore("driver explicitly disabled");
+  }
+  if (options.driver === "sqlite" || !process.env.VERCEL) {
+    const store = new SqliteScanStore(options.file ?? scanStorePath(projectRoot));
+    await store.init();
+    return store;
+  }
+  return new UnavailableScanStore(
+    "no DATABASE_URL is configured for this deployment, so hosted scans are returned inline and not stored server-side"
+  );
+}
+var UnavailableScanStore, SCHEMA, SqliteScanStore;
+var init_src10 = __esm({
+  "../persistence/src/index.ts"() {
+    "use strict";
+    UnavailableScanStore = class {
+      constructor(reason) {
+        this.reason = reason;
+        this.driver = "unavailable";
+        this.durable = false;
+      }
+      async init() {
+      }
+      async saveScan() {
+        throw new Error(`Scan persistence is not configured: ${this.reason}`);
+      }
+      async appendEvent() {
+        throw new Error(`Scan persistence is not configured: ${this.reason}`);
+      }
+      async saveArtifact() {
+        throw new Error(`Scan persistence is not configured: ${this.reason}`);
+      }
+      async getScan() {
+        return null;
+      }
+      async listScans() {
+        return [];
+      }
+      async deleteScan() {
+        return false;
+      }
+      async close() {
+      }
+    };
+    SCHEMA = `
+CREATE TABLE IF NOT EXISTS scans (
+  scan_id TEXT PRIMARY KEY,
+  origin TEXT NOT NULL,
+  status TEXT NOT NULL,
+  target TEXT NOT NULL,
+  started_at TEXT NOT NULL,
+  completed_at TEXT,
+  issue_count INTEGER NOT NULL,
+  blocking_count INTEGER NOT NULL,
+  route_count INTEGER NOT NULL,
+  locale_count INTEGER NOT NULL,
+  engine_version TEXT NOT NULL,
+  document TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS scan_events (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  scan_id TEXT NOT NULL,
+  at TEXT NOT NULL,
+  stage TEXT NOT NULL,
+  message TEXT NOT NULL,
+  detail TEXT
+);
+CREATE TABLE IF NOT EXISTS scan_artifacts (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  scan_id TEXT NOT NULL,
+  kind TEXT NOT NULL,
+  route TEXT,
+  locale TEXT,
+  viewport TEXT,
+  file_path TEXT NOT NULL,
+  byte_length INTEGER NOT NULL,
+  sha256 TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS scan_events_scan ON scan_events (scan_id);
+CREATE INDEX IF NOT EXISTS scan_artifacts_scan ON scan_artifacts (scan_id);
+CREATE INDEX IF NOT EXISTS scans_started ON scans (started_at DESC);
+`;
+    SqliteScanStore = class {
+      constructor(file) {
+        this.file = file;
+        this.driver = "sqlite";
+        this.durable = true;
+        this.database = null;
+      }
+      async init() {
+        if (this.database) return;
+        await mkdir3(path5.dirname(this.file), { recursive: true });
+        const sqlite = await import("node:sqlite");
+        this.database = new sqlite.DatabaseSync(this.file);
+        this.database.exec(SCHEMA);
+      }
+      db() {
+        if (!this.database) throw new Error("Scan store used before init().");
+        return this.database;
+      }
+      async saveScan(scan) {
+        const summary = summarise(scan);
+        this.db().prepare(
+          `INSERT INTO scans (scan_id, origin, status, target, started_at, completed_at,
+           issue_count, blocking_count, route_count, locale_count, engine_version, document)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+         ON CONFLICT(scan_id) DO UPDATE SET
+           status = excluded.status,
+           completed_at = excluded.completed_at,
+           issue_count = excluded.issue_count,
+           blocking_count = excluded.blocking_count,
+           route_count = excluded.route_count,
+           locale_count = excluded.locale_count,
+           document = excluded.document`
+        ).run(
+          summary.scanId,
+          summary.origin,
+          summary.status,
+          summary.target,
+          summary.startedAt,
+          summary.completedAt,
+          summary.issueCount,
+          summary.blockingCount,
+          summary.routeCount,
+          summary.localeCount,
+          scan.engineVersion,
+          JSON.stringify(scan)
+        );
+      }
+      async appendEvent(event) {
+        this.db().prepare(
+          `INSERT INTO scan_events (scan_id, at, stage, message, detail) VALUES (?, ?, ?, ?, ?)`
+        ).run(
+          event.scanId,
+          event.at,
+          event.stage,
+          event.message,
+          event.detail ? JSON.stringify(event.detail) : null
+        );
+      }
+      async saveArtifact(artifact) {
+        this.db().prepare(
+          `INSERT INTO scan_artifacts (scan_id, kind, route, locale, viewport, file_path, byte_length, sha256)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+        ).run(
+          artifact.scanId,
+          artifact.kind,
+          artifact.route,
+          artifact.locale,
+          artifact.viewport,
+          artifact.filePath,
+          artifact.byteLength,
+          artifact.sha256
+        );
+      }
+      async getScan(scanId) {
+        const row = this.db().prepare(`SELECT document FROM scans WHERE scan_id = ?`).get(scanId);
+        if (!row?.document) return null;
+        const scan = JSON.parse(row.document);
+        const events = this.db().prepare(
+          `SELECT scan_id, at, stage, message, detail FROM scan_events WHERE scan_id = ? ORDER BY id ASC`
+        ).all(scanId).map((event) => ({
+          scanId: event.scan_id,
+          at: event.at,
+          stage: event.stage,
+          message: event.message,
+          detail: event.detail ? JSON.parse(event.detail) : void 0
+        }));
+        const artifacts = this.db().prepare(
+          `SELECT scan_id, kind, route, locale, viewport, file_path, byte_length, sha256
+           FROM scan_artifacts WHERE scan_id = ? ORDER BY id ASC`
+        ).all(scanId).map((artifact) => ({
+          scanId: String(artifact.scan_id),
+          kind: artifact.kind,
+          route: artifact.route === null ? null : String(artifact.route),
+          locale: artifact.locale === null ? null : String(artifact.locale),
+          viewport: artifact.viewport === null ? null : String(artifact.viewport),
+          filePath: String(artifact.file_path),
+          byteLength: Number(artifact.byte_length),
+          sha256: String(artifact.sha256)
+        }));
+        return { summary: summarise(scan), scan, events, artifacts };
+      }
+      async listScans(limit = 50) {
+        return this.db().prepare(
+          `SELECT scan_id, origin, status, target, started_at, completed_at,
+                  issue_count, blocking_count, route_count, locale_count
+           FROM scans ORDER BY started_at DESC LIMIT ?`
+        ).all(limit).map((row) => ({
+          scanId: String(row.scan_id),
+          origin: row.origin,
+          status: row.status,
+          target: String(row.target),
+          startedAt: String(row.started_at),
+          completedAt: row.completed_at === null ? null : String(row.completed_at),
+          issueCount: Number(row.issue_count),
+          blockingCount: Number(row.blocking_count),
+          routeCount: Number(row.route_count),
+          localeCount: Number(row.locale_count)
+        }));
+      }
+      async deleteScan(scanId) {
+        const before = this.db().prepare(`SELECT COUNT(*) AS total FROM scans WHERE scan_id = ?`).get(scanId);
+        if (!before?.total) return false;
+        this.db().prepare(`DELETE FROM scan_events WHERE scan_id = ?`).run(scanId);
+        this.db().prepare(`DELETE FROM scan_artifacts WHERE scan_id = ?`).run(scanId);
+        this.db().prepare(`DELETE FROM scans WHERE scan_id = ?`).run(scanId);
+        return true;
+      }
+      async close() {
+        this.database?.close();
+        this.database = null;
+      }
+    };
+  }
+});
+
 // ../report/src/index.ts
-import { mkdir as mkdir4, writeFile as writeFile4 } from "node:fs/promises";
-import path6 from "node:path";
+import { mkdir as mkdir5, writeFile as writeFile4 } from "node:fs/promises";
+import path7 from "node:path";
 function escapeHtml(value) {
   return String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
 }
@@ -39247,7 +39494,7 @@ function buildCsv(scan) {
   return [header.map(csvCell).join(","), ...rows].join("\n");
 }
 async function writeReportBundle(outputDirectory, scan, verification) {
-  await mkdir4(outputDirectory, { recursive: true });
+  await mkdir5(outputDirectory, { recursive: true });
   const files = {
     "report.json": JSON.stringify(buildJsonReport(scan, verification), null, 2),
     "report.html": buildHtmlReport(scan, verification),
@@ -39257,13 +39504,13 @@ async function writeReportBundle(outputDirectory, scan, verification) {
   };
   await Promise.all(
     Object.entries(files).map(
-      ([name, contents]) => writeFile4(path6.join(outputDirectory, name), `${contents}
+      ([name, contents]) => writeFile4(path7.join(outputDirectory, name), `${contents}
 `, "utf8")
     )
   );
-  return Object.keys(files).map((name) => path6.join(outputDirectory, name));
+  return Object.keys(files).map((name) => path7.join(outputDirectory, name));
 }
-var init_src10 = __esm({
+var init_src11 = __esm({
   "../report/src/index.ts"() {
     "use strict";
   }
@@ -39325,7 +39572,7 @@ async function verifyRepair(projectRoot, baseline, options = {}) {
   return { scan, result, diffPolicy };
 }
 var BROWSER_ONLY_FIELDS, DEFAULT_MAX_CHANGED_LINES;
-var init_src11 = __esm({
+var init_src12 = __esm({
   "../verifier/src/index.ts"() {
     "use strict";
     init_src5();
@@ -41499,8 +41746,8 @@ var require_uri_all = __commonJS({
             wsComponents.secure = void 0;
           }
           if (wsComponents.resourceName) {
-            var _wsComponents$resourc = wsComponents.resourceName.split("?"), _wsComponents$resourc2 = slicedToArray(_wsComponents$resourc, 2), path9 = _wsComponents$resourc2[0], query = _wsComponents$resourc2[1];
-            wsComponents.path = path9 && path9 !== "/" ? path9 : void 0;
+            var _wsComponents$resourc = wsComponents.resourceName.split("?"), _wsComponents$resourc2 = slicedToArray(_wsComponents$resourc, 2), path10 = _wsComponents$resourc2[0], query = _wsComponents$resourc2[1];
+            wsComponents.path = path10 && path10 !== "/" ? path10 : void 0;
             wsComponents.query = query;
             wsComponents.resourceName = void 0;
           }
@@ -41873,12 +42120,12 @@ var require_util = __commonJS({
       return "'" + escapeQuotes(str) + "'";
     }
     function getPathExpr(currentPath, expr, jsonPointers, isNumber) {
-      var path9 = jsonPointers ? "'/' + " + expr + (isNumber ? "" : ".replace(/~/g, '~0').replace(/\\//g, '~1')") : isNumber ? "'[' + " + expr + " + ']'" : "'[\\'' + " + expr + " + '\\']'";
-      return joinPaths(currentPath, path9);
+      var path10 = jsonPointers ? "'/' + " + expr + (isNumber ? "" : ".replace(/~/g, '~0').replace(/\\//g, '~1')") : isNumber ? "'[' + " + expr + " + ']'" : "'[\\'' + " + expr + " + '\\']'";
+      return joinPaths(currentPath, path10);
     }
     function getPath(currentPath, prop, jsonPointers) {
-      var path9 = jsonPointers ? toQuotedString("/" + escapeJsonPointer(prop)) : toQuotedString(getProperty(prop));
-      return joinPaths(currentPath, path9);
+      var path10 = jsonPointers ? toQuotedString("/" + escapeJsonPointer(prop)) : toQuotedString(getProperty(prop));
+      return joinPaths(currentPath, path10);
     }
     var JSON_POINTER = /^\/(?:[^~]|~0|~1)*$/;
     var RELATIVE_JSON_POINTER = /^([0-9]+)(#|\/(?:[^~]|~0|~1)*)?$/;
@@ -49744,9 +49991,9 @@ __export(server_exports, {
   createMcpServer: () => createMcpServer,
   startMcpServer: () => startMcpServer
 });
-import { createHash as createHash5, randomUUID as randomUUID2 } from "node:crypto";
-import { mkdir as mkdir5, readFile as readFile4, writeFile as writeFile5 } from "node:fs/promises";
-import path7 from "node:path";
+import { createHash as createHash6, randomUUID as randomUUID2 } from "node:crypto";
+import { mkdir as mkdir6, readFile as readFile5, writeFile as writeFile5 } from "node:fs/promises";
+import path8 from "node:path";
 function text(value, isError = false) {
   return {
     content: [{ type: "text", text: JSON.stringify(value, null, 2) }],
@@ -49754,19 +50001,19 @@ function text(value, isError = false) {
   };
 }
 async function readJson2(file) {
-  return JSON.parse(await readFile4(file, "utf8"));
+  return JSON.parse(await readFile5(file, "utf8"));
 }
 function scansDirectory(root) {
-  return path7.join(root, ".bhashafix", "scans");
+  return path8.join(root, ".bhashafix", "scans");
 }
 function scanRequestsDirectory(root) {
-  return path7.join(root, ".bhashafix", "scan-requests");
+  return path8.join(root, ".bhashafix", "scan-requests");
 }
 async function writeScanRequest(root, request) {
   const directory = scanRequestsDirectory(root);
-  await mkdir5(directory, { recursive: true });
+  await mkdir6(directory, { recursive: true });
   await writeFile5(
-    path7.join(directory, `${request.scanId}.json`),
+    path8.join(directory, `${request.scanId}.json`),
     `${JSON.stringify(request, null, 2)}
 `
   );
@@ -49774,24 +50021,24 @@ async function writeScanRequest(root, request) {
 async function loadScanRequest(root, scanId) {
   if (!/^[A-Za-z0-9_-]+$/.test(scanId)) throw new Error("Invalid scan ID.");
   return await readJson2(
-    path7.join(scanRequestsDirectory(root), `${scanId}.json`)
+    path8.join(scanRequestsDirectory(root), `${scanId}.json`)
   );
 }
 async function writeScan(root, scan) {
   const directory = scansDirectory(root);
-  await mkdir5(directory, { recursive: true });
+  await mkdir6(directory, { recursive: true });
   await writeFile5(
-    path7.join(directory, `${scan.scanId}.json`),
+    path8.join(directory, `${scan.scanId}.json`),
     `${JSON.stringify(scan, null, 2)}
 `
   );
 }
 async function loadScan(root, scanId) {
   if (!/^[A-Za-z0-9_-]+$/.test(scanId)) throw new Error("Invalid scan ID.");
-  return await readJson2(path7.join(scansDirectory(root), `${scanId}.json`));
+  return await readJson2(path8.join(scansDirectory(root), `${scanId}.json`));
 }
 function planHash(unifiedDiff) {
-  return createHash5("sha256").update(unifiedDiff).digest("hex");
+  return createHash6("sha256").update(unifiedDiff).digest("hex");
 }
 function createMcpServer(projectRoot = process.cwd()) {
   const server = new McpServer({
@@ -49804,7 +50051,7 @@ function createMcpServer(projectRoot = process.cwd()) {
       description: "Inspect framework and localisation infrastructure without executing project scripts.",
       inputSchema: { projectRoot: external_exports.string().optional() }
     },
-    async ({ projectRoot: requestedRoot }) => text(await inspectProject(path7.resolve(requestedRoot ?? projectRoot)))
+    async ({ projectRoot: requestedRoot }) => text(await inspectProject(path8.resolve(requestedRoot ?? projectRoot)))
   );
   server.registerTool(
     "bhashafix_list_locales",
@@ -50095,7 +50342,7 @@ function createMcpServer(projectRoot = process.cwd()) {
     async ({ scanId, outputDirectory }) => {
       const scan = await loadScan(projectRoot, scanId);
       const files = await writeReportBundle(
-        path7.resolve(projectRoot, outputDirectory),
+        path8.resolve(projectRoot, outputDirectory),
         scan
       );
       return text({ scanId, files });
@@ -50121,7 +50368,7 @@ function createMcpServer(projectRoot = process.cwd()) {
           {
             uri,
             mimeType: "text/plain",
-            text: await readFile4(path7.join(projectRoot, relative), "utf8").catch(
+            text: await readFile5(path8.join(projectRoot, relative), "utf8").catch(
               () => "Not initialised. Run `bhashafix init`."
             )
           }
@@ -50222,8 +50469,8 @@ var init_server2 = __esm({
     init_src3();
     init_src();
     init_src8();
-    init_src10();
     init_src11();
+    init_src12();
     init_mcp();
     init_stdio2();
     init_zod();
@@ -50232,8 +50479,8 @@ var init_server2 = __esm({
 
 // src/cli.ts
 init_src5();
-import { mkdir as mkdir6, readFile as readFile5, writeFile as writeFile6 } from "node:fs/promises";
-import path8 from "node:path";
+import { mkdir as mkdir7, readFile as readFile6, writeFile as writeFile6 } from "node:fs/promises";
+import path9 from "node:path";
 import { fileURLToPath } from "node:url";
 
 // ../config/src/index.ts
@@ -50275,10 +50522,11 @@ init_src8();
 init_src9();
 init_src7();
 init_src();
+init_src10();
 init_src2();
-import { randomUUID } from "node:crypto";
-import { mkdir as mkdir3, writeFile as writeFile3 } from "node:fs/promises";
-import path5 from "node:path";
+import { createHash as createHash5, randomUUID } from "node:crypto";
+import { mkdir as mkdir4, readFile as readFile4, writeFile as writeFile3 } from "node:fs/promises";
+import path6 from "node:path";
 function selectViewports(names) {
   if (!names || names.length === 0) return [...DEFAULT_VIEWPORTS];
   const selected = DEFAULT_VIEWPORTS.filter(
@@ -50300,8 +50548,8 @@ async function runBrowserProjectScan(options) {
   const viewports = selectViewports(options.viewports);
   const themes = options.themes?.length ? options.themes : ["light"];
   const scanId = `browser-${randomUUID()}`;
-  const artifactDir = path5.join(options.projectRoot, ".bhashafix", "scans", scanId);
-  await mkdir3(artifactDir, { recursive: true });
+  const artifactDir = path6.join(options.projectRoot, ".bhashafix", "scans", scanId);
+  await mkdir4(artifactDir, { recursive: true });
   let routes = options.routes;
   let discoveredRoutes = routes?.length ?? 0;
   if (!routes || routes.length === 0) {
@@ -50366,12 +50614,12 @@ async function runBrowserProjectScan(options) {
   });
   const screenshots = result.renders.map((render) => render.screenshotPath).filter((value) => Boolean(value));
   await writeFile3(
-    path5.join(artifactDir, "scan.json"),
+    path6.join(artifactDir, "scan.json"),
     `${JSON.stringify(scan, null, 2)}
 `
   );
   await writeFile3(
-    path5.join(artifactDir, "renders.json"),
+    path6.join(artifactDir, "renders.json"),
     `${JSON.stringify(
       result.renders.map((render) => ({
         route: render.request.route,
@@ -50394,19 +50642,69 @@ async function runBrowserProjectScan(options) {
     )}
 `
   );
+  const store = await createScanStore({ projectRoot: options.projectRoot });
+  await persistScan(store, scan, result.renders, artifactDir);
+  await store.close();
   return {
     scan,
     artifactDir,
     screenshots,
     renderCount: result.coverage.renderCount,
     remote: result.remote,
-    discoveredRoutes
+    discoveredRoutes,
+    persistence: { driver: store.driver, durable: store.durable }
   };
+}
+async function sha256File(file) {
+  return createHash5("sha256").update(await readFile4(file)).digest("hex");
+}
+async function persistScan(store, scan, renders, artifactDir) {
+  if (!store.durable) return;
+  await store.saveScan(scan);
+  await store.appendEvent({
+    scanId: scan.scanId,
+    at: scan.startedAt,
+    stage: "rendering",
+    message: `Rendered ${renders.length} page(s) in a real browser.`,
+    detail: { artifactDir }
+  });
+  for (const render of renders) {
+    await store.appendEvent({
+      scanId: scan.scanId,
+      at: render.renderedAt,
+      stage: "checking",
+      message: `${render.request.route} \xB7 ${render.request.locale} \xB7 ${render.request.viewport.name}`,
+      detail: { durationMs: render.durationMs }
+    });
+    for (const [kind, file] of [
+      ["screenshot", render.screenshotPath],
+      ["dom", render.domPath]
+    ]) {
+      if (!file) continue;
+      const bytes = await readFile4(file);
+      await store.saveArtifact({
+        scanId: scan.scanId,
+        kind,
+        route: render.request.route,
+        locale: render.request.locale,
+        viewport: render.request.viewport.name,
+        filePath: path6.relative(path6.dirname(artifactDir), file).replaceAll("\\", "/"),
+        byteLength: bytes.byteLength,
+        sha256: await sha256File(file)
+      });
+    }
+  }
+  await store.appendEvent({
+    scanId: scan.scanId,
+    at: scan.completedAt,
+    stage: scan.status,
+    message: `${scan.issues.length} measured issue(s).`
+  });
 }
 
 // src/cli.ts
-init_src10();
 init_src11();
+init_src12();
 var EXIT = {
   passed: 0,
   blocking: 1,
@@ -50430,6 +50728,7 @@ Commands:
               or evaluate the bundled fixture project (--project)
   translate-preview
               Generate a protected synthetic localisation preview
+  scans       List persisted scans, or show one with --scan <id>
   issues      List evidence-backed issues
   translate   Generate missing translations through a configured provider
   diagnose    Compatibility alias for issues
@@ -50445,7 +50744,7 @@ Options:
   --source-locale <bcp47> --locales <bcp47,bcp47>
   --routes </,/pricing> --viewports <mobile,desktop>
   --themes <light,dark>
-  --text <value> --locale <bcp47> --mode <pseudo-mode>
+  --text <value> --locale <bcp47> --mode <pseudo-mode> --scan <id>
   --config <path> --fail-on <blocking|warning|advisory>
 
 Exit codes: 0 passed \xB7 1 blocking issues \xB7 2 invalid config \xB7
@@ -50466,7 +50765,7 @@ function parseArgs(args) {
   for (let index = 1; index < args.length; index += 1) {
     const value = args[index + 1];
     if (args[index] === "--output" && value) options.output = value;
-    if (args[index] === "--project" && value) options.project = path8.resolve(value);
+    if (args[index] === "--project" && value) options.project = path9.resolve(value);
     if (args[index] === "--url" && value) options.url = value;
     if (args[index] === "--source-locale" && value) {
       options.sourceLocale = localeProfile(value).canonical;
@@ -50494,6 +50793,7 @@ function parseArgs(args) {
       }
       options.themes = themes;
     }
+    if (args[index] === "--scan" && value) options.scanId = value;
     if (args[index] === "--config" && value) options.configPath = value;
     if (args[index] === "--text" && value) options.text = value;
     if (args[index] === "--locale" && value) options.locale = value;
@@ -50528,8 +50828,8 @@ function emit(io, options, value, human) {
   io.out(options.json ? JSON.stringify(value, null, 2) : human);
 }
 async function initialise(projectRoot) {
-  const directory = path8.join(projectRoot, ".bhashafix");
-  await mkdir6(path8.join(directory, "locale-rules"), { recursive: true });
+  const directory = path9.join(projectRoot, ".bhashafix");
+  await mkdir7(path9.join(directory, "locale-rules"), { recursive: true });
   const files = {
     "config.yml": `sourceLocale: en-GB
 locales: [hi-IN, de-DE, ar-SA, he-IL, ja-JP, zh-Hans-CN, th-TH, fr-FR, es-MX]
@@ -50565,7 +50865,7 @@ repair:
   };
   await Promise.all(
     Object.entries(files).map(
-      ([name, contents]) => writeFile6(path8.join(directory, name), contents, { flag: "wx" }).catch(
+      ([name, contents]) => writeFile6(path9.join(directory, name), contents, { flag: "wx" }).catch(
         (error) => {
           if (error.code !== "EEXIST") throw error;
         }
@@ -50575,8 +50875,8 @@ repair:
   return Object.keys(files);
 }
 async function readBaseline(projectRoot) {
-  const file = path8.join(projectRoot, ".bhashafix", "baseline-scan.json");
-  return JSON.parse(await readFile5(file, "utf8"));
+  const file = path9.join(projectRoot, ".bhashafix", "baseline-scan.json");
+  return JSON.parse(await readFile6(file, "utf8"));
 }
 async function probeBrowser() {
   try {
@@ -50703,13 +51003,13 @@ Unknown scripts require approval before execution.`
           onProgress: options.verbose ? (message) => io.error(`\xB7 ${message}`) : void 0
         });
         await writeFile6(
-          path8.join(options.project, ".bhashafix", "baseline-scan.json"),
+          path9.join(options.project, ".bhashafix", "baseline-scan.json"),
           `${JSON.stringify(outcome.scan, null, 2)}
 `
         );
         if (options.output) {
           await writeFile6(
-            path8.resolve(options.output),
+            path9.resolve(options.output),
             `${JSON.stringify(outcome.scan, null, 2)}
 `
           );
@@ -50728,14 +51028,14 @@ Unknown scripts require approval before execution.`
         return outcome.scan.issues.some((issue) => issue.severity === "blocking") ? EXIT.blocking : EXIT.passed;
       }
       const scan = await scanLocalProject(options.project, options);
-      await mkdir6(path8.join(options.project, ".bhashafix"), { recursive: true });
+      await mkdir7(path9.join(options.project, ".bhashafix"), { recursive: true });
       await writeFile6(
-        path8.join(options.project, ".bhashafix", "baseline-scan.json"),
+        path9.join(options.project, ".bhashafix", "baseline-scan.json"),
         `${JSON.stringify(scan, null, 2)}
 `
       );
       if (options.output) {
-        await writeFile6(path8.resolve(options.output), `${JSON.stringify(scan, null, 2)}
+        await writeFile6(path9.resolve(options.output), `${JSON.stringify(scan, null, 2)}
 `);
       }
       emit(
@@ -50746,6 +51046,43 @@ Unknown scripts require approval before execution.`
 ${scan.issues.length} verified blocking issue(s) across ${scan.routesDiscovered.length} routes and ${scan.localesTested.length} locales.`
       );
       return scan.issues.some((issue) => issue.severity === "blocking") ? EXIT.blocking : EXIT.passed;
+    }
+    if (command === "scans") {
+      const { createScanStore: createScanStore2 } = await Promise.resolve().then(() => (init_src10(), src_exports2));
+      const store = await createScanStore2({ projectRoot: options.project });
+      try {
+        if (options.scanId) {
+          const record = await store.getScan(options.scanId);
+          if (!record) {
+            io.error(`No stored scan with id ${options.scanId}.`);
+            return EXIT.invalidConfig;
+          }
+          emit(
+            io,
+            options,
+            record,
+            [
+              `${record.summary.scanId} \xB7 ${record.summary.origin} \xB7 ${record.summary.status}`,
+              `target ${record.summary.target}`,
+              `${record.summary.issueCount} issue(s), ${record.summary.blockingCount} blocking`,
+              `${record.artifacts.length} artifact(s), ${record.events.length} event(s)`
+            ].join("\n")
+          );
+          return EXIT.passed;
+        }
+        const scans = await store.listScans();
+        emit(
+          io,
+          options,
+          { driver: store.driver, durable: store.durable, scans },
+          scans.length === 0 ? `No stored scans (${store.driver}).` : scans.map(
+            (scan) => `${scan.scanId}  ${scan.status.padEnd(24)} ${String(scan.blockingCount).padStart(3)} blocking  ${scan.target}`
+          ).join("\n")
+        );
+        return EXIT.passed;
+      } finally {
+        await store.close();
+      }
     }
     if (command === "issues" || command === "diagnose") {
       const scan = await scanLocalProject(options.project, options);
@@ -50789,7 +51126,7 @@ ${preview.target}`
       const scan = await scanLocalProject(options.project, options);
       const plan = await prepareRepair(options.project, scan);
       const result = options.apply ? await applyRepair(plan, { dryRun: options.dryRun }) : { applied: false, dryRun: true, unifiedDiff: plan.unifiedDiff };
-      if (options.output) await writeFile6(path8.resolve(options.output), plan.unifiedDiff);
+      if (options.output) await writeFile6(path9.resolve(options.output), plan.unifiedDiff);
       emit(
         io,
         options,
@@ -50812,7 +51149,7 @@ ${plan.unifiedDiff}`
     }
     if (command === "report") {
       const scan = await scanLocalProject(options.project, options);
-      const output = path8.resolve(options.output ?? "artifacts/report");
+      const output = path9.resolve(options.output ?? "artifacts/report");
       const files = await writeReportBundle(output, scan);
       emit(io, options, { output, files }, `Wrote ${files.length} reports to ${output}.`);
       return EXIT.passed;
@@ -50836,8 +51173,8 @@ ${plan.unifiedDiff}`
         issues: scan.issues.length
       };
       if (options.output) {
-        const output = path8.resolve(options.output);
-        await mkdir6(path8.dirname(output), { recursive: true });
+        const output = path9.resolve(options.output);
+        await mkdir7(path9.dirname(output), { recursive: true });
         await writeFile6(output, `${JSON.stringify(ciResult, null, 2)}
 `);
       }
@@ -50894,7 +51231,7 @@ ${HELP}`);
     return /config|locale|allowlist|issue ID|required/i.test(message) ? EXIT.invalidConfig : /fetch|target|URL|ENOTFOUND|ECONN/i.test(message) ? EXIT.unavailable : EXIT.runtime;
   }
 }
-var isEntrypoint = process.argv[1] && path8.resolve(process.argv[1]) === path8.resolve(fileURLToPath(import.meta.url));
+var isEntrypoint = process.argv[1] && path9.resolve(process.argv[1]) === path9.resolve(fileURLToPath(import.meta.url));
 if (isEntrypoint) {
   process.exitCode = await runCli(process.argv.slice(2));
 }
