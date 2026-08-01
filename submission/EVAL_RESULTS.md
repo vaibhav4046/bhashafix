@@ -1,6 +1,6 @@
 # BhashaFix evaluation results
 
-Generated: 2026-08-01T13:04:26.596Z
+Generated: 2026-08-01T14:13:24.748Z
 
 | Release gate | Result | Evidence |
 | --- | --- | --- |
@@ -20,7 +20,7 @@ Generated: 2026-08-01T13:04:26.596Z
 | MCP Inspector | PASS | 18 tools |
 | MCP STDIO repair verification | PASS | 10 to 0 |
 | MCPC | PASS | 18 tools |
-| PPTX container and screenshots | PASS | 16 screenshots |
+| PPTX container and screenshots | PASS | 10 screenshots |
 
 These are release-contract results for the bundled AtlasPay vertical slice.
 The live public scan is bounded static HTTP evidence, not a browser-render or
