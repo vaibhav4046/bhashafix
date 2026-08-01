@@ -145,10 +145,14 @@ export const VerificationResultSchema = z.object({
   baselineBlocking: z.number().int().nonnegative(),
   finalBlocking: z.number().int().nonnegative(),
   sourceLocaleRegression: z.enum(["PASS", "FAIL"]),
-  consoleErrorDelta: z.number().int(),
-  accessibilityRegression: z.boolean(),
+  // `null` means the value was NOT measured on this code path. It is never a pass.
+  // Any field that is null must also be listed in `notMeasured`.
+  consoleErrorDelta: z.number().int().nullable(),
+  accessibilityRegression: z.boolean().nullable(),
   newBlockingIssues: z.number().int().nonnegative(),
-  diffWithinPolicy: z.boolean(),
+  diffWithinPolicy: z.boolean().nullable(),
+  /** Names of the fields above that were not measured and must not be read as evidence. */
+  notMeasured: z.array(z.string()).default([]),
 });
 
 export type Severity = z.infer<typeof SeveritySchema>;
