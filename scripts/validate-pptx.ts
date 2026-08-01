@@ -1,6 +1,7 @@
-import { execFileSync } from "node:child_process";
 import { readFile, readdir, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { PLACEHOLDER_PUBLIC_URL } from "./forbidden-patterns";
+import { readZipEntries } from "./zip-entries";
 
 const root = process.cwd();
 const deck = path.join(
@@ -9,10 +10,9 @@ const deck = path.join(
   "BhashaFix-Hackathon-Deck.pptx",
 );
 const inspectPath = `${deck}.inspect.ndjson`;
-const archiveEntries = execFileSync("tar", ["-tf", deck], {
-  encoding: "utf8",
-  windowsHide: true,
-}).split(/\r?\n/);
+// A .pptx is an OOXML ZIP package. Parse its central directory directly:
+// `tar -tf` treats a Windows absolute path as a remote host and fails.
+const archiveEntries = readZipEntries(await readFile(deck)).map((entry) => entry.name);
 const slideEntries = archiveEntries.filter((entry) =>
   /^ppt\/slides\/slide\d+\.xml$/.test(entry),
 );
@@ -44,7 +44,7 @@ if (
   !deckText.includes("18 tools") ||
   !deckText.includes("Inspector + MCPC") ||
   deckText.includes("15 tools") ||
-  /your-product\.com|github\.com\/(?:your|example)|REPLACE_ME/i.test(deckText)
+  PLACEHOLDER_PUBLIC_URL.test(deckText)
 ) {
   throw new Error("PowerPoint content inspection rejected stale or fake claims.");
 }
@@ -56,21 +56,38 @@ const screenshots = (await readdir(screenshotDirectory)).filter((file) =>
 if (screenshots.length !== 8) {
   throw new Error(`Expected 8 release screenshots; found ${screenshots.length}.`);
 }
+// Verify the bytes, not the extension: several release assets have previously
+// carried a .png name over JPEG content.
+const PNG_MAGIC = [0x89, 0x50, 0x4e, 0x47];
+const mislabelled: string[] = [];
 for (const screenshot of screenshots) {
-  if ((await stat(path.join(screenshotDirectory, screenshot))).size < 10_000) {
+  const file = path.join(screenshotDirectory, screenshot);
+  if ((await stat(file)).size < 10_000) {
     throw new Error(`Screenshot ${screenshot} is unexpectedly small.`);
   }
+  const header = await readFile(file);
+  if (!PNG_MAGIC.every((byte, index) => header[index] === byte)) {
+    mislabelled.push(screenshot);
+  }
+}
+if (mislabelled.length > 0) {
+  throw new Error(
+    `Screenshots named .png are not PNG files: ${mislabelled.join(", ")}.`,
+  );
 }
 
 const receipt = {
   deck: "submission/BhashaFix-Hackathon-Deck.pptx",
-  validZipContainer: true,
+  validZipContainer: archiveEntries.includes("[Content_Types].xml"),
   slides: slideEntries.length,
-  inheritedTemplate: true,
   actualScreenshots: screenshots.length,
+  screenshotsVerifiedAsPng: screenshots.length - mislabelled.length,
   currentMcpToolClaim: 18,
   fakeClaimsOrUrls: 0,
-  artifactToolInspection: "PASS",
+  notMeasured: [
+    "whether the deck inherits a specific PowerPoint template",
+    "visual rendering of the slides",
+  ],
   status: "PASS",
 };
 await writeFile(

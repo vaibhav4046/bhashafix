@@ -51,36 +51,68 @@ if (stdio.status !== "verified") {
   throw new Error("Spawned STDIO MCP verification did not pass.");
 }
 
+function collectSpecTitles(node: {
+  suites?: unknown[];
+  specs?: Array<{ title: string; ok?: boolean }>;
+}): Array<{ title: string; ok: boolean }> {
+  const collected: Array<{ title: string; ok: boolean }> = [];
+  for (const spec of node.specs ?? []) {
+    collected.push({ title: spec.title, ok: spec.ok !== false });
+  }
+  for (const child of (node.suites ?? []) as typeof node[]) {
+    collected.push(...collectSpecTitles(child));
+  }
+  return collected;
+}
+
+const browserSpecs = collectSpecTitles(playwright);
+const browserProjects = [
+  ...new Set(
+    (playwright.config?.projects ?? []).map(
+      (project: { name?: string }) => project.name ?? "unnamed",
+    ),
+  ),
+];
+
 const receipt = {
-  schemaVersion: "1.0",
+  schemaVersion: "2.0",
   generatedAt: new Date().toISOString(),
-  commands: {
-    lint: "PASS",
-    typecheck: "PASS",
-    unit: "PASS",
-    integration: "PASS",
-    cli: "PASS",
-    mcpTests: "PASS",
-    build: "PASS",
-    packVerify: "PASS",
-    mcpInspector: "PASS",
-    mcpStdio: "PASS",
-    mcpc: "PASS",
-    browserE2e: "PASS",
-    demoProof: "PASS",
+  // This receipt is the last step of the `verify` chain, which is joined by
+  // `&&`. Reaching it therefore proves every preceding command exited zero —
+  // that is the only claim made here, and it is why they are not re-run.
+  commandChain: {
+    basis: "reached as the final step of `pnpm verify`, an && chain",
+    precedingCommands: [
+      "lint",
+      "typecheck",
+      "test",
+      "test:integration",
+      "test:cli",
+      "test:mcp",
+      "build",
+      "fixtures:clean",
+      "fixtures:broken",
+      "fixtures:failed",
+      "pack:verify",
+      "mcp:inspect",
+      "mcpc:smoke",
+      "test:e2e",
+      "demo:reset",
+      "demo:scan",
+      "demo:repair",
+      "demo:verify",
+    ],
   },
   proof,
   browser: {
     expectedTests: expectedBrowserTests,
     unexpectedTests: unexpectedBrowserTests,
-    chromium: "PASS",
-    darkMode: "PASS",
-    lightMode: "PASS",
-    reducedMotion: "PASS",
-    mobile390x844: "PASS",
-    desktop1440x900: "PASS",
-    consoleErrors: 0,
-    hydrationErrors: 0,
+    projects: browserProjects,
+    specs: browserSpecs,
+    notMeasured: [
+      "console error count across the browser suite",
+      "hydration error count across the browser suite",
+    ],
   },
   packages: pack,
   mcp: {

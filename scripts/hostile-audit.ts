@@ -1,5 +1,11 @@
 import { readFile, readdir, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
+import {
+  EXPOSED_SECRET,
+  MACHINE_PATH,
+  PLACEHOLDER_PUBLIC_URL,
+  UNSUPPORTED_LANGUAGE_CLAIM,
+} from "./forbidden-patterns";
 
 const root = process.cwd();
 const textExtensions = new Set([
@@ -33,8 +39,7 @@ async function collectTextFiles(directory: string): Promise<string[]> {
       files.push(...(await collectTextFiles(absolute)));
     } else if (
       textExtensions.has(path.extname(entry.name)) &&
-      !entry.name.endsWith(".inspect.ndjson") &&
-      !["hostile-audit.ts", "validate-pptx.ts"].includes(entry.name)
+      !entry.name.endsWith(".inspect.ndjson")
     ) {
       files.push(absolute);
     }
@@ -44,10 +49,13 @@ async function collectTextFiles(directory: string): Promise<string[]> {
 
 const files = await collectTextFiles(root);
 const findings: Array<{ file: string; rule: string }> = [];
+/** Counts come from the scan, never from a literal. */
+const countFindings = (rule: string) =>
+  findings.filter((finding) => finding.rule === rule).length;
 const rules = [
   {
     name: "disabled-test",
-    pattern: /\b(?:describe|it|test)\.skip\s*\(/,
+    pattern: /\b(?:describe|it|test)\.(?:skip|only|todo|fixme)\s*\(|\bx(?:it|describe)\s*\(/,
     scope: (file: string) => file.includes(`${path.sep}tests${path.sep}`),
   },
   {
@@ -57,25 +65,22 @@ const rules = [
   },
   {
     name: "placeholder-public-url",
-    pattern:
-      /your-product\.com|example\.vercel\.app|github\.com\/(?:your|example)|REPLACE_ME/i,
+    pattern: PLACEHOLDER_PUBLIC_URL,
     scope: () => true,
   },
   {
     name: "machine-path",
-    pattern: /(?:[A-Z]:\\Users\\[^\\]+|[A-Z]:\/Users\/[^/]+)/,
+    pattern: MACHINE_PATH,
     scope: () => true,
   },
   {
     name: "secret",
-    pattern:
-      /(?:sk-[A-Za-z0-9]{20,}|ghp_[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}|-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----)/,
+    pattern: EXPOSED_SECRET,
     scope: () => true,
   },
   {
     name: "unsupported-language-claim",
-    pattern:
-      /(?:guarantees? perfect|perfect (?:native|human)[-\s]level|every language perfectly)/i,
+    pattern: UNSUPPORTED_LANGUAGE_CLAIM,
     scope: () => true,
   },
 ];
@@ -154,12 +159,12 @@ if (
 const receipt = {
   generatedAt: new Date().toISOString(),
   sourceFilesScanned: files.length,
-  disabledTests: 0,
-  fakeProgressTimers: 0,
-  fakeClaimsOrUrls: 0,
-  machinePaths: 0,
-  exposedSecrets: 0,
-  unsupportedLanguageClaims: 0,
+  disabledTests: countFindings("disabled-test"),
+  fakeProgressTimers: countFindings("fake-progress"),
+  fakeClaimsOrUrls: countFindings("placeholder-public-url"),
+  machinePaths: countFindings("machine-path"),
+  exposedSecrets: countFindings("secret"),
+  unsupportedLanguageClaims: countFindings("unsupported-language-claim"),
   reportsAndDownloads: downloads.length,
   cleanFixtureBlocking: cleanFixture.blocking,
   brokenFixtureBlocking: brokenFixture.blocking,
@@ -172,8 +177,9 @@ const receipt = {
   mcpStdio: stdio.status,
   mcpc: mcpc.status,
   powerpoint: powerpoint.status,
-  consoleErrors: release.browser.consoleErrors,
-  hydrationErrors: release.browser.hydrationErrors,
+  browserExpectedTests: release.browser.expectedTests,
+  browserUnexpectedTests: release.browser.unexpectedTests,
+  notMeasured: release.browser.notMeasured,
   status: "PASS",
 };
 await writeFile(
@@ -181,5 +187,5 @@ await writeFile(
   `${JSON.stringify(receipt, null, 2)}\n`,
 );
 console.log(
-  `HOSTILE AUDIT PASS (${receipt.sourceFilesScanned} source files; ${receipt.reportsAndDownloads} downloads; fake claims/URLs ${receipt.fakeClaimsOrUrls}; console/hydration 0)`,
+  `HOSTILE AUDIT PASS (${receipt.sourceFilesScanned} source files; ${receipt.reportsAndDownloads} downloads; fake claims/URLs ${receipt.fakeClaimsOrUrls}; disabled tests ${receipt.disabledTests})`,
 );
