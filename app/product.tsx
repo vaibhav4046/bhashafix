@@ -321,7 +321,8 @@ export function LandingPage() {
           en-GB,de-DE,ar-SA,ja-JP
         </pre>
         <p className="ls-caveat">
-          <b>Not on npm yet.</b> Today that engine runs from a clone or from a
+          <b>Not on npm yet.</b>{" "}
+          Today that engine runs from a clone or from a
           tarball you pack yourself. Both routes are two clicks away and both are
           exercised by this repository&rsquo;s own checks.
         </p>
@@ -3451,8 +3452,12 @@ export function IntegrationsPage() {
         </article>
         <article>
           <i>◇</i><span>MCP · STDIO</span><h2>@bhashafix/mcp</h2>
-          <p>Eighteen strict tools, seven resource patterns and five workflow prompts for coding agents.</p>
-          <pre>{`{\n  "mcpServers": {\n    "bhashafix": {\n      "command": "node",\n      "args": ["packages/mcp/dist/server.js"]\n    }\n  }\n}`}</pre>
+          <p>
+            {evidenceIndex.mcp.tools} strict tools, {evidenceIndex.mcp.resources}{" "}
+            resources and {evidenceIndex.mcp.prompts} workflow prompts for coding
+            agents, as listed by the recorded <code>tools/list</code> response.
+          </p>
+          <pre>{`{\n  "mcpServers": {\n    "bhashafix": {\n      "command": "node",\n      "args": ["${evidenceIndex.mcp.serverEntry}"]\n    }\n  }\n}`}</pre>
         </article>
         <article id="ci">
           <i>✓</i><span>GITHUB ACTIONS</span><h2>Release gate</h2>

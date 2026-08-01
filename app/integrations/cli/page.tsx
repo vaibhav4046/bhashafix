@@ -87,7 +87,8 @@ export default function CliSetupPage() {
         <p className="ls-caveat">
           <b>Not on npm yet.</b> That is the shape the CLI is built and packaged
           for — a <code>bhashafix</code> binary, public access — but{" "}
-          <code>@bhashafix/cli</code> has not been published to a registry, so
+          <code>@bhashafix/cli</code>{" "}
+          has not been published to a registry, so
           today it runs from a clone or from a tarball you pack yourself. Both
           routes are below, and both are exercised by the repository&rsquo;s own
           checks.

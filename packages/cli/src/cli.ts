@@ -430,7 +430,10 @@ export async function runCli(
             ...outcome.scan,
             artifacts: {
               directory: outcome.artifactDir,
-              screenshots: outcome.screenshots,
+              // The stat-verified list, not the paths the engine reported it
+              // meant to write. A consumer must not be handed a path to a file
+              // that is not on disk.
+              screenshots: outcome.screenshotsOnDisk,
               report: outcome.reportPath,
             },
             stages: outcome.stages,
