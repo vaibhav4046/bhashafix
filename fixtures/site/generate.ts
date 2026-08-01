@@ -1,8 +1,9 @@
 /**
  * Benchmark fixture site for BhashaFix.
  *
- * Generates a realistic four-route payments product ("Meridian Pay") in six
- * locales, in two variants:
+ * Generates a realistic four-route payments product ("Meridian Pay") in twelve
+ * locales spanning nine scripts - Latin, Arabic, Japanese, Devanagari, Thai,
+ * Cyrillic, Hebrew, Bengali, Hangul, Han and Ethiopic - in two variants:
  *
  *   clean  - must produce ZERO issues under packages/browser/src/rules.ts at
  *            390x844, 768x1024 and 1440x900. This is the false-positive gate.
@@ -16,6 +17,10 @@
  *     measurement is unambiguous at any font fallback
  *   - every defect-carrying element has a data-testid and no id, so
  *     collectPageMeasurement's cssSelector() emits [data-testid="..."]
+ *
+ * The one exception to the data-testid rule is BF-LOC-HREFLANG-INVALID: rules.ts
+ * identifies that defect by the literal selector `link[hreflang="..."]`, so the
+ * ground truth has to record the same string for the label to match.
  */
 
 export type Variant = "clean" | "broken";
@@ -37,7 +42,16 @@ export const FIXTURE_LOCALES: string[] = [
   "ja-JP",
   "hi-IN",
   "th-TH",
+  "uk-UA",
+  "he-IL",
+  "bn-BD",
+  "ko-KR",
+  "zh-Hans-CN",
+  "am-ET",
 ];
+
+/** Locales whose script reads right to left, per locale-engine's RTL_SCRIPTS. */
+const RTL_LOCALES = new Set(["ar-SA", "he-IL"]);
 
 export const FIXTURE_ROUTES: string[] = [
   "/",
@@ -151,6 +165,60 @@ export const SEEDED_DEFECTS: SeededDefect[] = [
     selector: '[data-testid="home-hero-eyebrow"]',
     note: "The Thai dictionary is missing home.hero.eyebrow, so the key leaks to the page.",
   },
+  {
+    id: "home-uk-viewport-overflow",
+    ruleId: "BF-VIS-VIEWPORT-OVERFLOW",
+    route: "/",
+    locale: "uk-UA",
+    viewports: NARROW_VIEWPORTS,
+    selector: "html",
+    note: "The Ukrainian quarterly-metrics strip is pinned to 1180px, so the document scrolls sideways at 390px and 768px but not at 1440px.",
+  },
+  {
+    id: "home-he-dir-missing",
+    ruleId: "BF-LOC-DIR-MISSING",
+    route: "/",
+    locale: "he-IL",
+    viewports: ALL_VIEWPORTS,
+    selector: "html",
+    note: "The Hebrew home route declares no dir=\"rtl\", so the Hebrew page renders left to right.",
+  },
+  {
+    id: "home-bn-text-clip-y",
+    ruleId: "BF-VIS-TEXT-CLIP-Y",
+    route: "/",
+    locale: "bn-BD",
+    viewports: ALL_VIEWPORTS,
+    selector: '[data-testid="home-hero-badge"]',
+    note: "The 14px fixed-height badge cuts the Bengali line box, which carries matras above and below the baseline.",
+  },
+  {
+    id: "home-ko-title-missing",
+    ruleId: "BF-A11Y-TITLE-MISSING",
+    route: "/",
+    locale: "ko-KR",
+    viewports: ALL_VIEWPORTS,
+    selector: "title",
+    note: "The Korean home route ships an empty <title>.",
+  },
+  {
+    id: "home-zh-name-missing",
+    ruleId: "BF-A11Y-NAME-MISSING",
+    route: "/",
+    locale: "zh-Hans-CN",
+    viewports: ALL_VIEWPORTS,
+    selector: '[data-testid="site-lang-button"]',
+    note: "The icon-only language switcher has no aria-label in the Simplified Chinese build.",
+  },
+  {
+    id: "home-am-text-clip-y",
+    ruleId: "BF-VIS-TEXT-CLIP-Y",
+    route: "/",
+    locale: "am-ET",
+    viewports: ALL_VIEWPORTS,
+    selector: '[data-testid="home-hero-badge"]',
+    note: "The 14px fixed-height badge clips the taller Ethiopic line box.",
+  },
 
   // --------------------------------------------------------- route: /pricing
   {
@@ -215,6 +283,96 @@ export const SEEDED_DEFECTS: SeededDefect[] = [
     viewports: ALL_VIEWPORTS,
     selector: '[data-testid="pricing-plan-cta"]',
     note: "The same 120px nowrap CTA clips the Thai enterprise label.",
+  },
+  {
+    id: "pricing-uk-text-overflow-x",
+    ruleId: "BF-VIS-TEXT-OVERFLOW-X",
+    route: "/pricing",
+    locale: "uk-UA",
+    viewports: ALL_VIEWPORTS,
+    selector: '[data-testid="pricing-plan-cta"]',
+    note: "The 120px nowrap CTA clips the Ukrainian enterprise label, which is about three times as wide.",
+  },
+  {
+    id: "pricing-uk-name-missing",
+    ruleId: "BF-A11Y-NAME-MISSING",
+    route: "/pricing",
+    locale: "uk-UA",
+    viewports: ALL_VIEWPORTS,
+    selector: '[data-testid="site-lang-button"]',
+    note: "The icon-only language switcher has no aria-label on the Ukrainian pricing route.",
+  },
+  {
+    id: "pricing-he-lang-mismatch",
+    ruleId: "BF-LOC-LANG-MISMATCH",
+    route: "/pricing",
+    locale: "he-IL",
+    viewports: ALL_VIEWPORTS,
+    selector: "html",
+    note: "The he-IL pricing route keeps dir=\"rtl\" but is served with <html lang=\"en-GB\">.",
+  },
+  {
+    id: "pricing-he-name-missing",
+    ruleId: "BF-A11Y-NAME-MISSING",
+    route: "/pricing",
+    locale: "he-IL",
+    viewports: ALL_VIEWPORTS,
+    selector: '[data-testid="pricing-compare-toggle"]',
+    note: "The icon-only comparison toggle has no aria-label in the Hebrew build.",
+  },
+  {
+    id: "pricing-bn-title-missing",
+    ruleId: "BF-A11Y-TITLE-MISSING",
+    route: "/pricing",
+    locale: "bn-BD",
+    viewports: ALL_VIEWPORTS,
+    selector: "title",
+    note: "The Bengali pricing route ships an empty <title>.",
+  },
+  {
+    id: "pricing-ko-hreflang-invalid",
+    ruleId: "BF-LOC-HREFLANG-INVALID",
+    route: "/pricing",
+    locale: "ko-KR",
+    viewports: ALL_VIEWPORTS,
+    selector: 'link[hreflang="ko_KR"]',
+    note: "The alternate link uses ko_KR instead of ko-KR. Selector is the literal string rules.ts emits for this rule, which is not a data-testid selector.",
+  },
+  {
+    id: "pricing-ko-raw-key",
+    ruleId: "BF-LNG-RAW-KEY",
+    route: "/pricing",
+    locale: "ko-KR",
+    viewports: ALL_VIEWPORTS,
+    selector: '[data-testid="pricing-enterprise-cta"]',
+    note: "The Korean dictionary is missing pricing.plan.enterprise.cta, so the key leaks into the CTA.",
+  },
+  {
+    id: "pricing-zh-name-missing",
+    ruleId: "BF-A11Y-NAME-MISSING",
+    route: "/pricing",
+    locale: "zh-Hans-CN",
+    viewports: ALL_VIEWPORTS,
+    selector: '[data-testid="pricing-compare-toggle"]',
+    note: "The icon-only comparison toggle has no aria-label in the Simplified Chinese build.",
+  },
+  {
+    id: "pricing-am-lang-invalid",
+    ruleId: "BF-LOC-LANG-INVALID",
+    route: "/pricing",
+    locale: "am-ET",
+    viewports: ALL_VIEWPORTS,
+    selector: "html",
+    note: "The Amharic pricing route declares <html lang=\"am_ET\">, which is not a BCP 47 tag.",
+  },
+  {
+    id: "pricing-am-viewport-overflow",
+    ruleId: "BF-VIS-VIEWPORT-OVERFLOW",
+    route: "/pricing",
+    locale: "am-ET",
+    viewports: NARROW_VIEWPORTS,
+    selector: "html",
+    note: "The Amharic regional fee strip is pinned to 1180px, so the document scrolls sideways at 390px and 768px only.",
   },
 
   // -------------------------------------------------------- route: /checkout
@@ -290,6 +448,96 @@ export const SEEDED_DEFECTS: SeededDefect[] = [
     selector: '[data-testid="checkout-total-label"]',
     note: "The total label sits in a 14px fixed-height box, clipping the Thai line box.",
   },
+  {
+    id: "checkout-uk-name-missing",
+    ruleId: "BF-A11Y-NAME-MISSING",
+    route: "/checkout",
+    locale: "uk-UA",
+    viewports: ALL_VIEWPORTS,
+    selector: '[data-testid="checkout-note"]',
+    note: "The Ukrainian delivery-note textarea lost its <label>, so it has no accessible name.",
+  },
+  {
+    id: "checkout-uk-hreflang-invalid",
+    ruleId: "BF-LOC-HREFLANG-INVALID",
+    route: "/checkout",
+    locale: "uk-UA",
+    viewports: ALL_VIEWPORTS,
+    selector: 'link[hreflang="uk_UA"]',
+    note: "The alternate link uses uk_UA instead of uk-UA. Selector is the literal string rules.ts emits for this rule, which is not a data-testid selector.",
+  },
+  {
+    id: "checkout-he-dir-missing",
+    ruleId: "BF-LOC-DIR-MISSING",
+    route: "/checkout",
+    locale: "he-IL",
+    viewports: ALL_VIEWPORTS,
+    selector: "html",
+    note: "The Hebrew checkout route is missing dir=\"rtl\", so the payment form is mirrored the wrong way.",
+  },
+  {
+    id: "checkout-he-img-alt-missing",
+    ruleId: "BF-A11Y-IMG-ALT-MISSING",
+    route: "/checkout",
+    locale: "he-IL",
+    viewports: ALL_VIEWPORTS,
+    selector: '[data-testid="checkout-card-logo"]',
+    note: "The accepted-card mark has no alt attribute in the Hebrew build.",
+  },
+  {
+    id: "checkout-bn-text-clip-y",
+    ruleId: "BF-VIS-TEXT-CLIP-Y",
+    route: "/checkout",
+    locale: "bn-BD",
+    viewports: ALL_VIEWPORTS,
+    selector: '[data-testid="checkout-total-label"]',
+    note: "The 14px fixed-height total label clips the Bengali line box.",
+  },
+  {
+    id: "checkout-ko-raw-key",
+    ruleId: "BF-LNG-RAW-KEY",
+    route: "/checkout",
+    locale: "ko-KR",
+    viewports: ALL_VIEWPORTS,
+    selector: '[data-testid="checkout-accepted-heading"]',
+    note: "The accepted-schemes heading renders checkout.summary.accepted instead of the Korean string.",
+  },
+  {
+    id: "checkout-zh-text-overflow-x",
+    ruleId: "BF-VIS-TEXT-OVERFLOW-X",
+    route: "/checkout",
+    locale: "zh-Hans-CN",
+    viewports: ALL_VIEWPORTS,
+    selector: '[data-testid="checkout-total-label"]',
+    note: "The total label is a 120px nowrap box; the ten-character Chinese label needs about 160px.",
+  },
+  {
+    id: "checkout-zh-lang-invalid",
+    ruleId: "BF-LOC-LANG-INVALID",
+    route: "/checkout",
+    locale: "zh-Hans-CN",
+    viewports: ALL_VIEWPORTS,
+    selector: "html",
+    note: "The Chinese checkout declares <html lang=\"zh_Hans_CN\">, which is not a BCP 47 tag.",
+  },
+  {
+    id: "checkout-am-title-missing",
+    ruleId: "BF-A11Y-TITLE-MISSING",
+    route: "/checkout",
+    locale: "am-ET",
+    viewports: ALL_VIEWPORTS,
+    selector: "title",
+    note: "The Amharic checkout route ships an empty <title>.",
+  },
+  {
+    id: "checkout-am-text-clip-y",
+    ruleId: "BF-VIS-TEXT-CLIP-Y",
+    route: "/checkout",
+    locale: "am-ET",
+    viewports: ALL_VIEWPORTS,
+    selector: '[data-testid="checkout-total-label"]',
+    note: "The 14px fixed-height total label clips the Ethiopic line box.",
+  },
 
   // -------------------------------------------------------- route: /settings
   {
@@ -354,6 +602,105 @@ export const SEEDED_DEFECTS: SeededDefect[] = [
     viewports: ALL_VIEWPORTS,
     selector: '[data-testid="settings-theme-toggle"]',
     note: "The icon-only theme toggle has no aria-label in the Thai build.",
+  },
+  {
+    id: "settings-uk-lang-mismatch",
+    ruleId: "BF-LOC-LANG-MISMATCH",
+    route: "/settings",
+    locale: "uk-UA",
+    viewports: ALL_VIEWPORTS,
+    selector: "html",
+    note: "The uk-UA settings route is served with <html lang=\"en-GB\">.",
+  },
+  {
+    id: "settings-he-raw-key",
+    ruleId: "BF-LNG-RAW-KEY",
+    route: "/settings",
+    locale: "he-IL",
+    viewports: ALL_VIEWPORTS,
+    selector: '[data-testid="settings-security-heading"]',
+    note: "The Hebrew dictionary is missing settings.section.security, so the key leaks into the heading.",
+  },
+  {
+    id: "settings-he-text-clip-y",
+    ruleId: "BF-VIS-TEXT-CLIP-Y",
+    route: "/settings",
+    locale: "he-IL",
+    viewports: ALL_VIEWPORTS,
+    selector: '[data-testid="settings-timezone-value"]',
+    note: "The reporting time zone sits in a 200x14px fixed box, so the wrapped Hebrew value is clipped below the first line.",
+  },
+  {
+    id: "settings-bn-name-missing",
+    ruleId: "BF-A11Y-NAME-MISSING",
+    route: "/settings",
+    locale: "bn-BD",
+    viewports: ALL_VIEWPORTS,
+    selector: '[data-testid="settings-theme-toggle"]',
+    note: "The icon-only theme toggle has no aria-label in the Bengali build.",
+  },
+  {
+    id: "settings-bn-viewport-overflow",
+    ruleId: "BF-VIS-VIEWPORT-OVERFLOW",
+    route: "/settings",
+    locale: "bn-BD",
+    viewports: NARROW_VIEWPORTS,
+    selector: "html",
+    note: "The Bengali audit-trail strip is pinned to 1180px, so the document scrolls sideways at 390px and 768px only.",
+  },
+  {
+    id: "settings-ko-text-overflow-x",
+    ruleId: "BF-VIS-TEXT-OVERFLOW-X",
+    route: "/settings",
+    locale: "ko-KR",
+    viewports: ALL_VIEWPORTS,
+    selector: '[data-testid="settings-timezone-value"]',
+    note: "The 120px nowrap time-zone box clips the Korean value.",
+  },
+  {
+    id: "settings-ko-title-missing",
+    ruleId: "BF-A11Y-TITLE-MISSING",
+    route: "/settings",
+    locale: "ko-KR",
+    viewports: ALL_VIEWPORTS,
+    selector: "title",
+    note: "The Korean settings route ships an empty <title>.",
+  },
+  {
+    id: "settings-zh-hreflang-invalid",
+    ruleId: "BF-LOC-HREFLANG-INVALID",
+    route: "/settings",
+    locale: "zh-Hans-CN",
+    viewports: ALL_VIEWPORTS,
+    selector: 'link[hreflang="zh_Hans_CN"]',
+    note: "The alternate link uses zh_Hans_CN instead of zh-Hans-CN. Selector is the literal string rules.ts emits for this rule, which is not a data-testid selector.",
+  },
+  {
+    id: "settings-zh-viewport-overflow",
+    ruleId: "BF-VIS-VIEWPORT-OVERFLOW",
+    route: "/settings",
+    locale: "zh-Hans-CN",
+    viewports: NARROW_VIEWPORTS,
+    selector: "html",
+    note: "The Chinese audit-trail strip is pinned to 1180px, so the document scrolls sideways at 390px and 768px only.",
+  },
+  {
+    id: "settings-am-theme-name-missing",
+    ruleId: "BF-A11Y-NAME-MISSING",
+    route: "/settings",
+    locale: "am-ET",
+    viewports: ALL_VIEWPORTS,
+    selector: '[data-testid="settings-theme-toggle"]',
+    note: "The icon-only theme toggle has no aria-label in the Amharic build.",
+  },
+  {
+    id: "settings-am-lang-name-missing",
+    ruleId: "BF-A11Y-NAME-MISSING",
+    route: "/settings",
+    locale: "am-ET",
+    viewports: ALL_VIEWPORTS,
+    selector: '[data-testid="site-lang-button"]',
+    note: "The icon-only language switcher also lost its aria-label on the Amharic settings route; two unnamed controls on one page are two separate defects.",
   },
 ];
 
@@ -447,6 +794,12 @@ const LANGUAGE_OPTIONS = [
   "日本語",
   "हिन्दी",
   "ไทย",
+  "Українська",
+  "עברית",
+  "বাংলা",
+  "한국어",
+  "简体中文",
+  "አማርኛ",
 ];
 
 const COPY: Record<string, Copy> = {
@@ -1148,6 +1501,712 @@ const COPY: Record<string, Copy> = {
       links: ["สถานะ", "เอกสาร", "การสนับสนุน"],
     },
   },
+
+  "uk-UA": {
+    brand: "Meridian Pay",
+    navLabel: "Головна навігація",
+    nav: ["Огляд", "Тарифи", "Оплата", "Налаштування"],
+    langButton: "Змінити мову",
+    titles: [
+      "Meridian Pay · Глобальна платіжна інфраструктура",
+      "Тарифи · Meridian Pay",
+      "Оплата · Meridian Pay",
+      "Налаштування · Meridian Pay",
+    ],
+    logoAlt: "Логотип {n}",
+    home: {
+      eyebrow: "Глобальні платежі",
+      heading: "Платежі, що працюють будь-якою мовою",
+      sub: "Meridian Pay проводить розрахунки за картками, гаманцями та банківськими переказами на 42 ринках, а сторінку оплати ваші клієнти справді можуть прочитати.",
+      ctaPrimary: "Відкрити платіжний рахунок",
+      ctaSecondary: "Поговорити з відділом продажу",
+      badge: "Сертифіковано за PCI DSS рівня 1 та працює на 42 ринках",
+      partnersHeading: "Нам довіряють команди, що працюють понад 30 мовами",
+      featuresHeading: "Чому фінансові команди переходять на Meridian",
+      features: [
+        {
+          title: "Одна інтеграція, 42 ринки",
+          body: "Новий ринок додається просто з панелі керування. Локальні способи оплати, валюти та податкові правила вмикаються без окремого релізу.",
+        },
+        {
+          title: "Оплата мовою клієнта",
+          body: "Кожен рядок, дата й сума форматуються з мовного профілю, а не з жорстко заданого шаблону.",
+        },
+        {
+          title: "Виплати, які можна звірити",
+          body: "Щоденні виплати надходять із машинозчитуваною випискою, що збігається з вашим обліком рядок у рядок.",
+        },
+      ],
+      statsHeading: "Минулий квартал",
+      stats: [
+        { value: "99,99 %", label: "Доступність платежів" },
+        { value: "1,4 с", label: "Медіанна авторизація" },
+        { value: "42", label: "Активні ринки" },
+      ],
+    },
+    pricing: {
+      heading: "Тарифи, що зростають разом з обсягом",
+      intro: "Без плати за підключення та без місячного мінімуму. Ви платите лише за кожну успішну операцію.",
+      caption: "Порівняння тарифів для карткових платежів в Україні",
+      columns: ["Можливість", "Старт", "Зростання", "Корпоративний"],
+      rows: [
+        ["Комісія за операцію", "1,9 % + 2 ₴", "1,4 % + 2 ₴", "За домовленістю"],
+        ["Підтримувані ринки", "8", "24", "42"],
+        ["Графік виплат", "Щотижня", "Щодня", "Щодня"],
+        ["Виділена підтримка", "Спільнота", "Робочі години", "Цілодобово"],
+      ],
+      compareToggle: "Показати повне порівняння можливостей",
+      planCta: "Обрати корпоративний тариф",
+      enterpriseCta: "Написати у відділ продажу",
+      stripHeading: "Порівняння комісій за регіонами",
+      regions: [
+        "Велика Британія",
+        "Німеччина",
+        "Саудівська Аравія",
+        "Японія",
+        "Індія",
+        "Таїланд",
+      ],
+    },
+    checkout: {
+      heading: "Завершіть оплату",
+      summaryHeading: "Підсумок замовлення",
+      items: [
+        { name: "Тариф «Зростання», річний", price: "56 000 ₴" },
+        { name: "Додатковий пакет ринків", price: "11 300 ₴" },
+        { name: "ПДВ (20 %)", price: "13 460 ₴" },
+      ],
+      totalLabel: "Разом до сплати сьогодні",
+      total: "80 760 ₴",
+      formHeading: "Платіжні дані",
+      fields: [
+        "Адреса електронної пошти",
+        "Імʼя на картці",
+        "Номер картки",
+        "Термін дії (ММ/РР)",
+        "Код безпеки",
+        "Країна виставлення рахунку",
+      ],
+      note: "Примітка до доставки (необовʼязково)",
+      terms: "Я приймаю умови оплати та повідомлення про конфіденційність.",
+      submit: "Сплатити 80 760 ₴",
+      secure: "Платежі шифруються наскрізно й ніколи не зберігаються на наших серверах.",
+      cardAlt: "Прийнята платіжна система",
+      acceptedHeading: "Приймаємо тут",
+      receiptHeading: "Останні квитанції",
+      receiptColumns: ["Дата", "Номер", "Спосіб", "Статус", "Сума"],
+    },
+    settings: {
+      heading: "Налаштування робочого простору",
+      localeHeading: "Мова та регіон",
+      securityHeading: "Безпека",
+      langLabel: "Мова інтерфейсу",
+      tzLabel: "Часовий пояс для звітів",
+      tzValue: "Європа/Київ, східноєвропейський літній час (UTC+3)",
+      themeToggle: "Перемкнути на темну тему",
+      twoFactor: "Вимагати двофакторну автентифікацію під час кожного входу",
+      sessionLabel: "Завершувати неактивні сеанси через",
+      sessionOptions: ["15 хвилин", "1 годину", "8 годин"],
+      auditHeading: "Журнал аудиту",
+      auditColumns: ["Час", "Виконавець", "Дія", "Робочий простір", "Результат"],
+      detailsSummary: "Як ми зберігаємо ваші налаштування",
+      detailsBody: "Налаштування зберігаються для кожного робочого простору й реплікуються в обраний вами регіон. Зміна регіону переносить дані протягом одного платіжного циклу.",
+      dangerHeading: "Небезпечна зона",
+      dangerBody: "Закриття робочого простору негайно скасовує всі заплановані виплати.",
+      dangerCta: "Закрити робочий простір",
+      save: "Зберегти зміни",
+    },
+    footer: {
+      legal: "© 2026 Meridian Pay Ltd. Зареєстровано в Англії та Уельсі.",
+      links: ["Стан", "Документація", "Підтримка"],
+    },
+  },
+
+  "he-IL": {
+    brand: "מרידיאן פיי",
+    navLabel: "ניווט ראשי",
+    nav: ["סקירה", "תמחור", "תשלום", "הגדרות"],
+    langButton: "שינוי שפה",
+    titles: [
+      "מרידיאן פיי · תשתית תשלומים גלובלית",
+      "תמחור · מרידיאן פיי",
+      "תשלום · מרידיאן פיי",
+      "הגדרות · מרידיאן פיי",
+    ],
+    logoAlt: "הלוגו של {n}",
+    home: {
+      eyebrow: "תשלומים גלובליים",
+      heading: "תשלומים שעובדים בכל שפה",
+      sub: "מרידיאן פיי מסלקת כרטיסים, ארנקים דיגיטליים והעברות בנקאיות ב-42 שווקים, עם עמוד תשלום שהלקוחות שלכם באמת יכולים לקרוא.",
+      ctaPrimary: "פתיחת חשבון תשלומים",
+      ctaSecondary: "שיחה עם צוות המכירות",
+      badge: "מוסמך PCI DSS רמה 1 ופעיל ב-42 שווקים",
+      partnersHeading: "צוותים שמשיקים ביותר מ-30 שפות סומכים עלינו",
+      featuresHeading: "למה צוותי כספים עוברים למרידיאן",
+      features: [
+        {
+          title: "אינטגרציה אחת, 42 שווקים",
+          body: "מוסיפים שוק חדש מלוח הבקרה. אמצעי תשלום מקומיים, מטבעות וכללי מס נדלקים בלי גרסה נוספת.",
+        },
+        {
+          title: "עמוד תשלום בשפת הלקוח",
+          body: "כל מחרוזת, תאריך וסכום מעוצבים מפרופיל השפה ולא מתבנית קשיחה בקוד.",
+        },
+        {
+          title: "סליקה שאפשר להתאים לספרים",
+          body: "ההעברות היומיות מגיעות עם דוח קריא למכונה שתואם להנהלת החשבונות שלכם שורה מול שורה.",
+        },
+      ],
+      statsHeading: "הרבעון האחרון",
+      stats: [
+        { value: "99.99%", label: "זמינות תשלומים" },
+        { value: "1.4 שנ׳", label: "חציון אישור" },
+        { value: "42", label: "שווקים פעילים" },
+      ],
+    },
+    pricing: {
+      heading: "תמחור שגדל עם הנפח",
+      intro: "בלי דמי הקמה ובלי מינימום חודשי. משלמים על כל עסקה מוצלחת בלבד.",
+      caption: "השוואת מסלולים לתשלומי כרטיס בישראל",
+      columns: ["יכולת", "התחלה", "צמיחה", "ארגוני"],
+      rows: [
+        ["עמלת עסקה", "1.9% + ₪0.7", "1.4% + ₪0.7", "לפי הסכם"],
+        ["שווקים נתמכים", "8", "24", "42"],
+        ["מועדי העברה", "שבועי", "יומי", "יומי"],
+        ["תמיכה ייעודית", "קהילה", "שעות עבודה", "מסביב לשעון"],
+      ],
+      compareToggle: "הצגת השוואת היכולות המלאה",
+      planCta: "בחירת מסלול צמיחה",
+      enterpriseCta: "יצירת קשר עם המכירות",
+      stripHeading: "השוואת עמלות לפי אזור",
+      regions: [
+        "הממלכה המאוחדת",
+        "גרמניה",
+        "ערב הסעודית",
+        "יפן",
+        "הודו",
+        "תאילנד",
+      ],
+    },
+    checkout: {
+      heading: "השלמת התשלום",
+      summaryHeading: "סיכום ההזמנה",
+      items: [
+        { name: "מסלול צמיחה, שנתי", price: "₪5,400" },
+        { name: "חבילת שווקים נוספת", price: "₪1,090" },
+        { name: "מע״מ (17%)", price: "₪1,103" },
+      ],
+      totalLabel: "הסכום לתשלום היום",
+      total: "₪7,593",
+      formHeading: "פרטי התשלום",
+      fields: [
+        "כתובת דוא״ל",
+        "השם על הכרטיס",
+        "מספר הכרטיס",
+        "תוקף (חח/שש)",
+        "קוד אבטחה",
+        "מדינת החיוב",
+      ],
+      note: "הערת משלוח (רשות)",
+      terms: "אני מאשר את תנאי התשלום ואת הודעת הפרטיות.",
+      submit: "תשלום ₪7,593",
+      secure: "התשלומים מוצפנים מקצה לקצה ואינם נשמרים בשרתים שלנו.",
+      cardAlt: "מותג כרטיס נתמך",
+      acceptedHeading: "מתקבל כאן",
+      receiptHeading: "קבלות אחרונות",
+      receiptColumns: ["תאריך", "אסמכתא", "אמצעי", "סטטוס", "סכום"],
+    },
+    settings: {
+      heading: "הגדרות סביבת העבודה",
+      localeHeading: "שפה ואזור",
+      securityHeading: "אבטחה",
+      langLabel: "שפת הממשק",
+      tzLabel: "אזור הזמן לדוחות",
+      tzValue: "אסיה/ירושלים, שעון קיץ ישראל (UTC+3)",
+      themeToggle: "מעבר לערכת נושא כהה",
+      twoFactor: "לדרוש אימות דו-שלבי בכל כניסה",
+      sessionLabel: "ניתוק הפעלות לא פעילות לאחר",
+      sessionOptions: ["15 דקות", "שעה אחת", "8 שעות"],
+      auditHeading: "יומן ביקורת",
+      auditColumns: ["שעה", "מבצע", "פעולה", "סביבת עבודה", "תוצאה"],
+      detailsSummary: "כיצד אנחנו שומרים את ההגדרות",
+      detailsBody: "ההגדרות נשמרות לכל סביבת עבודה ומשוכפלות לאזור שבחרתם. שינוי האזור מעביר את הנתונים בתוך מחזור חיוב אחד.",
+      dangerHeading: "אזור מסוכן",
+      dangerBody: "סגירת סביבת העבודה מבטלת מיד את כל ההעברות המתוזמנות.",
+      dangerCta: "סגירת סביבת העבודה",
+      save: "שמירת השינויים",
+    },
+    footer: {
+      legal: "© 2026 Meridian Pay Ltd. רשומה באנגליה ובוויילס.",
+      links: ["סטטוס", "תיעוד", "תמיכה"],
+    },
+  },
+
+  "bn-BD": {
+    brand: "মেরিডিয়ান পে",
+    navLabel: "প্রধান নেভিগেশন",
+    nav: ["ওভারভিউ", "মূল্য", "চেকআউট", "সেটিংস"],
+    langButton: "ভাষা পরিবর্তন করুন",
+    titles: [
+      "মেরিডিয়ান পে · বৈশ্বিক পেমেন্ট অবকাঠামো",
+      "মূল্য · মেরিডিয়ান পে",
+      "চেকআউট · মেরিডিয়ান পে",
+      "সেটিংস · মেরিডিয়ান পে",
+    ],
+    logoAlt: "{n}-এর লোগো",
+    home: {
+      eyebrow: "বৈশ্বিক পেমেন্ট",
+      heading: "প্রতিটি ভাষায় কাজ করে এমন পেমেন্ট",
+      sub: "মেরিডিয়ান পে ৪২টি বাজারে কার্ড, ওয়ালেট ও ব্যাংক ট্রান্সফার নিষ্পত্তি করে, আর এমন একটি চেকআউট দেয় যা আপনার গ্রাহক সত্যিই পড়তে পারেন।",
+      ctaPrimary: "পেমেন্ট অ্যাকাউন্ট খুলুন",
+      ctaSecondary: "বিক্রয় দলের সঙ্গে কথা বলুন",
+      badge: "PCI DSS লেভেল ১ সনদপ্রাপ্ত এবং ৪২টি বাজারে সক্রিয়",
+      partnersHeading: "৩০টির বেশি ভাষায় কাজ করা দলগুলোর আস্থা",
+      featuresHeading: "অর্থ বিভাগ কেন মেরিডিয়ানে আসে",
+      features: [
+        {
+          title: "একটি ইন্টিগ্রেশন, ৪২টি বাজার",
+          body: "ড্যাশবোর্ড থেকেই নতুন বাজার যোগ করুন। স্থানীয় পেমেন্ট পদ্ধতি, মুদ্রা ও করের নিয়ম নতুন রিলিজ ছাড়াই চালু হয়।",
+        },
+        {
+          title: "গ্রাহকের ভাষায় চেকআউট",
+          body: "প্রতিটি বাক্য, তারিখ ও পরিমাণ লোকেল প্রোফাইল থেকে সাজানো হয়, কোনো নির্দিষ্ট টেমপ্লেট থেকে নয়।",
+        },
+        {
+          title: "মিলিয়ে দেখার উপযোগী নিষ্পত্তি",
+          body: "প্রতিদিনের পরিশোধের সঙ্গে যন্ত্রপাঠ্য বিবরণী আসে, যা আপনার হিসাবের সঙ্গে লাইন ধরে মেলে।",
+        },
+      ],
+      statsHeading: "গত ত্রৈমাসিক",
+      stats: [
+        { value: "৯৯.৯৯%", label: "পেমেন্ট আপটাইম" },
+        { value: "১.৪ সে", label: "গড় অনুমোদনের সময়" },
+        { value: "৪২", label: "সক্রিয় বাজার" },
+      ],
+    },
+    pricing: {
+      heading: "লেনদেনের পরিমাণের সঙ্গে বাড়ে এমন মূল্য",
+      intro: "কোনো সেটআপ ফি নেই, মাসিক ন্যূনতমও নেই। আপনি কেবল প্রতিটি সফল লেনদেনের জন্য দেন।",
+      caption: "বাংলাদেশে কার্ড পেমেন্টের জন্য প্যাকেজ তুলনা",
+      columns: ["সুবিধা", "স্টার্টার", "গ্রোথ", "এন্টারপ্রাইজ"],
+      rows: [
+        ["লেনদেন ফি", "১.৯% + ২ টাকা", "১.৪% + ২ টাকা", "আলোচনাসাপেক্ষ"],
+        ["সমর্থিত বাজার", "৮", "২৪", "৪২"],
+        ["পরিশোধের সময়সূচি", "সাপ্তাহিক", "দৈনিক", "দৈনিক"],
+        ["নিবেদিত সহায়তা", "কমিউনিটি", "কর্মঘণ্টা", "সারাক্ষণ"],
+      ],
+      compareToggle: "সম্পূর্ণ সুবিধা তুলনা দেখান",
+      planCta: "গ্রোথ প্যাকেজ বেছে নিন",
+      enterpriseCta: "বিক্রয়ে যোগাযোগ করুন",
+      stripHeading: "অঞ্চলভিত্তিক ফি তুলনা",
+      regions: [
+        "যুক্তরাজ্য",
+        "জার্মানি",
+        "সৌদি আরব",
+        "জাপান",
+        "ভারত",
+        "থাইল্যান্ড",
+      ],
+    },
+    checkout: {
+      heading: "আপনার পেমেন্ট সম্পূর্ণ করুন",
+      summaryHeading: "অর্ডার সারাংশ",
+      items: [
+        { name: "গ্রোথ প্যাকেজ, বার্ষিক", price: "১,৬৫,০০০ টাকা" },
+        { name: "অতিরিক্ত বাজার প্যাক", price: "৩৩,০০০ টাকা" },
+        { name: "ভ্যাট (১৫%)", price: "২৯,৭০০ টাকা" },
+      ],
+      totalLabel: "আজ পরিশোধযোগ্য মোট",
+      total: "২,২৭,৭০০ টাকা",
+      formHeading: "পেমেন্টের বিবরণ",
+      fields: [
+        "ইমেইল ঠিকানা",
+        "কার্ডে থাকা নাম",
+        "কার্ড নম্বর",
+        "মেয়াদ (মাস/বছর)",
+        "নিরাপত্তা কোড",
+        "বিলিং দেশ",
+      ],
+      note: "ডেলিভারি নোট (ঐচ্ছিক)",
+      terms: "আমি পেমেন্টের শর্তাবলি ও গোপনীয়তা বিজ্ঞপ্তি মেনে নিচ্ছি।",
+      submit: "২,২৭,৭০০ টাকা পরিশোধ করুন",
+      secure: "পেমেন্ট প্রান্ত থেকে প্রান্ত পর্যন্ত এনক্রিপ্ট করা হয় এবং আমাদের সার্ভারে কখনো সংরক্ষিত হয় না।",
+      cardAlt: "গৃহীত কার্ড ব্র্যান্ড",
+      acceptedHeading: "এখানে গৃহীত",
+      receiptHeading: "সাম্প্রতিক রসিদ",
+      receiptColumns: ["তারিখ", "রেফারেন্স", "মাধ্যম", "অবস্থা", "পরিমাণ"],
+    },
+    settings: {
+      heading: "ওয়ার্কস্পেস সেটিংস",
+      localeHeading: "ভাষা ও অঞ্চল",
+      securityHeading: "নিরাপত্তা",
+      langLabel: "ইন্টারফেসের ভাষা",
+      tzLabel: "রিপোর্টের সময় অঞ্চল",
+      tzValue: "এশিয়া/ঢাকা, বাংলাদেশ মান সময় (UTC+6)",
+      themeToggle: "ডার্ক থিমে যান",
+      twoFactor: "প্রতিবার সাইন-ইনে দুই স্তরের প্রমাণীকরণ বাধ্যতামূলক করুন",
+      sessionLabel: "নিষ্ক্রিয় সেশন সাইন আউট করুন",
+      sessionOptions: ["১৫ মিনিট", "১ ঘণ্টা", "৮ ঘণ্টা"],
+      auditHeading: "নিরীক্ষা লগ",
+      auditColumns: ["সময়", "সম্পাদক", "কাজ", "ওয়ার্কস্পেস", "ফলাফল"],
+      detailsSummary: "আমরা আপনার সেটিংস কীভাবে রাখি",
+      detailsBody: "সেটিংস প্রতিটি ওয়ার্কস্পেসের জন্য আলাদা করে রাখা হয় এবং আপনার বেছে নেওয়া অঞ্চলে প্রতিলিপি করা হয়। অঞ্চল বদলালে এক বিলিং চক্রের মধ্যে ডেটা সরে যায়।",
+      dangerHeading: "বিপজ্জনক অংশ",
+      dangerBody: "ওয়ার্কস্পেস বন্ধ করলে নির্ধারিত সব পরিশোধ সঙ্গে সঙ্গে বাতিল হয়।",
+      dangerCta: "ওয়ার্কস্পেস বন্ধ করুন",
+      save: "পরিবর্তন সংরক্ষণ করুন",
+    },
+    footer: {
+      legal: "© ২০২৬ Meridian Pay Ltd. ইংল্যান্ড ও ওয়েলসে নিবন্ধিত।",
+      links: ["স্ট্যাটাস", "ডকুমেন্টেশন", "সহায়তা"],
+    },
+  },
+
+  "ko-KR": {
+    brand: "Meridian Pay",
+    navLabel: "기본 탐색",
+    nav: ["개요", "요금제", "결제", "설정"],
+    langButton: "언어 변경",
+    titles: [
+      "Meridian Pay · 글로벌 결제 인프라",
+      "요금제 · Meridian Pay",
+      "결제 · Meridian Pay",
+      "설정 · Meridian Pay",
+    ],
+    logoAlt: "{n} 로고",
+    home: {
+      eyebrow: "글로벌 결제",
+      heading: "모든 언어에서 작동하는 결제",
+      sub: "Meridian Pay는 42개 시장에서 카드, 월렛, 계좌이체를 정산하며 고객이 실제로 읽을 수 있는 결제 화면을 제공합니다.",
+      ctaPrimary: "결제 계정 개설",
+      ctaSecondary: "영업팀에 문의",
+      badge: "PCI DSS 레벨 1 인증을 받았으며 42개 시장에서 운영 중",
+      partnersHeading: "30개 이상의 언어로 출시하는 팀이 신뢰합니다",
+      featuresHeading: "재무 팀이 Meridian으로 옮기는 이유",
+      features: [
+        {
+          title: "하나의 연동으로 42개 시장",
+          body: "대시보드에서 시장을 추가하세요. 현지 결제 수단, 통화, 세금 규칙이 추가 배포 없이 켜집니다.",
+        },
+        {
+          title: "고객의 언어로 표시되는 결제",
+          body: "모든 문구와 날짜, 금액은 고정된 템플릿이 아니라 로케일 프로필에서 서식이 만들어집니다.",
+        },
+        {
+          title: "대사할 수 있는 정산",
+          body: "매일 입금되는 금액에는 장부와 한 줄씩 일치하는 기계 판독용 명세서가 함께 제공됩니다.",
+        },
+      ],
+      statsHeading: "지난 분기",
+      stats: [
+        { value: "99.99%", label: "결제 가동률" },
+        { value: "1.4초", label: "승인 중앙값" },
+        { value: "42", label: "운영 중인 시장" },
+      ],
+    },
+    pricing: {
+      heading: "거래량에 따라 확장되는 요금제",
+      intro: "설치 비용도, 월 최소 금액도 없습니다. 성공한 거래에 대해서만 지불합니다.",
+      caption: "대한민국 카드 결제 요금제 비교",
+      columns: ["기능", "스타터", "그로스", "엔터프라이즈"],
+      rows: [
+        ["거래 수수료", "1.9% + 30원", "1.4% + 30원", "협의"],
+        ["지원 시장", "8", "24", "42"],
+        ["정산 주기", "주 1회", "매일", "매일"],
+        ["전담 지원", "커뮤니티", "업무 시간", "연중무휴"],
+      ],
+      compareToggle: "전체 기능 비교 보기",
+      planCta: "그로스 선택",
+      enterpriseCta: "영업팀 문의",
+      stripHeading: "지역별 수수료 비교",
+      regions: ["영국", "독일", "사우디아라비아", "일본", "인도", "태국"],
+    },
+    checkout: {
+      heading: "결제 완료하기",
+      summaryHeading: "주문 요약",
+      items: [
+        { name: "그로스 요금제, 연간", price: "₩1,584,000" },
+        { name: "추가 시장 팩", price: "₩320,000" },
+        { name: "부가가치세 (10%)", price: "₩190,400" },
+      ],
+      totalLabel: "오늘 결제할 금액",
+      total: "₩2,094,400",
+      formHeading: "결제 정보",
+      fields: [
+        "이메일 주소",
+        "카드 소유자 이름",
+        "카드 번호",
+        "유효기간 (월/년)",
+        "보안 코드",
+        "청구 국가",
+      ],
+      note: "배송 메모 (선택)",
+      terms: "결제 약관과 개인정보 처리방침에 동의합니다.",
+      submit: "₩2,094,400 결제",
+      secure: "결제 정보는 종단 간 암호화되며 당사 서버에 저장되지 않습니다.",
+      cardAlt: "사용 가능한 카드 브랜드",
+      acceptedHeading: "여기에서 사용 가능",
+      receiptHeading: "최근 영수증",
+      receiptColumns: ["날짜", "참조 번호", "수단", "상태", "금액"],
+    },
+    settings: {
+      heading: "워크스페이스 설정",
+      localeHeading: "언어 및 지역",
+      securityHeading: "보안",
+      langLabel: "인터페이스 언어",
+      tzLabel: "보고서 표준 시간대",
+      tzValue: "아시아/서울, 한국 표준시 (UTC+9)",
+      themeToggle: "다크 테마로 전환",
+      twoFactor: "로그인할 때마다 2단계 인증을 요구합니다",
+      sessionLabel: "비활성 세션 로그아웃 시간",
+      sessionOptions: ["15분", "1시간", "8시간"],
+      auditHeading: "감사 로그",
+      auditColumns: ["시각", "실행자", "작업", "워크스페이스", "결과"],
+      detailsSummary: "설정을 저장하는 방식",
+      detailsBody: "설정은 워크스페이스별로 저장되며 선택한 지역으로 복제됩니다. 지역을 변경하면 한 번의 청구 주기 안에 데이터가 이동합니다.",
+      dangerHeading: "위험 구역",
+      dangerBody: "워크스페이스를 닫으면 예정된 모든 정산이 즉시 취소됩니다.",
+      dangerCta: "워크스페이스 닫기",
+      save: "변경 사항 저장",
+    },
+    footer: {
+      legal: "© 2026 Meridian Pay Ltd. 잉글랜드 및 웨일스 등록.",
+      links: ["상태", "문서", "지원"],
+    },
+  },
+
+  "zh-Hans-CN": {
+    brand: "Meridian Pay",
+    navLabel: "主导航",
+    nav: ["概览", "价格", "结账", "设置"],
+    langButton: "更改语言",
+    titles: [
+      "Meridian Pay · 全球支付基础设施",
+      "价格 · Meridian Pay",
+      "结账 · Meridian Pay",
+      "设置 · Meridian Pay",
+    ],
+    logoAlt: "{n} 标识",
+    home: {
+      eyebrow: "全球支付",
+      heading: "在每一种语言中都能用的支付",
+      sub: "Meridian Pay 在 42 个市场清算银行卡、电子钱包和银行转账，并提供客户真正读得懂的结账页面。",
+      ctaPrimary: "开通支付账户",
+      ctaSecondary: "联系销售团队",
+      badge: "已通过 PCI DSS 一级认证，并在 42 个市场上线",
+      partnersHeading: "以超过 30 种语言发布的团队都在使用",
+      featuresHeading: "财务团队为何选择 Meridian",
+      features: [
+        {
+          title: "一次接入，覆盖 42 个市场",
+          body: "在控制台即可新增市场。本地支付方式、币种和税务规则无需再次发版即可生效。",
+        },
+        {
+          title: "以客户语言呈现的结账页",
+          body: "每一段文案、日期和金额都由语言配置生成，而不是写死在模板里。",
+        },
+        {
+          title: "可对账的结算",
+          body: "每日结算都附带可机读的对账单，与您的账簿逐行一致。",
+        },
+      ],
+      statsHeading: "上一季度",
+      stats: [
+        { value: "99.99%", label: "支付可用率" },
+        { value: "1.4 秒", label: "授权耗时中位数" },
+        { value: "42", label: "已上线市场" },
+      ],
+    },
+    pricing: {
+      heading: "随交易量增长的价格",
+      intro: "没有开通费，也没有月度最低消费。您只为每一笔成功交易付费。",
+      caption: "中国大陆银行卡支付的套餐对比",
+      columns: ["功能", "入门版", "成长版", "企业版"],
+      rows: [
+        ["交易费率", "1.9% + 0.2 元", "1.4% + 0.2 元", "面议"],
+        ["支持市场", "8", "24", "42"],
+        ["结算周期", "每周", "每日", "每日"],
+        ["专属支持", "社区", "工作时间", "全天候"],
+      ],
+      compareToggle: "显示完整功能对比",
+      planCta: "选择成长版",
+      enterpriseCta: "联系销售",
+      stripHeading: "各地区费率对比",
+      regions: ["英国", "德国", "沙特阿拉伯", "日本", "印度", "泰国"],
+    },
+    checkout: {
+      heading: "完成支付",
+      summaryHeading: "订单摘要",
+      items: [
+        { name: "成长版套餐（年付）", price: "¥8,568" },
+        { name: "附加市场包", price: "¥1,730" },
+        { name: "增值税（6%）", price: "¥618" },
+      ],
+      totalLabel: "今日应付总额（含税）",
+      total: "¥10,916",
+      formHeading: "支付信息",
+      fields: [
+        "电子邮件地址",
+        "持卡人姓名",
+        "卡号",
+        "有效期（月/年）",
+        "安全码",
+        "账单国家或地区",
+      ],
+      note: "配送备注（选填）",
+      terms: "我接受支付条款和隐私声明。",
+      submit: "支付 ¥10,916",
+      secure: "支付信息端到端加密，绝不会存储在我们的服务器上。",
+      cardAlt: "受理的卡组织",
+      acceptedHeading: "此处受理",
+      receiptHeading: "最近的收据",
+      receiptColumns: ["日期", "参考号", "方式", "状态", "金额"],
+    },
+    settings: {
+      heading: "工作区设置",
+      localeHeading: "语言与地区",
+      securityHeading: "安全",
+      langLabel: "界面语言",
+      tzLabel: "报表时区",
+      tzValue: "亚洲/上海，中国标准时间（UTC+8）",
+      themeToggle: "切换到深色主题",
+      twoFactor: "每次登录都要求双重验证",
+      sessionLabel: "闲置会话自动登出时间",
+      sessionOptions: ["15 分钟", "1 小时", "8 小时"],
+      auditHeading: "审计日志",
+      auditColumns: ["时间", "操作者", "操作", "工作区", "结果"],
+      detailsSummary: "我们如何保存您的设置",
+      detailsBody: "设置按工作区保存，并复制到您选择的地区。更改地区后，数据会在一个账单周期内迁移。",
+      dangerHeading: "危险区域",
+      dangerBody: "关闭工作区会立即取消所有已安排的结算。",
+      dangerCta: "关闭工作区",
+      save: "保存更改",
+    },
+    footer: {
+      legal: "© 2026 Meridian Pay Ltd. 于英格兰和威尔士注册。",
+      links: ["服务状态", "文档", "支持"],
+    },
+  },
+
+  "am-ET": {
+    brand: "ሜሪዲያን ፔይ",
+    navLabel: "ዋና አሰሳ",
+    nav: ["አጠቃላይ እይታ", "ዋጋ", "ክፍያ", "ቅንብሮች"],
+    langButton: "ቋንቋ ቀይር",
+    titles: [
+      "ሜሪዲያን ፔይ · ዓለም አቀፍ የክፍያ መሠረተ ልማት",
+      "ዋጋ · ሜሪዲያን ፔይ",
+      "ክፍያ · ሜሪዲያን ፔይ",
+      "ቅንብሮች · ሜሪዲያን ፔይ",
+    ],
+    logoAlt: "የ{n} አርማ",
+    home: {
+      eyebrow: "ዓለም አቀፍ ክፍያዎች",
+      heading: "በየትኛውም ቋንቋ የሚሠሩ ክፍያዎች",
+      sub: "ሜሪዲያን ፔይ በ42 ገበያዎች ካርዶችን፣ ዲጂታል ቦርሳዎችንና የባንክ ዝውውሮችን ያወራርዳል፤ ደንበኞችዎ በእውነት ማንበብ የሚችሉት የክፍያ ገጽ ይሰጣል።",
+      ctaPrimary: "የክፍያ ሒሳብ ይክፈቱ",
+      ctaSecondary: "ከሽያጭ ቡድን ጋር ይነጋገሩ",
+      badge: "የPCI DSS ደረጃ 1 ማረጋገጫ ያለው ሲሆን በ42 ገበያዎች ንቁ ነው",
+      partnersHeading: "ከ30 በላይ ቋንቋዎች የሚሠሩ ቡድኖች ይተማመኑብናል",
+      featuresHeading: "የፋይናንስ ቡድኖች ወደ ሜሪዲያን የሚሸጋገሩበት ምክንያት",
+      features: [
+        {
+          title: "አንድ ውህደት፣ 42 ገበያዎች",
+          body: "አዲስ ገበያ ከዳሽቦርዱ ይጨምሩ። የአካባቢ የክፍያ መንገዶች፣ ገንዘቦችና የግብር ደንቦች ያለ አዲስ ልቀት ይሠራሉ።",
+        },
+        {
+          title: "በደንበኛው ቋንቋ የሚቀርብ ክፍያ",
+          body: "እያንዳንዱ ጽሑፍ፣ ቀንና መጠን ከቋንቋ መገለጫው ይቀረጻል እንጂ ከቋሚ ቅንብር አይደለም።",
+        },
+        {
+          title: "ማስታረቅ የሚቻል ወራጅ ክፍያ",
+          body: "ዕለታዊ ክፍያዎች በማሽን ሊነበብ ከሚችል መግለጫ ጋር ይደርሳሉ፤ ከመዝገብዎ ጋር መስመር በመስመር ይመሳሰላል።",
+        },
+      ],
+      statsHeading: "ያለፈው ሩብ ዓመት",
+      stats: [
+        { value: "99.99%", label: "የክፍያ ተገኝነት" },
+        { value: "1.4 ሰ", label: "አማካይ የፈቃድ ጊዜ" },
+        { value: "42", label: "ንቁ ገበያዎች" },
+      ],
+    },
+    pricing: {
+      heading: "ከመጠን ጋር የሚያድግ ዋጋ",
+      intro: "የማዋቀሪያ ክፍያ የለም፤ ወርሃዊ ዝቅተኛ መጠንም የለም። ለተሳካ ግብይት ብቻ ይከፍላሉ።",
+      caption: "በኢትዮጵያ ለካርድ ክፍያዎች የዕቅድ ንጽጽር",
+      columns: ["አገልግሎት", "መነሻ", "ዕድገት", "ድርጅት"],
+      rows: [
+        ["የግብይት ክፍያ", "1.9% + 2 ብር", "1.4% + 2 ብር", "በስምምነት"],
+        ["የሚደገፉ ገበያዎች", "8", "24", "42"],
+        ["የክፍያ መርሐ ግብር", "ሳምንታዊ", "ዕለታዊ", "ዕለታዊ"],
+        ["የተመደበ ድጋፍ", "ማኅበረሰብ", "የሥራ ሰዓት", "ሰዓቱን ሙሉ"],
+      ],
+      compareToggle: "ሙሉ የአገልግሎት ንጽጽር አሳይ",
+      planCta: "የዕድገት ዕቅድ ይምረጡ",
+      enterpriseCta: "ሽያጭን ያግኙ",
+      stripHeading: "በክልል የክፍያ ንጽጽር",
+      regions: [
+        "ዩናይትድ ኪንግደም",
+        "ጀርመን",
+        "ሳውዲ ዓረቢያ",
+        "ጃፓን",
+        "ሕንድ",
+        "ታይላንድ",
+      ],
+    },
+    checkout: {
+      heading: "ክፍያዎን ያጠናቅቁ",
+      summaryHeading: "የትዕዛዝ ማጠቃለያ",
+      items: [
+        { name: "የዕድገት ዕቅድ፣ ዓመታዊ", price: "67,800 ብር" },
+        { name: "ተጨማሪ የገበያ ጥቅል", price: "13,700 ብር" },
+        { name: "ተጨማሪ እሴት ታክስ (15%)", price: "12,225 ብር" },
+      ],
+      totalLabel: "ዛሬ የሚከፈል ጠቅላላ",
+      total: "93,725 ብር",
+      formHeading: "የክፍያ ዝርዝሮች",
+      fields: [
+        "የኢሜይል አድራሻ",
+        "በካርዱ ላይ ያለ ስም",
+        "የካርድ ቁጥር",
+        "የሚያበቃበት (ወር/ዓመት)",
+        "የደኅንነት ኮድ",
+        "የሒሳብ አከፋፈል አገር",
+      ],
+      note: "የማድረሻ ማስታወሻ (አማራጭ)",
+      terms: "የክፍያ ውሎችንና የግላዊነት ማስታወቂያውን እቀበላለሁ።",
+      submit: "93,725 ብር ይክፈሉ",
+      secure: "ክፍያዎች ከጫፍ እስከ ጫፍ የተመሰጠሩ ናቸው፤ በአገልጋዮቻችን ላይ ፈጽሞ አይቀመጡም።",
+      cardAlt: "ተቀባይነት ያለው የካርድ ምልክት",
+      acceptedHeading: "እዚህ ተቀባይነት አለው",
+      receiptHeading: "የቅርብ ጊዜ ደረሰኞች",
+      receiptColumns: ["ቀን", "ማጣቀሻ", "መንገድ", "ሁኔታ", "መጠን"],
+    },
+    settings: {
+      heading: "የሥራ ቦታ ቅንብሮች",
+      localeHeading: "ቋንቋና ክልል",
+      securityHeading: "ደኅንነት",
+      langLabel: "የበይነገጽ ቋንቋ",
+      tzLabel: "የሪፖርት የሰዓት ክልል",
+      tzValue: "አፍሪካ/አዲስ አበባ፣ የምሥራቅ አፍሪካ ሰዓት (UTC+3)",
+      themeToggle: "ወደ ጨለማ ገጽታ ቀይር",
+      twoFactor: "በእያንዳንዱ መግቢያ ላይ ባለ ሁለት ደረጃ ማረጋገጫ ይጠይቁ",
+      sessionLabel: "ንቁ ያልሆኑ ክፍለ ጊዜዎችን ካለፈ በኋላ ያስወጡ",
+      sessionOptions: ["15 ደቂቃ", "1 ሰዓት", "8 ሰዓት"],
+      auditHeading: "የኦዲት መዝገብ",
+      auditColumns: ["ሰዓት", "አድራጊ", "ተግባር", "የሥራ ቦታ", "ውጤት"],
+      detailsSummary: "ቅንብሮችዎን እንዴት እንደምናስቀምጥ",
+      detailsBody: "ቅንብሮች ለእያንዳንዱ የሥራ ቦታ ተለይተው ይቀመጣሉ፤ እርስዎ ወደመረጡት ክልልም ይባዛሉ። ክልሉን መቀየር መረጃውን በአንድ የሒሳብ ዑደት ውስጥ ያዛውራል።",
+      dangerHeading: "አደገኛ ክፍል",
+      dangerBody: "የሥራ ቦታውን መዝጋት ሁሉንም የታቀዱ ክፍያዎች ወዲያውኑ ይሰርዛል።",
+      dangerCta: "የሥራ ቦታውን ዝጋ",
+      save: "ለውጦችን አስቀምጥ",
+    },
+    footer: {
+      legal: "© 2026 Meridian Pay Ltd. በእንግሊዝና በዌልስ የተመዘገበ።",
+      links: ["ሁኔታ", "ሰነድ", "ድጋፍ"],
+    },
+  },
 };
 
 /* -------------------------------------------------------------------------- */
@@ -1188,7 +2247,7 @@ const BASE_CSS = `
 *,*::before,*::after{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:#ffffff;color:#111827;font-size:16px;line-height:1.6;overflow-wrap:anywhere;
-font-family:system-ui,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans","Nirmala UI","Leelawadee UI","Yu Gothic UI","Noto Sans Arabic",sans-serif}
+font-family:system-ui,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans","Nirmala UI","Leelawadee UI","Yu Gothic UI","Malgun Gothic","Microsoft YaHei","Nyala","Ebrima","Noto Sans Arabic","Noto Sans Hebrew","Noto Sans Bengali","Noto Sans Ethiopic",sans-serif}
 img,svg{max-width:100%}
 img{height:auto;display:block}
 .shell{width:100%;max-width:1100px;margin:0 auto;padding:0 16px}
@@ -1278,30 +2337,49 @@ function href(route: string, locale: string): string {
   return `${route}?locale=${locale}`;
 }
 
-/** Index of a defect for this exact page, or undefined when it is not seeded. */
+/** The POSIX form of a BCP 47 tag: `zh-Hans-CN` becomes `zh_Hans_CN`. */
+function posixTag(tag: string): string {
+  return tag.replace(/-/g, "_");
+}
+
+/**
+ * The seeded defect for this exact page, or undefined when it is not seeded.
+ *
+ * `testId` narrows the lookup to one element, which is what lets a single page
+ * carry two defects of the same rule on different controls (see
+ * settings-am-theme-name-missing and settings-am-lang-name-missing).
+ */
 function findDefect(
   variant: Variant,
   route: string,
   locale: string,
   ruleId: string,
+  testId?: string,
 ): SeededDefect | undefined {
   if (variant !== "broken") return undefined;
+  const selector = testId ? `[data-testid="${testId}"]` : null;
   return SEEDED_DEFECTS.find(
     (defect) =>
-      defect.route === route && defect.locale === locale && defect.ruleId === ruleId,
+      defect.route === route &&
+      defect.locale === locale &&
+      defect.ruleId === ruleId &&
+      (selector === null || defect.selector === selector),
   );
 }
 
 function htmlAttributes(variant: Variant, route: string, locale: string): string {
-  const rtl = locale === "ar-SA";
+  const rtl = RTL_LOCALES.has(locale);
   if (findDefect(variant, route, locale, "BF-LOC-LANG-MISSING")) {
     return rtl ? ' dir="rtl"' : "";
   }
   if (findDefect(variant, route, locale, "BF-LOC-LANG-INVALID")) {
-    return ` lang="${locale.replace("-", "_")}"${rtl ? ' dir="rtl"' : ""}`;
+    return ` lang="${posixTag(locale)}"${rtl ? ' dir="rtl"' : ""}`;
   }
   if (findDefect(variant, route, locale, "BF-LOC-LANG-MISMATCH")) {
-    return ` lang="en-GB"${rtl ? ' dir="rtl"' : ""}`;
+    // A mismatch needs a different primary language subtag, so English pages
+    // fall back to German rather than declaring themselves correctly.
+    const wrong = locale.startsWith("en") ? "de-DE" : "en-GB";
+    return ` lang="${wrong}"${rtl ? ' dir="rtl"' : ""}`;
   }
   const dir = rtl && !findDefect(variant, route, locale, "BF-LOC-DIR-MISSING")
     ? ' dir="rtl"'
@@ -1312,7 +2390,7 @@ function htmlAttributes(variant: Variant, route: string, locale: string): string
 function alternateLinks(variant: Variant, route: string, locale: string): string {
   const broken = findDefect(variant, route, locale, "BF-LOC-HREFLANG-INVALID");
   const links = FIXTURE_LOCALES.map((alternate) => {
-    const tag = broken && alternate === locale ? alternate.replace("-", "_") : alternate;
+    const tag = broken && alternate === locale ? posixTag(alternate) : alternate;
     return `<link rel="alternate" hreflang="${tag}" href="${esc(href(route, alternate))}">`;
   });
   links.push(
@@ -1338,9 +2416,7 @@ function head(variant: Variant, route: string, locale: string, copy: Copy): stri
 
 function siteHeader(variant: Variant, route: string, locale: string, copy: Copy): string {
   const unnamed = Boolean(
-    findDefect(variant, route, locale, "BF-A11Y-NAME-MISSING") &&
-      route === "/" &&
-      locale === "en-GB",
+    findDefect(variant, route, locale, "BF-A11Y-NAME-MISSING", "site-lang-button"),
   );
   const label = unnamed ? "" : ` aria-label="${esc(copy.langButton)}"`;
   const links = FIXTURE_ROUTES.map((target, index) => {
@@ -1373,10 +2449,17 @@ function siteFooter(locale: string, copy: Copy): string {
 
 function homeMain(variant: Variant, locale: string, copy: Copy): string {
   const route = "/";
-  const rawKey = findDefect(variant, route, locale, "BF-LNG-RAW-KEY");
-  const clipY = findDefect(variant, route, locale, "BF-VIS-TEXT-CLIP-Y");
-  const clipX = findDefect(variant, route, locale, "BF-VIS-TEXT-OVERFLOW-X");
-  const missingAlt = findDefect(variant, route, locale, "BF-A11Y-IMG-ALT-MISSING");
+  const rawKey = findDefect(variant, route, locale, "BF-LNG-RAW-KEY", "home-hero-eyebrow");
+  const clipY = findDefect(variant, route, locale, "BF-VIS-TEXT-CLIP-Y", "home-hero-badge");
+  const clipX = findDefect(variant, route, locale, "BF-VIS-TEXT-OVERFLOW-X", "home-primary-cta");
+  const missingAlt = findDefect(
+    variant,
+    route,
+    locale,
+    "BF-A11Y-IMG-ALT-MISSING",
+    "home-partner-logo",
+  );
+  const wide = findDefect(variant, route, locale, "BF-VIS-VIEWPORT-OVERFLOW");
 
   const eyebrow = rawKey ? "home.hero.eyebrow" : copy.home.eyebrow;
   const logos = PARTNER_LOGOS.map((svg, index) => {
@@ -1423,17 +2506,23 @@ function homeMain(variant: Variant, locale: string, copy: Copy): string {
 </section>
 <section>
 <h2>${esc(copy.home.statsHeading)}</h2>
-<ul class="stats">${stats}</ul>
+<ul class="stats${wide ? " bf-wide" : ""}">${stats}</ul>
 </section>
 </div></main>`;
 }
 
 function pricingMain(variant: Variant, locale: string, copy: Copy): string {
   const route = "/pricing";
-  const clipX = findDefect(variant, route, locale, "BF-VIS-TEXT-OVERFLOW-X");
+  const clipX = findDefect(variant, route, locale, "BF-VIS-TEXT-OVERFLOW-X", "pricing-plan-cta");
   const wide = findDefect(variant, route, locale, "BF-VIS-VIEWPORT-OVERFLOW");
-  const rawKey = findDefect(variant, route, locale, "BF-LNG-RAW-KEY");
-  const unnamed = findDefect(variant, route, locale, "BF-A11Y-NAME-MISSING");
+  const rawKey = findDefect(variant, route, locale, "BF-LNG-RAW-KEY", "pricing-enterprise-cta");
+  const unnamed = findDefect(
+    variant,
+    route,
+    locale,
+    "BF-A11Y-NAME-MISSING",
+    "pricing-compare-toggle",
+  );
 
   const headCells = copy.pricing.columns
     .map((column) => `<th scope="col">${esc(column)}</th>`)
@@ -1482,10 +2571,40 @@ function pricingMain(variant: Variant, locale: string, copy: Copy): string {
 
 function checkoutMain(variant: Variant, locale: string, copy: Copy): string {
   const route = "/checkout";
-  const clipY = findDefect(variant, route, locale, "BF-VIS-TEXT-CLIP-Y");
+  const clipY = findDefect(variant, route, locale, "BF-VIS-TEXT-CLIP-Y", "checkout-total-label");
+  const clipX = findDefect(
+    variant,
+    route,
+    locale,
+    "BF-VIS-TEXT-OVERFLOW-X",
+    "checkout-total-label",
+  );
   const wide = findDefect(variant, route, locale, "BF-VIS-VIEWPORT-OVERFLOW");
-  const missingAlt = findDefect(variant, route, locale, "BF-A11Y-IMG-ALT-MISSING");
-  const unlabelledNote = findDefect(variant, route, locale, "BF-A11Y-NAME-MISSING");
+  const missingAlt = findDefect(
+    variant,
+    route,
+    locale,
+    "BF-A11Y-IMG-ALT-MISSING",
+    "checkout-card-logo",
+  );
+  const unlabelledNote = findDefect(
+    variant,
+    route,
+    locale,
+    "BF-A11Y-NAME-MISSING",
+    "checkout-note",
+  );
+  const rawKey = findDefect(
+    variant,
+    route,
+    locale,
+    "BF-LNG-RAW-KEY",
+    "checkout-accepted-heading",
+  );
+  const totalLabelClass = clipX ? "bf-clip-x" : clipY ? "bf-clip-y" : "";
+  const acceptedHeading = rawKey
+    ? "checkout.summary.accepted"
+    : copy.checkout.acceptedHeading;
 
   const items = copy.checkout.items
     .map(
@@ -1517,10 +2636,10 @@ function checkoutMain(variant: Variant, locale: string, copy: Copy): string {
 <h2>${esc(copy.checkout.summaryHeading)}</h2>
 <ul class="summary-list">${items}</ul>
 <div class="total-row">
-<span class="${clipY ? "bf-clip-y" : ""}" data-testid="checkout-total-label">${esc(copy.checkout.totalLabel)}</span>
+<span class="${totalLabelClass}" data-testid="checkout-total-label">${esc(copy.checkout.totalLabel)}</span>
 <span>${esc(copy.checkout.total)}</span>
 </div>
-<h3>${esc(copy.checkout.acceptedHeading)}</h3>
+<h3 data-testid="checkout-accepted-heading">${esc(acceptedHeading)}</h3>
 <img data-testid="checkout-card-logo" src="${dataUri(CARD_MARK)}" width="56" height="36"${cardAlt}>
 <p class="muted">${esc(copy.checkout.secure)}</p>
 </section>
@@ -1581,11 +2700,37 @@ ${copy.pricing.regions.map((region) => `<option>${esc(region)}</option>`).join("
 
 function settingsMain(variant: Variant, locale: string, copy: Copy): string {
   const route = "/settings";
-  const rawKey = findDefect(variant, route, locale, "BF-LNG-RAW-KEY");
-  const clipX = findDefect(variant, route, locale, "BF-VIS-TEXT-OVERFLOW-X");
+  const rawKey = findDefect(
+    variant,
+    route,
+    locale,
+    "BF-LNG-RAW-KEY",
+    "settings-security-heading",
+  );
+  const clipX = findDefect(
+    variant,
+    route,
+    locale,
+    "BF-VIS-TEXT-OVERFLOW-X",
+    "settings-timezone-value",
+  );
+  const clipY = findDefect(
+    variant,
+    route,
+    locale,
+    "BF-VIS-TEXT-CLIP-Y",
+    "settings-timezone-value",
+  );
   const wide = findDefect(variant, route, locale, "BF-VIS-VIEWPORT-OVERFLOW");
-  const unnamed = findDefect(variant, route, locale, "BF-A11Y-NAME-MISSING");
+  const unnamed = findDefect(
+    variant,
+    route,
+    locale,
+    "BF-A11Y-NAME-MISSING",
+    "settings-theme-toggle",
+  );
 
+  const timezoneClass = clipX ? " bf-clip-x" : clipY ? " bf-clip-y" : "";
   const securityHeading = rawKey ? "settings.section.security" : copy.settings.securityHeading;
   const themeLabel = unnamed ? "" : ` aria-label="${esc(copy.settings.themeToggle)}"`;
   const auditHead = copy.settings.auditColumns
@@ -1611,7 +2756,7 @@ ${LANGUAGE_OPTIONS.map((option) => `<option>${esc(option)}</option>`).join("")}
 </div>
 <div>
 <p class="field-label">${esc(copy.settings.tzLabel)}</p>
-<p class="muted${clipX ? " bf-clip-x" : ""}" data-testid="settings-timezone-value">${esc(copy.settings.tzValue)}</p>
+<p class="muted${timezoneClass}" data-testid="settings-timezone-value">${esc(copy.settings.tzValue)}</p>
 </div>
 </div>
 <button class="btn btn-secondary" type="button">${esc(copy.settings.save)}</button>
