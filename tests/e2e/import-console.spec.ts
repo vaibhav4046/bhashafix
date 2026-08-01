@@ -21,9 +21,17 @@ test("import console rejects a file that is not a BhashaFix report", async ({ pa
 });
 
 test("import console accepts a real CLI scan.json", async ({ page }) => {
-  const response = await page.request.get(
-    "/evidence/scans/browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a/scan.json",
-  );
+  // Read the scan id from the published index rather than pinning one: the ids
+  // change every time `pnpm evidence:publish` regenerates the evidence.
+  const index = await page.request.get("/evidence/index.json");
+  expect(index.status()).toBe(200);
+  const published = (await index.json()) as {
+    realSiteScans: { scans: Array<{ scanId: string }> };
+  };
+  const scanId = published.realSiteScans.scans[0]?.scanId;
+  expect(scanId, "the published evidence index lists at least one scan").toBeTruthy();
+
+  const response = await page.request.get(`/evidence/scans/${scanId}/scan.json`);
   expect(response.status()).toBe(200);
   const scan = await response.text();
 
@@ -35,5 +43,5 @@ test("import console accepts a real CLI scan.json", async ({ page }) => {
     buffer: Buffer.from(scan),
   });
 
-  await expect(page.getByText("browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a").first()).toBeVisible();
+  await expect(page.getByText(scanId!).first()).toBeVisible();
 });

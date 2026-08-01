@@ -17,9 +17,19 @@ const TARGETS = [
   {
     name: "BhashaFix production",
     url: "https://bhashafix.vercel.app",
-    routes: ["/", "/docs", "/trust"],
-    locales: ["en-GB", "ar-SA"],
-    note: "The product's own deployment.",
+    routes: [
+      "/",
+      "/evidence",
+      "/import",
+      "/integrations/cli",
+      "/integrations/mcp",
+      "/trust",
+      "/docs",
+      "/demo",
+    ],
+    locales: ["en-GB"],
+    viewports: ["mobile", "desktop"],
+    note: "The product's own deployment, scanned by its own gate in the source locale.",
   },
   {
     name: "MDN Web Docs",
@@ -30,6 +40,7 @@ const TARGETS = [
       "/en-US/docs/Web/JavaScript",
     ],
     locales: ["en-GB", "de-DE"],
+    viewports: ["mobile"],
     note: "Mozilla property, three routes, single viewport.",
   },
   {
@@ -37,6 +48,7 @@ const TARGETS = [
     url: "https://en.wikipedia.org/wiki/Localization",
     routes: ["/wiki/Localization", "/wiki/Internationalization_and_localization"],
     locales: ["en-GB", "he-IL"],
+    viewports: ["mobile"],
     note: "Two article routes, single viewport.",
   },
 ] as const;
@@ -50,7 +62,7 @@ for (const target of TARGETS) {
     sourceLocale: "en-GB",
     locales: [...target.locales],
     routes: [...target.routes],
-    viewports: ["mobile"],
+    viewports: [...target.viewports],
   });
   const byRule: Record<string, number> = {};
   for (const issue of outcome.scan.issues) {

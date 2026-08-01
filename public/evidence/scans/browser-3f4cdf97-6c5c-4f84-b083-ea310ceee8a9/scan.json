@@ -1,0 +1,66 @@
+{
+  "scanId": "browser-3f4cdf97-6c5c-4f84-b083-ea310ceee8a9",
+  "origin": "LIVE_PUBLIC_BROWSER_SCAN",
+  "status": "completed",
+  "startedAt": "2026-08-01T21:22:53.331Z",
+  "completedAt": "2026-08-01T21:23:24.369Z",
+  "config": {
+    "projectRoot": "<local project root>",
+    "url": "https://bhashafix.vercel.app/",
+    "sourceLocale": "en-GB",
+    "locales": [
+      "en-GB"
+    ],
+    "routes": [
+      "/",
+      "/evidence",
+      "/import",
+      "/integrations/cli",
+      "/integrations/mcp",
+      "/trust",
+      "/docs",
+      "/demo"
+    ],
+    "viewports": [
+      {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      }
+    ],
+    "browsers": [
+      "chromium"
+    ],
+    "themes": [
+      "light"
+    ],
+    "maxPages": 5,
+    "maxDepth": 1,
+    "rateLimitPerSecond": 2,
+    "noAi": true,
+    "hosted": false,
+    "allowLocalhost": true,
+    "allowlist": []
+  },
+  "issues": [],
+  "routesDiscovered": [
+    "/",
+    "/evidence",
+    "/import",
+    "/integrations/cli",
+    "/integrations/mcp",
+    "/trust",
+    "/docs",
+    "/demo"
+  ],
+  "localesTested": [
+    "en-GB"
+  ],
+  "engineVersion": "0.2.0",
+  "mode": "live"
+}

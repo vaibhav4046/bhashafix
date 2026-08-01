@@ -10,13 +10,36 @@
  * time and only the fields rendered on the page reach the browser.
  */
 
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import evidenceIndex from "../../public/evidence/index.json";
-import bhashafixScan from "../../public/evidence/scans/browser-bce30786-6142-49c0-910a-e9d9098e41ff/scan.json";
-import bhashafixRenders from "../../public/evidence/scans/browser-bce30786-6142-49c0-910a-e9d9098e41ff/renders.json";
-import mdnScan from "../../public/evidence/scans/browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6/scan.json";
-import mdnRenders from "../../public/evidence/scans/browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6/renders.json";
-import wikipediaScan from "../../public/evidence/scans/browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a/scan.json";
-import wikipediaRenders from "../../public/evidence/scans/browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a/renders.json";
+
+/**
+ * Read a published scan from disk at build time.
+ *
+ * These were static imports keyed by scan id, which meant regenerating the
+ * evidence renamed the files and broke the build. Reading by the id the index
+ * actually lists keeps the page valid for whatever `pnpm evidence:publish`
+ * produced.
+ */
+function readPublished(scanId: string, file: "scan" | "renders"): unknown {
+  const target = path.join(
+    process.cwd(),
+    "public",
+    "evidence",
+    "scans",
+    scanId,
+    `${file}.json`,
+  );
+  try {
+    return JSON.parse(readFileSync(target, "utf8"));
+  } catch (cause) {
+    throw new Error(
+      `public/evidence/index.json lists ${scanId}, but ${file}.json for it could not be read. Run \`pnpm evidence:publish\`.`,
+      { cause },
+    );
+  }
+}
 
 type RawIssue = {
   issueId: string;
@@ -253,13 +276,14 @@ export function realScanEvidence(): {
   limitations: string[];
   scans: EvidenceScan[];
 } {
-  const sources = [
-    [bhashafixScan, bhashafixRenders],
-    [mdnScan, mdnRenders],
-    [wikipediaScan, wikipediaRenders],
-  ] as const;
   const byId = new Map(
-    sources.map(([scan, renders]) => [scan.scanId, { scan, renders }]),
+    evidenceIndex.realSiteScans.scans.map((entry) => [
+      entry.scanId,
+      {
+        scan: readPublished(entry.scanId, "scan"),
+        renders: readPublished(entry.scanId, "renders"),
+      },
+    ]),
   );
   return {
     generatedAt: evidenceIndex.realSiteScans.generatedAt,
@@ -268,7 +292,7 @@ export function realScanEvidence(): {
       const source = byId.get(entry.scanId);
       if (!source) {
         throw new Error(
-          `public/evidence/index.json lists ${entry.scanId} but no scan.json is imported for it.`,
+          `public/evidence/index.json lists ${entry.scanId} but no scan.json was loaded for it.`,
         );
       }
       return buildScan(

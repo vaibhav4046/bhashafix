@@ -1,9 +1,9 @@
 {
-  "scanId": "browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6",
-  "origin": "LOCAL_REPOSITORY_SCAN",
+  "scanId": "browser-d1b79fb2-1891-4e55-83fc-8df1cafd79d2",
+  "origin": "LIVE_PUBLIC_BROWSER_SCAN",
   "status": "completed_with_warnings",
-  "startedAt": "2026-08-01T08:48:48.157Z",
-  "completedAt": "2026-08-01T08:49:15.201Z",
+  "startedAt": "2026-08-01T21:23:24.732Z",
+  "completedAt": "2026-08-01T21:23:39.996Z",
   "config": {
     "projectRoot": "<local project root>",
     "url": "https://developer.mozilla.org/en-US/docs/Web/HTML",
@@ -41,8 +41,8 @@
   "issues": [
     {
       "issueId": "b717e29545293191",
-      "scanId": "browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6",
-      "origin": "LOCAL_REPOSITORY_SCAN",
+      "scanId": "browser-d1b79fb2-1891-4e55-83fc-8df1cafd79d2",
+      "origin": "LIVE_PUBLIC_BROWSER_SCAN",
       "category": "accessibility",
       "ruleId": "BF-A11Y-AXE-ARIA-VALID-ATTR-VALUE",
       "severity": "blocking",
@@ -80,8 +80,8 @@
     },
     {
       "issueId": "f94da7418029aa0f",
-      "scanId": "browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6",
-      "origin": "LOCAL_REPOSITORY_SCAN",
+      "scanId": "browser-d1b79fb2-1891-4e55-83fc-8df1cafd79d2",
+      "origin": "LIVE_PUBLIC_BROWSER_SCAN",
       "category": "locale",
       "ruleId": "BF-LOC-LANG-MISMATCH",
       "severity": "blocking",
@@ -117,8 +117,8 @@
     },
     {
       "issueId": "c2c190a341ca343f",
-      "scanId": "browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6",
-      "origin": "LOCAL_REPOSITORY_SCAN",
+      "scanId": "browser-d1b79fb2-1891-4e55-83fc-8df1cafd79d2",
+      "origin": "LIVE_PUBLIC_BROWSER_SCAN",
       "category": "accessibility",
       "ruleId": "BF-A11Y-AXE-ARIA-VALID-ATTR-VALUE",
       "severity": "blocking",
@@ -156,8 +156,8 @@
     },
     {
       "issueId": "8b5b151c2655bef6",
-      "scanId": "browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6",
-      "origin": "LOCAL_REPOSITORY_SCAN",
+      "scanId": "browser-d1b79fb2-1891-4e55-83fc-8df1cafd79d2",
+      "origin": "LIVE_PUBLIC_BROWSER_SCAN",
       "category": "accessibility",
       "ruleId": "BF-A11Y-AXE-ARIA-VALID-ATTR-VALUE",
       "severity": "blocking",
@@ -195,8 +195,8 @@
     },
     {
       "issueId": "5bf3412ca2054817",
-      "scanId": "browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6",
-      "origin": "LOCAL_REPOSITORY_SCAN",
+      "scanId": "browser-d1b79fb2-1891-4e55-83fc-8df1cafd79d2",
+      "origin": "LIVE_PUBLIC_BROWSER_SCAN",
       "category": "locale",
       "ruleId": "BF-LOC-LANG-MISMATCH",
       "severity": "blocking",
@@ -232,8 +232,8 @@
     },
     {
       "issueId": "bbb47e449f12910c",
-      "scanId": "browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6",
-      "origin": "LOCAL_REPOSITORY_SCAN",
+      "scanId": "browser-d1b79fb2-1891-4e55-83fc-8df1cafd79d2",
+      "origin": "LIVE_PUBLIC_BROWSER_SCAN",
       "category": "accessibility",
       "ruleId": "BF-A11Y-AXE-ARIA-VALID-ATTR-VALUE",
       "severity": "blocking",
@@ -271,8 +271,8 @@
     },
     {
       "issueId": "9bc277a9dff44a85",
-      "scanId": "browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6",
-      "origin": "LOCAL_REPOSITORY_SCAN",
+      "scanId": "browser-d1b79fb2-1891-4e55-83fc-8df1cafd79d2",
+      "origin": "LIVE_PUBLIC_BROWSER_SCAN",
       "category": "accessibility",
       "ruleId": "BF-A11Y-AXE-ARIA-VALID-ATTR-VALUE",
       "severity": "blocking",
@@ -310,8 +310,8 @@
     },
     {
       "issueId": "c9527ed34fdf11ea",
-      "scanId": "browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6",
-      "origin": "LOCAL_REPOSITORY_SCAN",
+      "scanId": "browser-d1b79fb2-1891-4e55-83fc-8df1cafd79d2",
+      "origin": "LIVE_PUBLIC_BROWSER_SCAN",
       "category": "locale",
       "ruleId": "BF-LOC-LANG-MISMATCH",
       "severity": "blocking",
@@ -347,8 +347,8 @@
     },
     {
       "issueId": "9b02a8c2cdc490cd",
-      "scanId": "browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6",
-      "origin": "LOCAL_REPOSITORY_SCAN",
+      "scanId": "browser-d1b79fb2-1891-4e55-83fc-8df1cafd79d2",
+      "origin": "LIVE_PUBLIC_BROWSER_SCAN",
       "category": "accessibility",
       "ruleId": "BF-A11Y-AXE-ARIA-VALID-ATTR-VALUE",
       "severity": "blocking",

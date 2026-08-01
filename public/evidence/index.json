@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-08-01T19:25:13.730Z",
+  "generatedAt": "2026-08-01T21:24:05.968Z",
   "note": "Every entry here was produced by an actual run and copied verbatim. Regenerate with `pnpm evidence:publish`.",
   "realSiteScans": {
-    "generatedAt": "2026-08-01T08:49:28.793Z",
+    "generatedAt": "2026-08-01T21:23:53.438Z",
     "limitations": [
       "These targets carry no ground-truth labels, so no precision or recall figure is derived from them.",
       "Coverage is deliberately bounded: a handful of routes per site at one viewport.",
@@ -11,61 +11,115 @@
     "scans": [
       {
         "name": "BhashaFix production",
-        "scanId": "browser-bce30786-6142-49c0-910a-e9d9098e41ff",
-        "origin": "LOCAL_REPOSITORY_SCAN",
+        "scanId": "browser-3f4cdf97-6c5c-4f84-b083-ea310ceee8a9",
+        "origin": "LIVE_PUBLIC_BROWSER_SCAN",
         "target": "https://bhashafix.vercel.app",
-        "note": "The product's own deployment.",
+        "note": "The product's own deployment, scanned by its own gate in the source locale.",
         "routes": [
           "/",
+          "/evidence",
+          "/import",
+          "/integrations/cli",
+          "/integrations/mcp",
+          "/trust",
           "/docs",
-          "/trust"
+          "/demo"
         ],
         "locales": [
-          "en-GB",
-          "ar-SA"
+          "en-GB"
         ],
-        "renders": 6,
-        "issues": 10,
-        "startedAt": "2026-08-01T08:48:36.554Z",
-        "completedAt": "2026-08-01T08:48:48.002Z",
+        "renders": 16,
+        "issues": 0,
+        "startedAt": "2026-08-01T21:22:53.331Z",
+        "completedAt": "2026-08-01T21:23:24.369Z",
         "screenshots": [
           {
-            "file": "screenshots/20f4080953b7.png",
-            "bytes": 182307,
-            "sha256": "6aea3f81c8b12303a3aee16f3f27abefa04b7f18e5d6a6bc16dddcc55127724a"
+            "file": "screenshots/0f361efb2f47.png",
+            "bytes": 168443,
+            "sha256": "476db5f17e075008b0d7c545c1b43e5341a748d02e04628066e51622e980729d"
+          },
+          {
+            "file": "screenshots/434cc6e50cb4.png",
+            "bytes": 505656,
+            "sha256": "d2edb24a1feea1e52c3e4cd7a7d16e40551a3743bebf7320ab65f35eab0442f1"
           },
           {
             "file": "screenshots/5bdf26e63c1d.png",
-            "bytes": 155903,
-            "sha256": "2e1c5854028b32371453eccd92725f2c3c80358633974f16e1f25d1586168ac5"
+            "bytes": 152121,
+            "sha256": "582a8b2fc9002feafe0595f1352773f149023be1aa533692e953ea7854e52f80"
           },
           {
-            "file": "screenshots/81a9669ec542.png",
-            "bytes": 357504,
-            "sha256": "b027792fd43228aaaf4a5989c95e50cfe615386223c2a648eb26099b11e4b345"
+            "file": "screenshots/80e867895bc0.png",
+            "bytes": 192596,
+            "sha256": "e40f979da92d7467f8453b5d4b1063742d5b6a5c3c85b5c0ee7eb9496bdafe5c"
+          },
+          {
+            "file": "screenshots/9644643c4737.png",
+            "bytes": 639522,
+            "sha256": "18357b9eab3b5374b9ff5a7933408bf8c8d97fe6db2aba40fa1a3e4bfcdef630"
           },
           {
             "file": "screenshots/a0ae6988f4da.png",
-            "bytes": 357607,
-            "sha256": "18ad992c60ebb885aa681615f79ebd0c7daa5dd4650250c44bdc7112065480c5"
+            "bytes": 324318,
+            "sha256": "b36900ea08f6600599388101af8d2adac34b24cb3519f384b75c66204d4fcedf"
           },
           {
-            "file": "screenshots/bbb411ffa3d7.png",
-            "bytes": 155903,
-            "sha256": "2e1c5854028b32371453eccd92725f2c3c80358633974f16e1f25d1586168ac5"
+            "file": "screenshots/b216128f32ec.png",
+            "bytes": 247453,
+            "sha256": "1dad513ffb3398d82a124df686d5abb57b24b6fd0c7337bd615a13de5bcf6319"
+          },
+          {
+            "file": "screenshots/c565673690c1.png",
+            "bytes": 581957,
+            "sha256": "e22d2a973ebf764a82cf20f12839eae87cf3211cb1f2b627dbb7fe2d02352cab"
           },
           {
             "file": "screenshots/c8d1debef99a.png",
-            "bytes": 182307,
-            "sha256": "6aea3f81c8b12303a3aee16f3f27abefa04b7f18e5d6a6bc16dddcc55127724a"
+            "bytes": 166734,
+            "sha256": "e85454eb3befbf845b144c2f67d1caf54774f72d83e2dc68dbd7b1cc183e2c36"
+          },
+          {
+            "file": "screenshots/cc49463475ae.png",
+            "bytes": 331676,
+            "sha256": "618dc33f47ed067d45685b86d70355678665dd73fbb14d1b0bc5c8db1c408a95"
+          },
+          {
+            "file": "screenshots/d40b89f63884.png",
+            "bytes": 311990,
+            "sha256": "3cf7110923182cbf97b59b58f452e328e8e10feffc1addcd79c1c93657ab09f5"
+          },
+          {
+            "file": "screenshots/d9b16d23050d.png",
+            "bytes": 434010,
+            "sha256": "27ee9833de61c8ce2dec8ec416841201f9c8afcd50a0bf91ccc8ec932ac5ce0f"
+          },
+          {
+            "file": "screenshots/dacf5f8be260.png",
+            "bytes": 245351,
+            "sha256": "ea8d344dfbc0f0ea91577e3b83a1c71bdcbe3be23753e69243e84340cb40b1d0"
+          },
+          {
+            "file": "screenshots/e0a0817d0745.png",
+            "bytes": 406821,
+            "sha256": "c36ce566eb09d9d404a1b2843650984aba698607290972871bed13e0cee46176"
+          },
+          {
+            "file": "screenshots/ed893aa8b1d2.png",
+            "bytes": 113683,
+            "sha256": "800757e020b08daffa6635be44dc0e53fa7e40543b58c5c401ca67d1b758ac13"
+          },
+          {
+            "file": "screenshots/fabfee325313.png",
+            "bytes": 159598,
+            "sha256": "85136f26425ba3c46faef8427e791465103105007bd891e14207a892d42a6d19"
           }
         ],
-        "path": "/evidence/scans/browser-bce30786-6142-49c0-910a-e9d9098e41ff"
+        "path": "/evidence/scans/browser-3f4cdf97-6c5c-4f84-b083-ea310ceee8a9"
       },
       {
         "name": "MDN Web Docs",
-        "scanId": "browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6",
-        "origin": "LOCAL_REPOSITORY_SCAN",
+        "scanId": "browser-d1b79fb2-1891-4e55-83fc-8df1cafd79d2",
+        "origin": "LIVE_PUBLIC_BROWSER_SCAN",
         "target": "https://developer.mozilla.org/en-US/docs/Web/HTML",
         "note": "Mozilla property, three routes, single viewport.",
         "routes": [
@@ -79,23 +133,23 @@
         ],
         "renders": 6,
         "issues": 9,
-        "startedAt": "2026-08-01T08:48:48.157Z",
-        "completedAt": "2026-08-01T08:49:15.201Z",
+        "startedAt": "2026-08-01T21:23:24.732Z",
+        "completedAt": "2026-08-01T21:23:39.996Z",
         "screenshots": [
           {
             "file": "screenshots/167b33589639.png",
-            "bytes": 614164,
-            "sha256": "8bded80d75b9d8c024c6c0e47a76eab964d2ed8a3260a423fe25684ada3aa618"
-          },
-          {
-            "file": "screenshots/2af46bda2ccb.png",
             "bytes": 618553,
             "sha256": "b28686d776baa9bf64bdbe6be05ab975cd94d31393b5347572ac228ae1b1ce77"
           },
           {
+            "file": "screenshots/2af46bda2ccb.png",
+            "bytes": 617524,
+            "sha256": "2041a05b68a8ac0147819f7e40b41246d310e012e58dae821a15e62aec9c6ecf"
+          },
+          {
             "file": "screenshots/8532d493caf1.png",
-            "bytes": 481425,
-            "sha256": "b4c83de5c5b3fdc186925e0753ff1bda74d6a1760027c89d30ea6c47dabf5868"
+            "bytes": 511905,
+            "sha256": "3c4d5c1d8402c086af2a17d089d3629004b62d4c875db9bdae940873c73ee0b4"
           },
           {
             "file": "screenshots/9c9c78bbffdd.png",
@@ -104,8 +158,8 @@
           },
           {
             "file": "screenshots/bc3e6871febf.png",
-            "bytes": 586699,
-            "sha256": "13b741a7652678359038b43cfb519106b2d801034100bb87086d6ec82cf0ebda"
+            "bytes": 555856,
+            "sha256": "8faff65d90a7583e20fb0c2ce285babff08052133dacec7e498b95ffb278dd83"
           },
           {
             "file": "screenshots/df6a156f7008.png",
@@ -113,12 +167,12 @@
             "sha256": "3c4d5c1d8402c086af2a17d089d3629004b62d4c875db9bdae940873c73ee0b4"
           }
         ],
-        "path": "/evidence/scans/browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6"
+        "path": "/evidence/scans/browser-d1b79fb2-1891-4e55-83fc-8df1cafd79d2"
       },
       {
         "name": "Wikipedia",
-        "scanId": "browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a",
-        "origin": "LOCAL_REPOSITORY_SCAN",
+        "scanId": "browser-707f6817-0e68-4236-a5e8-7e97b530a4f0",
+        "origin": "LIVE_PUBLIC_BROWSER_SCAN",
         "target": "https://en.wikipedia.org/wiki/Localization",
         "note": "Two article routes, single viewport.",
         "routes": [
@@ -131,8 +185,8 @@
         ],
         "renders": 4,
         "issues": 16,
-        "startedAt": "2026-08-01T08:49:15.382Z",
-        "completedAt": "2026-08-01T08:49:28.689Z",
+        "startedAt": "2026-08-01T21:23:40.232Z",
+        "completedAt": "2026-08-01T21:23:53.334Z",
         "screenshots": [
           {
             "file": "screenshots/626916722c9b.png",
@@ -155,7 +209,7 @@
             "sha256": "1c7a23c22f608991f1ba33ac91c07974542cc6a68c64be207588fa3807d724a3"
           }
         ],
-        "path": "/evidence/scans/browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a"
+        "path": "/evidence/scans/browser-707f6817-0e68-4236-a5e8-7e97b530a4f0"
       }
     ]
   },
@@ -276,7 +330,7 @@
   },
   "atlaspayRepair": {
     "schemaVersion": "1.0",
-    "generatedAt": "2026-08-01T19:21:45.215Z",
+    "generatedAt": "2026-08-01T19:25:14.491Z",
     "origin": "RECORDED_REPLAY",
     "mode": "genuine deterministic replay artifact",
     "baselineScanId": "atlaspay-83210b0daea2",
