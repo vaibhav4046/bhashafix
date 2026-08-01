@@ -1723,6 +1723,16 @@ function AnnotatedRenderStage({
       </div>
       <p className="stage-state">{stateNote}</p>
       <div className="stage-viewport" ref={containerRef}>
+        {/* The frame renders at the recorded viewport width and is scaled to
+            fit; the wrapper takes the scaled size so the frame stays centred
+            and the surrounding bay does not collapse to one side. */}
+        <div
+          className="stage-frame"
+          style={{
+            width: `${Math.round(viewport.width * scale)}px`,
+            height: `${Math.round(viewport.height * scale)}px`,
+          }}
+        >
         <div
           className="stage-scaler"
           style={{
@@ -1759,6 +1769,7 @@ function AnnotatedRenderStage({
               </span>
             ))}
           </div>
+        </div>
         </div>
       </div>
       <div className="stage-legend">

@@ -2135,8 +2135,16 @@ pre {
     );
 }
 
-.stage-scaler {
+.stage-frame {
   position: relative;
+  margin: 0 auto;
+  max-width: 100%;
+}
+
+.stage-scaler {
+  position: absolute;
+  top: 0;
+  left: 0;
   transform-origin: top left;
   overflow: hidden;
   border: 1px solid var(--border-strong);

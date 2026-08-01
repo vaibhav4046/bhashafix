@@ -214,11 +214,7 @@ test("real public scan UI shows exact routes, evidence and honest coverage", asy
   await page.getByRole("button", { name: "Run real scan →" }).click();
   await expect(page.getByText("HTTP_PREFLIGHT · REAL HTTP RESPONSES")).toBeVisible();
   await expect(page.getByText("Routes actually fetched")).toBeVisible();
-  // The coverage matrix renders one cell per route x locale, so assert the
-  // route appears for every requested locale rather than expecting one cell.
-  const pricingCells = page.getByRole("cell", { name: "/pricing" });
-  expect(await pricingCells.count()).toBeGreaterThan(0);
-  await expect(pricingCells.first()).toBeVisible();
+  await expect(page.getByRole("cell", { name: "/pricing" })).toBeVisible();
   await expect(page.getByText("missing page lang")).toBeVisible();
   await expect(page.getByText("JavaScript browser rendering")).toBeVisible();
   await expect(
@@ -239,9 +235,7 @@ test("real public scan UI shows exact routes, evidence and honest coverage", asy
   await expect(
     page.getByText("SCAN NOT AVAILABLE IN THIS BROWSER"),
   ).toHaveCount(0);
-  // The saved-scan view labels the origin; assert it is rendered somewhere on
-  // the page rather than pinning one exact-text node.
-  await expect(page.getByText("HTTP_PREFLIGHT").first()).toBeVisible();
+  await expect(page.getByText("HTTP_PREFLIGHT", { exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Checks that ran" })).toBeVisible();
   await page.goto("/scan/web-ui-contract/report");
   await expect(page.getByText("SCAN-SPECIFIC EXPORTS")).toBeVisible();
