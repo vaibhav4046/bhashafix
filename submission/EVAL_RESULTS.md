@@ -1,6 +1,6 @@
 # BhashaFix evaluation results
 
-Generated: 2026-08-01T08:50:13.708Z
+Generated: 2026-08-01T09:27:06.811Z
 
 | Release gate | Result | Evidence |
 | --- | --- | --- |
@@ -14,7 +14,7 @@ Generated: 2026-08-01T08:50:13.708Z
 | Dark and light themes | PASS | Playwright production suite |
 | Reduced motion | PASS | Playwright production suite |
 | 390 x 844 and 1440 x 900 | PASS | Playwright production suite |
-| Seeded-defect recall | 100.0% | 97/97 expected detections across 33 labelled defects |
+| Seeded-defect recall | 100.0% | 204/204 expected detections across 70 labelled defects |
 | Detection precision | 100.0% | 0 unlabelled detection(s) on the broken fixture |
 | Clean-fixture false positives | PASS | 0 issue(s) on the clean variant |
 | MCP Inspector | PASS | 18 tools |

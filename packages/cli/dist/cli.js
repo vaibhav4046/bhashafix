@@ -5287,7 +5287,13 @@ function collectPageMeasurement(limits) {
     }
     const title = element.getAttribute("title");
     if (title && title.trim()) return title.trim();
-    return (element.textContent ?? "").replace(/\s+/g, " ").trim();
+    const text2 = (element.textContent ?? "").replace(/\s+/g, " ").trim();
+    if (text2) return text2;
+    const describedImage = element.querySelector("img[alt]:not([alt=''])");
+    if (describedImage) return (describedImage.getAttribute("alt") ?? "").trim();
+    const svgTitle = element.querySelector("svg > title");
+    if (svgTitle?.textContent?.trim()) return svgTitle.textContent.trim();
+    return "";
   }
   function isRendered(element, style) {
     if (style.display === "none" || style.visibility === "hidden") return false;
@@ -5388,6 +5394,9 @@ function looksLikeTranslationKey(text2) {
   if (segments.some((segment) => segment.length < 2)) return false;
   const last = segments.at(-1)?.toLowerCase() ?? "";
   return !NON_KEY_TRAILING_SEGMENTS.has(last);
+}
+function presentsTextVisually(element) {
+  return element.clientWidth >= MIN_VISIBLE_BOX_PX && element.clientHeight >= MIN_VISIBLE_BOX_PX;
 }
 function stableIssueId(parts) {
   return createHash3("sha256").update(
@@ -5555,7 +5564,7 @@ function visualRules(page, context) {
   }
   for (const element of page.elements) {
     if (!element.text) continue;
-    if (element.clientWidth === 0 || element.clientHeight === 0) continue;
+    if (!presentsTextVisually(element)) continue;
     const overflow = detectElementOverflow({
       clientWidth: element.clientWidth,
       scrollWidth: element.scrollWidth,
@@ -5771,7 +5780,7 @@ function evaluateRules(page, context, runtime) {
     ...runtimeRules(context, runtime)
   ];
 }
-var RAW_KEY, NON_KEY_TRAILING_SEGMENTS, SCROLLABLE, OVERFLOW_TOLERANCE_PX, IMPLEMENTED_RULE_IDS;
+var RAW_KEY, NON_KEY_TRAILING_SEGMENTS, SCROLLABLE, OVERFLOW_TOLERANCE_PX, MIN_VISIBLE_BOX_PX, IMPLEMENTED_RULE_IDS;
 var init_rules = __esm({
   "../browser/src/rules.ts"() {
     "use strict";
@@ -5814,6 +5823,7 @@ var init_rules = __esm({
     ]);
     SCROLLABLE = /* @__PURE__ */ new Set(["auto", "scroll", "overlay"]);
     OVERFLOW_TOLERANCE_PX = 2;
+    MIN_VISIBLE_BOX_PX = 8;
     IMPLEMENTED_RULE_IDS = [
       "BF-LOC-LANG-MISSING",
       "BF-LOC-LANG-INVALID",

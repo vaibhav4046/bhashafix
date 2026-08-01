@@ -5,6 +5,8 @@ account action only the repository owner can take.
 
 ## 1. Publish to GitHub
 
+Run every command below from the repository root.
+
 The repository now exists and the remote is configured:
 
 ```
@@ -30,7 +32,7 @@ which the submission evidence relies on.
 3. Run:
 
 ```powershell
-git -C "C:\Users\lalwa\Documents\Codex\2026-07-29\sh\work\bhashafix" push -u origin main
+git push -u origin main
 ```
 
 4. Re-tick the setting.
@@ -41,7 +43,6 @@ changes commit hashes, including the one recorded in
 `submission/RELEASE_MANIFEST.json`. Re-run `pnpm submission:prepare` afterwards.
 
 ```powershell
-cd "C:\Users\lalwa\Documents\Codex\2026-07-29\sh\work\bhashafix"
 git filter-branch --env-filter '
 if [ "$GIT_AUTHOR_EMAIL" = "lalwanivaibhav079@gmail.com" ]; then
   export GIT_AUTHOR_EMAIL="115102797+vaibhav4046@users.noreply.github.com"
@@ -66,7 +67,6 @@ The project is already linked (`.vercel/project.json`, project `bhashafix`).
 Deployment needs an interactive Vercel login in this shell:
 
 ```powershell
-cd "C:\Users\lalwa\Documents\Codex\2026-07-29\sh\work\bhashafix"
 pnpm dlx vercel@latest login
 pnpm dlx vercel@latest whoami
 pnpm dlx vercel@latest --prod

@@ -2,7 +2,7 @@
  * Benchmark fixture site for BhashaFix.
  *
  * Generates a realistic four-route payments product ("Meridian Pay") in twelve
- * locales spanning nine scripts - Latin, Arabic, Japanese, Devanagari, Thai,
+ * locales spanning eleven scripts - Latin, Arabic, Japanese, Devanagari, Thai,
  * Cyrillic, Hebrew, Bengali, Hangul, Han and Ethiopic - in two variants:
  *
  *   clean  - must produce ZERO issues under packages/browser/src/rules.ts at
