@@ -101,7 +101,7 @@ await writeFile(
 );
 run(
   process.execPath,
-  [pnpmEntry, "install", "--offline", "--ignore-scripts"],
+  [pnpmEntry, "install", "--prefer-offline", "--ignore-scripts"],
   consumer,
 );
 
@@ -225,18 +225,26 @@ try {
       `Packed MCP expected 18 strict tools; received ${tools.tools.length}.`,
     );
   }
+  const consumerManifest = JSON.parse(
+    await readFile(
+      path.join(consumer, "node_modules", "@bhashafix", "cli", "package.json"),
+      "utf8",
+    ),
+  ) as { dependencies?: Record<string, string> };
+  const consumerLock = consumerManifest.dependencies ?? {};
   const receipt = {
     cleanConsumer: "fresh operating-system temporary directory outside the repository",
     tarballs,
-    cliHelp: "PASS",
-    cliDoctor: "PASS",
+    cliHelp: help.status === 0 ? "PASS" : "FAIL",
+    cliDoctor: doctor.status === 0 && doctorResult.nodeSupported ? "PASS" : "FAIL",
+    cliBrowserAvailable: doctorResult.browser?.available === true,
     cliFixtureBaselineExit: baselineScan.status,
     cliFixtureBaselineIssues: baselineResult.issues.length,
     cliFixtureRepairedExit: repairedScan.status,
     cliFixtureRepairedIssues: repairedResult.issues.length,
     localeRegistry: registry.count,
     mcpTools: tools.tools.length,
-    workspaceRuntimeDependencies: 0,
+    consumerRuntimeDependencies: Object.keys(consumerLock).length,
     status: "PASS",
   };
   await writeFile(
