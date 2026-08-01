@@ -57,3 +57,5 @@ next-env.d.ts
 /fixtures/nextjs-app/.next/
 /fixtures/nextjs-app/out/
 /fixtures/nextjs-app/node_modules/
+/.tmp-contract-check/
+/.tmp/
