@@ -51100,6 +51100,7 @@ async function runBrowserProjectScan(options) {
     locales,
     viewports: [...viewports],
     themes: [...themes],
+    engine: options.engine,
     artifactDir,
     runAxe: options.runAxe ?? true,
     localeUrl: (target, route, locale) => {
@@ -51498,6 +51499,7 @@ Options:
   --dry-run --apply --project <path> --url <url>
   --source-locale <bcp47> --locales <bcp47,bcp47>
   --routes </,/pricing> --viewports <mobile,desktop>
+  --browsers <chromium|firefox|webkit>
   --themes <light,dark>
   --text <value> --locale <bcp47> --mode <pseudo-mode> --scan <id>
   --config <path> --fail-on <blocking|warning|advisory>
@@ -51563,6 +51565,18 @@ function parseArgs(args) {
         throw new Error(`Invalid theme list "${value}".`);
       }
       options.themes = themes;
+    }
+    if (args[index] === "--browsers" && value) {
+      const engines = value.split(/[,\s]+/).filter(Boolean);
+      if (engines.length !== 1) {
+        throw new Error(
+          `--browsers takes exactly one engine per scan; received "${value}".`
+        );
+      }
+      if (!["chromium", "firefox", "webkit"].includes(engines[0])) {
+        throw new Error(`Unknown browser engine "${engines[0]}".`);
+      }
+      options.engine = engines[0];
     }
     if (args[index] === "--scan" && value) options.scanId = value;
     if (args[index] === "--config" && value) options.configPath = value;
@@ -51785,6 +51799,7 @@ Unknown scripts require approval before execution.`
             routes: options.routes,
             viewports: options.viewports,
             themes: options.themes,
+            engine: options.engine,
             onProgress: options.verbose ? (message) => io.error(`\xB7 ${message}`) : void 0
           })
         );
