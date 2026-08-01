@@ -625,30 +625,6 @@ pre {
   line-height: 1.65;
 }
 
-.landing-cta {
-  width: min(1180px, calc(100% - 80px));
-  margin: 0 auto;
-  padding: 70px 0 96px;
-  border-top: 1px solid var(--border);
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 28px;
-}
-
-.landing-cta h2 {
-  margin: 0;
-  font-size: clamp(30px, 3.4vw, 46px);
-  letter-spacing: -0.045em;
-  font-weight: 850;
-}
-
-.landing-cta > div {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
 .global-footer {
   width: min(1370px, calc(100% - 80px));
   min-height: 130px;
@@ -3443,18 +3419,6 @@ pre {
     display: none;
   }
 
-  .landing-hero {
-    grid-template-columns: 1fr;
-    gap: 44px;
-  }
-
-  .language-orbit {
-    padding-left: 0;
-    padding-top: 26px;
-    border-left: 0;
-    border-top: 1px solid var(--border);
-  }
-
   .pipeline-band ol {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 26px 0;
@@ -3502,11 +3466,7 @@ pre {
     font-size: 11px;
   }
 
-  .landing-hero,
   .pipeline-band,
-  .landing-registry,
-  .replay-footnote,
-  .landing-cta,
   .global-footer,
   .page-heading,
   .scan-header,
@@ -3522,20 +3482,6 @@ pre {
   .docs-layout,
   .playground {
     width: calc(100% - 28px);
-  }
-
-  .landing-hero {
-    padding: 54px 0 46px;
-    gap: 36px;
-  }
-
-  .hero-copy h1 {
-    font-size: 43px;
-    letter-spacing: -0.05em;
-  }
-
-  .hero-lede {
-    font-size: 16px;
   }
 
   .url-launcher {
@@ -3554,13 +3500,7 @@ pre {
     border-radius: 0 0 var(--radius-sm) var(--radius-sm);
   }
 
-  .hero-secondary {
-    gap: 16px;
-  }
-
-  .pipeline-band,
-  .landing-registry,
-  .replay-footnote {
+  .pipeline-band {
     padding: 52px 0;
   }
 
@@ -3585,16 +3525,6 @@ pre {
   .integration-grid,
   .linguistic-table {
     grid-template-columns: 1fr;
-  }
-
-  .landing-cta {
-    padding: 56px 0 72px;
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .landing-cta h2 {
-    font-size: 40px;
   }
 
   .global-footer {
@@ -4029,25 +3959,18 @@ pre {
 
   .live-workspace,
   .empty-state,
-  .demo-index,
   .motion-lab,
   .data-toolbar {
     width: calc(100% - 28px);
   }
 
   .empty-state,
-  .demo-index,
   .motion-lab {
     padding: 65px 0 90px;
   }
 
-  .demo-proof-strip,
   .motion-ledger {
     grid-template-columns: 1fr;
-  }
-
-  .demo-proof-strip > i {
-    display: none;
   }
 
   .motion-ledger article {
@@ -4101,4 +4024,1389 @@ pre {
   color: var(--muted);
   font-size: 12px;
   line-height: 1.5;
+}
+
+/* =====================================================================
+   Living Script
+   ---------------------------------------------------------------------
+   The typographic layer for the five explanatory surfaces: the homepage,
+   the demo overview, the published-evidence page, the CLI page and the
+   MCP page. It is deliberately container-poor: rules, columns and type
+   scale carry the hierarchy, and the evidence itself supplies the
+   colour. Every transition below is driven by a state change, so the
+   reduced-motion block collapses all of them to an immediate cut.
+   ===================================================================== */
+
+:root {
+  --ls-measure: 66ch;
+  --ls-gutter: clamp(20px, 5vw, 64px);
+  --ls-section: clamp(52px, 7vw, 104px);
+  --ls-display: clamp(38px, 6.4vw, 82px);
+  --ls-heading: clamp(26px, 3.4vw, 44px);
+  --ls-sub: clamp(19px, 2.1vw, 27px);
+  --ls-swap: 460ms;
+  --ls-draw: 620ms;
+  --ls-ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ls-page {
+  overflow-x: clip;
+}
+
+.ls-page :is(.ls-hero, .ls-masthead, .ls-section, .pipeline-band) {
+  width: min(1180px, calc(100% - (2 * var(--ls-gutter))));
+  margin-inline: auto;
+}
+
+.ls-eyebrow {
+  margin: 0;
+  color: var(--lavender);
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+/* ---- Hero and mastheads ---- */
+
+.ls-hero,
+.ls-masthead {
+  padding: clamp(48px, 7vw, 104px) 0 clamp(36px, 4vw, 64px);
+  border-bottom: 1px solid var(--border);
+}
+
+.ls-hero-heading,
+.ls-masthead h1 {
+  margin: 22px 0 0;
+  max-width: 20ch;
+  font-size: var(--ls-display);
+  font-weight: 850;
+  line-height: 0.98;
+  letter-spacing: -0.05em;
+  text-wrap: balance;
+}
+
+.ls-masthead h1 {
+  max-width: 26ch;
+}
+
+.ls-display-line {
+  display: block;
+}
+
+/* The page heading the test contract names, kept inside the h1 as the
+   subordinate rule line beneath the display statement. */
+.ls-hero-rule {
+  display: block;
+  max-width: none;
+  margin-top: 26px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-strong);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  line-height: 1.6;
+  text-transform: uppercase;
+}
+
+/* ---- Hero script transition ----
+   Four language names stacked on one baseline. The container reserves the
+   height of a single line, so swapping the active script never moves
+   anything above or below it. */
+.language-orbit {
+  position: relative;
+  margin: 30px 0 0;
+  height: 1.35em;
+  font-size: var(--ls-sub);
+  line-height: 1.35;
+  font-weight: 700;
+}
+
+.language-orbit span {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  opacity: 0;
+  color: var(--yellow);
+  white-space: nowrap;
+  transition: opacity var(--ls-swap) var(--ls-ease);
+}
+
+.language-orbit span[data-active="true"] {
+  opacity: 1;
+}
+
+.ls-standfirst {
+  max-width: 58ch;
+  margin: 26px 0 0;
+  color: var(--muted);
+  font-size: clamp(16px, 1.3vw, 19px);
+  line-height: 1.72;
+}
+
+/* ---- Commands ---- */
+
+.ls-command {
+  max-width: 100%;
+  margin: 28px 0 0;
+  padding: 16px 18px;
+  border: 1px solid var(--border-strong);
+  border-left: 2px solid var(--yellow);
+  border-radius: var(--radius-sm);
+  background: var(--background-elevated);
+  font-size: 13px;
+  line-height: 1.75;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.ls-command-lead {
+  font-size: clamp(13px, 1.15vw, 16px);
+  font-weight: 600;
+}
+
+.ls-caveat {
+  max-width: var(--ls-measure);
+  margin: 16px 0 0;
+  padding-left: 15px;
+  border-left: 2px solid var(--lavender);
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.ls-caveat b {
+  color: var(--text);
+}
+
+.ls-note {
+  max-width: var(--ls-measure);
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.72;
+}
+
+.ls-actions {
+  margin: 34px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* ---- Sections ---- */
+
+.ls-section {
+  padding: var(--ls-section) 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.ls-section:last-of-type {
+  border-bottom: 0;
+}
+
+.ls-section > h2 {
+  margin: 0 0 8px;
+  font-size: var(--ls-heading);
+  font-weight: 830;
+  line-height: 1.06;
+  letter-spacing: -0.04em;
+}
+
+.ls-section > h3,
+.ls-import-report h3 {
+  margin: 0 0 10px;
+  font-size: 17px;
+  font-weight: 830;
+  letter-spacing: -0.015em;
+}
+
+/* ---- Judge choices ---- */
+
+.ls-choice-list {
+  margin: 40px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.ls-choice-list > li {
+  min-width: 0;
+  padding: 0 clamp(16px, 2vw, 30px);
+  border-left: 1px solid var(--border);
+}
+
+.ls-choice-list > li:first-child {
+  padding-left: 0;
+  border-left: 0;
+}
+
+.ls-choice-list h3 {
+  margin: 16px 0 12px;
+  font-size: clamp(20px, 1.9vw, 26px);
+  font-weight: 830;
+  letter-spacing: -0.03em;
+}
+
+.ls-choice-list p {
+  max-width: 46ch;
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: 13.5px;
+  line-height: 1.72;
+}
+
+.ls-choice-list code {
+  color: var(--lavender);
+}
+
+.ls-chain {
+  margin: 0 0 18px;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.ls-chain > li {
+  padding: 8px 0 8px 18px;
+  position: relative;
+  border-top: 1px solid var(--border);
+  color: var(--text);
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  overflow-wrap: anywhere;
+}
+
+.ls-chain > li::before {
+  content: "";
+  position: absolute;
+  inset-block-start: 15px;
+  inset-inline-start: 0;
+  width: 9px;
+  border-top: 1px solid var(--yellow);
+}
+
+/* ---- Proof chain and rule tally ---- */
+
+.ls-proof-chain {
+  margin: 40px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  border-top: 1px solid var(--border);
+}
+
+.ls-proof-chain > li {
+  min-width: 0;
+  padding: 22px clamp(12px, 1.6vw, 24px);
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ls-proof-chain > li:first-child {
+  padding-left: 0;
+  border-left: 0;
+}
+
+.ls-proof-chain b {
+  color: var(--yellow);
+  font-size: clamp(26px, 3vw, 40px);
+  font-weight: 850;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  overflow-wrap: anywhere;
+}
+
+.ls-proof-chain span {
+  color: var(--muted);
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+
+.ls-rule-tally {
+  margin: 28px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  border-top: 1px solid var(--border);
+}
+
+.ls-rule-tally > li {
+  min-width: 0;
+  padding: 14px 16px 14px 0;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.ls-rule-tally b {
+  color: var(--yellow);
+  font-size: 21px;
+  font-weight: 850;
+  font-variant-numeric: tabular-nums;
+}
+
+.ls-rule-tally span {
+  color: var(--muted);
+  font-size: 12.5px;
+  overflow-wrap: anywhere;
+}
+
+/* ---- Boundary, specimens, registry ---- */
+
+.ls-boundary-grid {
+  margin: 32px 0 0;
+  display: grid;
+  gap: 0 clamp(20px, 3vw, 48px);
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.ls-boundary-grid > div {
+  min-width: 0;
+  padding-top: 18px;
+  border-top: 1px solid var(--border-strong);
+}
+
+.ls-boundary-grid h3 {
+  margin: 0 0 14px;
+  font-size: 13px;
+  font-weight: 850;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.ls-boundary-grid ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ls-boundary-grid li {
+  padding: 9px 0;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+
+.ls-specimen-row {
+  margin: 32px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  border-top: 1px solid var(--border);
+}
+
+.ls-specimen-row > li {
+  min-width: 0;
+  padding: 20px clamp(12px, 1.4vw, 22px) 20px 0;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ls-specimen-row span {
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+}
+
+.ls-specimen-row strong {
+  font-size: clamp(20px, 2vw, 28px);
+  font-weight: 620;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.ls-specimen-row em {
+  color: var(--lavender);
+  font-size: 10.5px;
+  font-style: normal;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+}
+
+.ls-locale-registry {
+  margin: 30px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.ls-locale-registry > li {
+  padding: 5px 11px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 11.5px;
+  letter-spacing: 0.05em;
+}
+
+.ls-preflight .url-launcher {
+  margin-top: 26px;
+}
+
+/* ---- Masthead meta and hashes ---- */
+
+.ls-masthead-meta {
+  margin: 32px 0 0;
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  border-top: 1px solid var(--border);
+}
+
+.ls-masthead-meta > div {
+  min-width: 0;
+  padding: 16px clamp(10px, 1.4vw, 22px) 16px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.ls-masthead-meta dt {
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.ls-masthead-meta dd {
+  margin: 7px 0 0;
+  font-size: 15px;
+  font-weight: 720;
+  overflow-wrap: anywhere;
+}
+
+.ls-hash {
+  margin: 22px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  align-items: baseline;
+}
+
+.ls-hash b {
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.ls-hash code,
+.ls-hash-table code {
+  font-size: 11.5px;
+  color: var(--lavender);
+  overflow-wrap: anywhere;
+  word-break: break-all;
+}
+
+/* ---- Run index ---- */
+
+.ls-run-index {
+  width: min(1180px, calc(100% - (2 * var(--ls-gutter))));
+  margin: 0 auto;
+  padding: 30px 0 0;
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  border-bottom: 1px solid var(--border);
+}
+
+.ls-run-index button {
+  min-width: 0;
+  padding: 20px clamp(12px, 1.6vw, 24px) 22px 0;
+  border: 0;
+  border-top: 2px solid transparent;
+  background: transparent;
+  text-align: start;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: border-color 200ms var(--ls-ease), color 200ms var(--ls-ease);
+}
+
+.ls-run-index button.active {
+  border-top-color: var(--yellow);
+}
+
+.ls-run-index strong {
+  font-size: 16px;
+  font-weight: 830;
+  letter-spacing: -0.02em;
+}
+
+.ls-run-index span,
+.ls-run-index em {
+  color: var(--muted);
+  font-size: 11.5px;
+  font-style: normal;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.ls-run-index button.active strong {
+  color: var(--yellow);
+}
+
+/* ---- Evidence line ---- */
+
+.ls-evidence-line {
+  width: min(1180px, calc(100% - (2 * var(--ls-gutter))));
+  margin: 0 auto;
+  padding: 28px 0;
+  list-style: none;
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  border-bottom: 1px solid var(--border);
+}
+
+.ls-evidence-line > li {
+  min-width: 0;
+  padding-right: 14px;
+  display: grid;
+  gap: 5px;
+  align-content: start;
+}
+
+.ls-evidence-line i {
+  display: block;
+  height: 1px;
+  background: var(--border-strong);
+  position: relative;
+  overflow: hidden;
+}
+
+.ls-evidence-line i::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--yellow);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--ls-draw) var(--ls-ease);
+}
+
+.ls-evidence-line > li[data-drawn="true"] i::after {
+  transform: scaleX(1);
+}
+
+.ls-evidence-line span {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.ls-evidence-line b {
+  font-size: 12.5px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+/* ---- Tables ---- */
+
+.ls-scroll {
+  max-width: 100%;
+  margin-top: 26px;
+  overflow-x: auto;
+}
+
+.ls-table,
+.ls-matrix {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.ls-table caption,
+.ls-matrix caption {
+  padding-bottom: 12px;
+  color: var(--muted);
+  font-size: 11.5px;
+  text-align: start;
+}
+
+.ls-table th,
+.ls-table td,
+.ls-matrix th,
+.ls-matrix td {
+  padding: 11px 14px 11px 0;
+  border-bottom: 1px solid var(--border);
+  text-align: start;
+  vertical-align: top;
+  line-height: 1.6;
+}
+
+.ls-table th[scope="row"] {
+  width: 1%;
+  color: var(--muted);
+  font-weight: 800;
+  font-size: 11.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.ls-table thead th {
+  color: var(--lavender);
+  font-size: 10.5px;
+  font-weight: 850;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.ls-table td[data-answer="no"] {
+  color: var(--muted);
+}
+
+.ls-table td[data-answer="yes"] {
+  color: var(--success);
+  font-weight: 800;
+}
+
+.ls-matrix th[scope="row"] {
+  padding-right: 20px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 12px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.ls-matrix td {
+  width: 1%;
+  padding: 11px 16px 11px 0;
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+}
+
+.ls-matrix td > span[aria-hidden="true"] {
+  display: inline-block;
+  transition: opacity var(--ls-swap) var(--ls-ease);
+}
+
+.ls-matrix td[data-state="issues"] {
+  color: var(--danger);
+}
+
+.ls-matrix td[data-state="clean"] {
+  color: var(--success);
+}
+
+.ls-matrix td[data-state="not-rendered"] {
+  color: var(--muted);
+}
+
+/* ---- Render strip ---- */
+
+.ls-render-strip {
+  margin: 26px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: clamp(16px, 2vw, 30px);
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+}
+
+.ls-render-strip > li {
+  min-width: 0;
+  display: grid;
+  gap: 12px;
+  align-content: start;
+}
+
+.ls-render-strip img {
+  width: 100%;
+  height: 190px;
+  object-fit: cover;
+  object-position: top center;
+  border: 1px solid var(--border-strong);
+  background: var(--background-elevated);
+}
+
+.ls-render-strip div {
+  display: grid;
+  gap: 4px;
+}
+
+.ls-render-strip b {
+  font-size: 12.5px;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.ls-render-strip span {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.ls-render-strip code {
+  color: var(--lavender);
+  font-size: 10px;
+  word-break: break-all;
+}
+
+/* ---- Issue list ---- */
+
+.ls-issue-list,
+.ls-import-issues {
+  margin: 26px 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--border);
+}
+
+.ls-issue-list > li {
+  border-bottom: 1px solid var(--border);
+}
+
+.ls-issue-list button {
+  width: 100%;
+  padding: 15px 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  text-align: start;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1.4fr) minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: baseline;
+}
+
+.ls-issue-list button > i {
+  color: var(--muted);
+  font-size: 11px;
+  font-style: normal;
+  font-variant-numeric: tabular-nums;
+}
+
+.ls-issue-rule {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 12.5px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.ls-issue-where {
+  color: var(--muted);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.ls-issue-severity,
+.ls-import-issues [data-severity] {
+  font-size: 10.5px;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.ls-issue-severity[data-severity="blocking"],
+.ls-import-issues [data-severity="blocking"] {
+  color: var(--danger);
+}
+
+.ls-issue-list > li[data-open="true"] .ls-issue-rule {
+  color: var(--yellow);
+}
+
+.ls-issue-open {
+  padding: 6px 0 28px;
+  display: grid;
+  gap: clamp(18px, 2.4vw, 36px);
+  grid-template-columns: minmax(0, 300px) minmax(0, 1fr);
+  align-items: start;
+  animation: lsReveal 380ms var(--ls-ease) both;
+}
+
+@keyframes lsReveal {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.ls-shot {
+  margin: 0;
+  min-width: 0;
+}
+
+.ls-shot-frame {
+  height: 320px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid var(--border-strong);
+  background: var(--background-elevated);
+}
+
+.ls-shot-slide {
+  position: relative;
+  transition: transform var(--ls-draw) var(--ls-ease);
+}
+
+.ls-shot-slide img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.ls-shot-marker {
+  position: absolute;
+  border: 2px solid var(--yellow);
+  background: color-mix(in oklab, var(--yellow) 16%, transparent);
+  pointer-events: none;
+}
+
+.ls-shot figcaption,
+.ls-shot-absent p {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 11.5px;
+  line-height: 1.6;
+}
+
+.ls-issue-technical {
+  min-width: 0;
+}
+
+.ls-issue-technical h4 {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 820;
+  line-height: 1.35;
+}
+
+.ls-issue-technical > p {
+  max-width: 60ch;
+  margin: 0 0 18px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.ls-issue-technical dl,
+.ls-import-issues dl {
+  margin: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 150px) minmax(0, 1fr);
+  gap: 0;
+  border-top: 1px solid var(--border);
+}
+
+.ls-issue-technical dt,
+.ls-import-issues dt {
+  padding: 10px 14px 10px 0;
+  border-bottom: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.ls-issue-technical dd,
+.ls-import-issues dd,
+.ls-definition dd {
+  margin: 0;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 12.5px;
+  line-height: 1.65;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  overflow-wrap: anywhere;
+}
+
+.ls-issue-technical code,
+.ls-import-issues code,
+.ls-definition code {
+  color: var(--lavender);
+  font-size: 11.5px;
+  overflow-wrap: anywhere;
+}
+
+.ls-pair {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: baseline;
+}
+
+.ls-pair b {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* ---- Manifests, steps, definitions ---- */
+
+.ls-manifest {
+  margin: 24px 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--border);
+}
+
+.ls-manifest > li {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 18px;
+  align-items: baseline;
+}
+
+.ls-manifest a,
+.ls-manifest code {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 12.5px;
+  color: var(--lavender);
+  overflow-wrap: anywhere;
+}
+
+.ls-manifest a {
+  border-bottom: 1px solid var(--border-strong);
+}
+
+.ls-manifest a:hover {
+  color: var(--text);
+  border-bottom-color: var(--yellow);
+}
+
+.ls-manifest span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.ls-steps {
+  margin: 30px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ls-steps > li {
+  padding: 24px 0;
+  border-top: 1px solid var(--border);
+}
+
+.ls-steps h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 850;
+  letter-spacing: 0.02em;
+}
+
+.ls-definition {
+  margin: 24px 0 0;
+  display: grid;
+  border-top: 1px solid var(--border);
+}
+
+.ls-definition > div {
+  display: grid;
+  grid-template-columns: minmax(0, 210px) minmax(0, 1fr);
+}
+
+.ls-definition dt {
+  padding: 12px 16px 12px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.ls-definition dt code {
+  font-size: 12px;
+}
+
+.ls-definition dd {
+  color: var(--muted);
+}
+
+/* ---- MCP call log ---- */
+
+.ls-call-log {
+  margin: 30px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ls-call-log > li {
+  padding: 26px 0;
+  border-top: 1px solid var(--border);
+}
+
+.ls-call-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  align-items: baseline;
+}
+
+.ls-call-head i {
+  color: var(--yellow);
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 850;
+  letter-spacing: 0.14em;
+}
+
+.ls-call-head code {
+  font-size: 14px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.ls-call-head span {
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+.ls-call-log .ls-definition {
+  margin-top: 16px;
+}
+
+/* ---- Import console ---- */
+
+.ls-drop {
+  margin: 22px 0 0;
+  padding: 26px 22px;
+  display: block;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: border-color 180ms var(--ls-ease);
+}
+
+.ls-drop:hover,
+.ls-drop:focus-within {
+  border-color: var(--yellow);
+}
+
+.ls-drop > span {
+  display: block;
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+.ls-reject {
+  margin: 22px 0 0;
+  padding: 18px 20px;
+  border: 1px solid var(--danger);
+  border-radius: var(--radius-sm);
+}
+
+.ls-reject strong {
+  display: block;
+  color: var(--danger);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+}
+
+.ls-reject p {
+  max-width: var(--ls-measure);
+  margin: 10px 0 0;
+  font-size: 13.5px;
+  line-height: 1.65;
+}
+
+.ls-reject ul {
+  margin: 12px 0 0;
+  padding: 0 0 0 18px;
+}
+
+.ls-reject li {
+  margin-top: 5px;
+}
+
+.ls-reject code {
+  font-size: 11.5px;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.ls-import-report {
+  width: min(1180px, calc(100% - (2 * var(--ls-gutter))));
+  margin: 0 auto;
+  padding-bottom: var(--ls-section);
+  border-bottom: 1px solid var(--border);
+}
+
+.ls-import-report > header {
+  padding: 30px 0 0;
+}
+
+.ls-import-report > header h2 {
+  margin: 14px 0 0;
+  font-size: clamp(22px, 2.6vw, 34px);
+  font-weight: 840;
+  letter-spacing: -0.035em;
+  overflow-wrap: anywhere;
+}
+
+.ls-import-report .ls-section {
+  width: 100%;
+  padding: 34px 0;
+  border-bottom: 0;
+  border-top: 1px solid var(--border);
+}
+
+.ls-import-issues > li {
+  padding: 18px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.ls-import-issues > li > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  align-items: baseline;
+}
+
+.ls-import-issues > li > div b {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 12.5px;
+  overflow-wrap: anywhere;
+}
+
+.ls-import-issues > li > div span {
+  color: var(--muted);
+  font-size: 11.5px;
+}
+
+.ls-import-issues > li > p {
+  max-width: 62ch;
+  margin: 10px 0 0;
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.ls-import-issues dl {
+  margin-top: 14px;
+}
+
+/* ---- Diff ---- */
+
+.ls-diff {
+  max-width: 100%;
+  margin: 22px 0 0;
+  padding: 14px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  line-height: 1.65;
+  overflow-x: auto;
+}
+
+.ls-diff span {
+  display: block;
+  padding: 0 12px;
+  white-space: pre;
+  animation: lsHunk 320ms var(--ls-ease) both;
+}
+
+@keyframes lsHunk {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.ls-diff span[data-hunk="add"] {
+  color: var(--success);
+  border-left: 2px solid var(--success);
+}
+
+.ls-diff span[data-hunk="remove"] {
+  color: var(--danger);
+  border-left: 2px solid var(--danger);
+}
+
+.ls-diff span[data-hunk="range"] {
+  color: var(--lavender);
+}
+
+.ls-diff span[data-hunk="meta"] {
+  color: var(--muted);
+}
+
+/* ---- Verification ---- */
+
+.ls-verification[data-revealed="true"] {
+  animation: lsReveal 420ms var(--ls-ease) both;
+}
+
+.ls-verdict {
+  margin: 22px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  align-items: baseline;
+  font-size: clamp(30px, 4vw, 52px);
+  font-weight: 850;
+  letter-spacing: -0.045em;
+  color: var(--yellow);
+}
+
+.ls-verdict b {
+  color: var(--success);
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.ls-verification dl {
+  margin: 22px 0 0;
+  display: grid;
+  grid-template-columns: minmax(0, 220px) minmax(0, 1fr);
+  border-top: 1px solid var(--border);
+}
+
+.ls-verification dt {
+  padding: 10px 16px 10px 0;
+  border-bottom: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.ls-verification dd {
+  margin: 0;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+/* ---- Limits ---- */
+
+.ls-limits ul {
+  margin: 24px 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--border);
+}
+
+.ls-limits li {
+  max-width: 80ch;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 13.5px;
+  line-height: 1.7;
+}
+
+.ls-limits code {
+  color: var(--lavender);
+  font-size: 12.5px;
+}
+
+/* ---- Pipeline band inside the Living Script pages ---- */
+
+.ls-page .pipeline-band {
+  padding: var(--ls-section) 0;
+  border-top: 0;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ---- Narrow viewports ---- */
+
+@media (max-width: 900px) {
+  .ls-issue-open {
+    grid-template-columns: 1fr;
+  }
+
+  .ls-issue-list button {
+    grid-template-columns: auto minmax(0, 1fr);
+    row-gap: 5px;
+  }
+
+  .ls-issue-list button > .ls-issue-severity {
+    grid-column: 2;
+  }
+}
+
+@media (max-width: 720px) {
+  .ls-choice-list > li {
+    padding: 26px 0 0;
+    border-left: 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .ls-choice-list > li:first-child {
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  .ls-proof-chain > li {
+    padding-left: 0;
+    border-left: 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .ls-issue-technical dl,
+  .ls-import-issues dl,
+  .ls-verification dl,
+  .ls-definition > div {
+    grid-template-columns: 1fr;
+  }
+
+  .ls-issue-technical dt,
+  .ls-import-issues dt,
+  .ls-verification dt,
+  .ls-definition dt {
+    padding-bottom: 4px;
+    border-bottom: 0;
+  }
+
+  .ls-shot-frame {
+    height: 260px;
+  }
+}
+
+/* Delays are not covered by the global reduced-motion reset, so a reveal
+   cannot arrive late for a reader who asked for no motion. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-delay: 0s !important;
+    transition-delay: 0s !important;
+  }
 }

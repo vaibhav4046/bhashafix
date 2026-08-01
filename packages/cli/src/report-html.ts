@@ -125,7 +125,14 @@ header p{color:var(--muted);margin:10px 0 0}
 .stages .ok .mark{color:var(--ok)}
 .stages .skipped .mark{color:var(--skip)}
 .stages .failed .mark{color:var(--fail)}
-.stages .detail{color:var(--muted);font-family:var(--mono);font-size:.82rem}
+.stages .detail{color:var(--muted);font-family:var(--mono);font-size:.82rem;
+  min-width:0;overflow-wrap:anywhere}
+@media (max-width:520px){
+  .stages li{grid-template-columns:1.2rem 1fr;gap:4px 10px}
+  .stages .detail{grid-column:2}
+  .issue dl{grid-template-columns:1fr;gap:2px}
+  .issue dt{margin-top:10px}
+}
 .tally{display:flex;flex-wrap:wrap;gap:10px;margin:0;padding:0;list-style:none}
 .tally li{border:1px solid var(--line);border-radius:999px;padding:7px 16px;background:var(--panel);
   font-family:var(--mono);font-size:.85rem}
