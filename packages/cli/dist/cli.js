@@ -39044,8 +39044,10 @@ async function runAxe(page) {
       help: violation.help,
       nodes: violation.nodes.map((node) => node.target.join(" ")).slice(0, 10)
     }));
-  } catch {
-    return [];
+  } catch (error) {
+    throw new Error(
+      `axe could not be run on this page. Install @axe-core/playwright, or pass runAxe: false to scan without accessibility checks. Cause: ${error instanceof Error ? error.message : String(error)}`
+    );
   }
 }
 function defaultLocaleUrl(target, route, locale) {
