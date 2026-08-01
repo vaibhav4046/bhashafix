@@ -23,6 +23,8 @@ export type BrowserScanOptions = {
   viewports?: string[];
   themes?: Array<"light" | "dark">;
   maxRoutes?: number;
+  /** Rendering engine. Defaults to chromium. */
+  engine?: "chromium" | "firefox" | "webkit";
   allowLocalhost?: boolean;
   runAxe?: boolean;
   onProgress?: (message: string) => void;
@@ -113,6 +115,7 @@ export async function runBrowserProjectScan(
     locales,
     viewports: [...viewports],
     themes: [...themes],
+    engine: options.engine,
     artifactDir,
     runAxe: options.runAxe ?? true,
     localeUrl: (target, route, locale) => {

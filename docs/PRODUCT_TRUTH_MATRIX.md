@@ -140,6 +140,31 @@ axe independently reporting `image-alt` and `link-name` on the same pages. Two
 independent implementations agreeing is the strongest available signal that
 these are real defects rather than rule artefacts.
 
+## Cross-engine verification — 2026-08-01
+
+`--browsers` was not wired: `browser-scan.ts` never passed an engine and the CLI
+had no flag, so Firefox and WebKit were unreachable from every user surface
+despite being listed as selectable. The flag is now wired through, one engine per
+scan, because a scan record names the browser that rendered it.
+
+Three scans of `https://bhashafix.vercel.app/`, identical config
+(`en-GB,ar-SA`, route `/`, mobile):
+
+| Engine | Scan ID | Issues |
+| --- | --- | ---: |
+| chromium | `browser-3a3a2a8c-49f9-4c52-8731-6f3cd229ff75` | 2 |
+| firefox | `browser-877884cd-580a-4298-ae30-775cf3439e0f` | 4 |
+| webkit | `browser-c5b1e124-73db-4072-ac62-afb3a9a6217a` | 2 |
+
+**All three engines agree on the deterministic rules** — `BF-LOC-LANG-MISMATCH`
+and `BF-LOC-DIR-MISSING` for `ar-SA`, identical in each. Firefox additionally
+reports `BF-A11Y-AXE-SCROLLABLE-REGION-FOCUSABLE` on both locales, because that
+axe check depends on computed scroll state, which Gecko resolves differently.
+
+So: the measured, predicate-backed findings are engine-independent here;
+axe-derived findings are not, and a cross-browser run will legitimately differ in
+that category. Firefox and WebKit are now verified rather than merely listed.
+
 ## Known limitations, stated plainly
 
 - The hosted Vercel scan remains HTTP-only. Browser rendering requires the local
@@ -149,5 +174,4 @@ these are real defects rather than rule artefacts.
   has no configured database, so its scan history is still per browser and the
   store refuses to claim otherwise.
 - Repair still only rewrites allowlisted JSON. It cannot repair `.tsx` or CSS.
-- Firefox and WebKit are selectable in the engine but only Chromium has been
-  exercised in this environment.
+

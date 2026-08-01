@@ -56,6 +56,7 @@ type Options = {
   locale?: string;
   pseudoMode?: PseudoMode;
   scanId?: string;
+  engine?: "chromium" | "firefox" | "webkit";
 };
 
 const HELP = `BhashaFix — test, repair and prove every language before release
@@ -89,6 +90,7 @@ Options:
   --dry-run --apply --project <path> --url <url>
   --source-locale <bcp47> --locales <bcp47,bcp47>
   --routes </,/pricing> --viewports <mobile,desktop>
+  --browsers <chromium|firefox|webkit>
   --themes <light,dark>
   --text <value> --locale <bcp47> --mode <pseudo-mode> --scan <id>
   --config <path> --fail-on <blocking|warning|advisory>
@@ -164,6 +166,20 @@ function parseArgs(args: string[]) {
         throw new Error(`Invalid theme list "${value}".`);
       }
       options.themes = themes as Array<"light" | "dark">;
+    }
+    if (args[index] === "--browsers" && value) {
+      // One engine per scan: a scan record names the browser that rendered it,
+      // and mixing engines in one record would make that field a lie.
+      const engines = value.split(/[,\s]+/).filter(Boolean);
+      if (engines.length !== 1) {
+        throw new Error(
+          `--browsers takes exactly one engine per scan; received "${value}".`,
+        );
+      }
+      if (!["chromium", "firefox", "webkit"].includes(engines[0])) {
+        throw new Error(`Unknown browser engine "${engines[0]}".`);
+      }
+      options.engine = engines[0] as "chromium" | "firefox" | "webkit";
     }
     if (args[index] === "--scan" && value) options.scanId = value;
     if (args[index] === "--config" && value) options.configPath = value;
@@ -403,6 +419,7 @@ export async function runCli(
             routes: options.routes,
             viewports: options.viewports,
             themes: options.themes,
+            engine: options.engine,
             onProgress: options.verbose
               ? (message) => io.error(`· ${message}`)
               : undefined,

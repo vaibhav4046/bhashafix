@@ -75,7 +75,7 @@ pnpm demo:prove
 
 ## Scan a real site in a real browser
 
-`scan --url` launches Chromium, renders every route × locale × viewport,
+`scan --url` launches a real browser, renders every route × locale × viewport,
 measures the rendered DOM, runs axe, and writes screenshots and DOM snapshots
 to `.bhashafix/scans/<scanId>/`.
 
@@ -87,13 +87,15 @@ pnpm bhashafix scan --url https://example.com --locales en-GB,de-DE,ar-SA --view
 Every issue carries the measurement that produced it, for example
 `scrollWidth 212 / clientWidth 144 / overflowPx 68`, together with the predicate
 that was evaluated. Set `BHASHAFIX_BROWSER_WS_ENDPOINT` to render through a
-remote browser instead of a local install.
+remote browser instead of a local install, or `--browsers firefox|webkit` to
+render through a different engine.
 
 Accuracy is measured, not asserted. `pnpm benchmark` scans a generated
-six-locale fixture site with 33 labelled defects across 12 rule families and
-scores the engine against that ground truth; the receipt is written to
-`artifacts/benchmark.json` and the run fails the build if recall drops below
-100%, precision below 95%, or the clean variant produces any finding.
+twelve-locale fixture site carrying 70 labelled defects across 12 rule families
+and scores the engine against that ground truth over 288 real browser renders.
+The receipt is written to `artifacts/benchmark.json`, and the run fails the
+build if recall drops below 100%, precision below 95%, or the clean variant
+produces any finding.
 
 ## Scan a website
 
@@ -164,7 +166,7 @@ Build the publishable STDIO server:
 
 ```bash
 pnpm build:packages
-node packages/mcp/dist/server.js
+node packages/mcp/dist/bin.js
 ```
 
 Codex (`~/.codex/config.toml`):
@@ -172,14 +174,14 @@ Codex (`~/.codex/config.toml`):
 ```toml
 [mcp_servers.bhashafix]
 command = "node"
-args = ["/absolute/path/to/bhashafix/packages/mcp/dist/server.js"]
+args = ["/absolute/path/to/bhashafix/packages/mcp/dist/bin.js"]
 ```
 
 Claude Code:
 
 ```bash
 claude mcp add --transport stdio bhashafix -- \
-  node /absolute/path/to/bhashafix/packages/mcp/dist/server.js
+  node /absolute/path/to/bhashafix/packages/mcp/dist/bin.js
 ```
 
 Generic client:
@@ -189,7 +191,7 @@ Generic client:
   "mcpServers": {
     "bhashafix": {
       "command": "node",
-      "args": ["/absolute/path/to/bhashafix/packages/mcp/dist/server.js"]
+      "args": ["/absolute/path/to/bhashafix/packages/mcp/dist/bin.js"]
     }
   }
 }
@@ -253,8 +255,8 @@ mode. See [SECURITY.md](SECURITY.md).
 | Sandboxed synthetic localisation preview | Supported and explicitly labelled |
 | Packed CLI/MCP clean-consumer install | Verified by `pnpm pack:verify` |
 | Official MCP Inspector + MCPC invocation | Verified |
-| Chromium browser verification | Supported |
-| Firefox/WebKit | Environment-dependent |
+| Chromium browser rendering | Verified; full 288-render benchmark |
+| Firefox and WebKit rendering | Verified via `--browsers`; deterministic rules agree with Chromium, axe findings differ |
 | Vite/Remix/Astro/Nuxt/Vue/SvelteKit/static discovery | Experimental |
 | Provider-independent AI adapters | Interface + no-model mode |
 | Arbitrary autonomous business-logic repair | Not supported |

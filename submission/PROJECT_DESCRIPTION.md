@@ -102,6 +102,8 @@ control's descendant `img[alt]`.
 - Real-site scans prove operability, not precision — those targets carry no
   ground-truth labels, so no accuracy figure is derived from them.
 - No model provider is configured; linguistic review is deterministic only.
-- Only Chromium has been exercised. Firefox and WebKit are selectable but
-  unverified.
+- Chromium, Firefox and WebKit have each been exercised. On an identical
+  configuration all three agree on the deterministic rules; Firefox reports one
+  extra axe finding, because that check depends on computed scroll state. Only
+  Chromium has been run across the full 288-render benchmark.
 - It does not claim native-quality translation in any language.
