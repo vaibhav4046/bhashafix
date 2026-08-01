@@ -73,7 +73,7 @@
           "mdn-toggle-sidebar,mdn-button[aria-controls=\"main-sidebar\"]"
         ]
       },
-      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6\\2af46bda2ccb.png",
+      "screenshotBefore": "screenshots/2af46bda2ccb.png",
       "recommendedAction": "Resolve the axe rule \"aria-valid-attr-value\".",
       "deterministicPredicate": "axe.run() reports no serious/critical violation of aria-valid-attr-value",
       "humanReviewRequired": false
@@ -110,7 +110,7 @@
         "declaredLanguage": "en",
         "expectedLanguage": "de"
       },
-      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6\\167b33589639.png",
+      "screenshotBefore": "screenshots/167b33589639.png",
       "recommendedAction": "Serve the de-DE document or correct the lang attribute.",
       "deterministicPredicate": "primarySubtag(document.documentElement.lang) === primarySubtag(requestedLocale)",
       "humanReviewRequired": false
@@ -149,7 +149,7 @@
           "mdn-toggle-sidebar,mdn-button[aria-controls=\"main-sidebar\"]"
         ]
       },
-      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6\\167b33589639.png",
+      "screenshotBefore": "screenshots/167b33589639.png",
       "recommendedAction": "Resolve the axe rule \"aria-valid-attr-value\".",
       "deterministicPredicate": "axe.run() reports no serious/critical violation of aria-valid-attr-value",
       "humanReviewRequired": false
@@ -188,7 +188,7 @@
           "mdn-toggle-sidebar,mdn-button[aria-controls=\"main-sidebar\"]"
         ]
       },
-      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6\\8532d493caf1.png",
+      "screenshotBefore": "screenshots/8532d493caf1.png",
       "recommendedAction": "Resolve the axe rule \"aria-valid-attr-value\".",
       "deterministicPredicate": "axe.run() reports no serious/critical violation of aria-valid-attr-value",
       "humanReviewRequired": false
@@ -225,7 +225,7 @@
         "declaredLanguage": "en",
         "expectedLanguage": "de"
       },
-      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6\\df6a156f7008.png",
+      "screenshotBefore": "screenshots/df6a156f7008.png",
       "recommendedAction": "Serve the de-DE document or correct the lang attribute.",
       "deterministicPredicate": "primarySubtag(document.documentElement.lang) === primarySubtag(requestedLocale)",
       "humanReviewRequired": false
@@ -264,7 +264,7 @@
           "mdn-toggle-sidebar,mdn-button[aria-controls=\"main-sidebar\"]"
         ]
       },
-      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6\\df6a156f7008.png",
+      "screenshotBefore": "screenshots/df6a156f7008.png",
       "recommendedAction": "Resolve the axe rule \"aria-valid-attr-value\".",
       "deterministicPredicate": "axe.run() reports no serious/critical violation of aria-valid-attr-value",
       "humanReviewRequired": false
@@ -303,7 +303,7 @@
           "mdn-toggle-sidebar,mdn-button[aria-controls=\"main-sidebar\"]"
         ]
       },
-      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6\\bc3e6871febf.png",
+      "screenshotBefore": "screenshots/bc3e6871febf.png",
       "recommendedAction": "Resolve the axe rule \"aria-valid-attr-value\".",
       "deterministicPredicate": "axe.run() reports no serious/critical violation of aria-valid-attr-value",
       "humanReviewRequired": false
@@ -340,7 +340,7 @@
         "declaredLanguage": "en",
         "expectedLanguage": "de"
       },
-      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6\\9c9c78bbffdd.png",
+      "screenshotBefore": "screenshots/9c9c78bbffdd.png",
       "recommendedAction": "Serve the de-DE document or correct the lang attribute.",
       "deterministicPredicate": "primarySubtag(document.documentElement.lang) === primarySubtag(requestedLocale)",
       "humanReviewRequired": false
@@ -379,7 +379,7 @@
           "mdn-toggle-sidebar,mdn-button[aria-controls=\"main-sidebar\"]"
         ]
       },
-      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-511d535a-8dd5-4614-884c-6efbfe3fd6b6\\9c9c78bbffdd.png",
+      "screenshotBefore": "screenshots/9c9c78bbffdd.png",
       "recommendedAction": "Resolve the axe rule \"aria-valid-attr-value\".",
       "deterministicPredicate": "axe.run() reports no serious/critical violation of aria-valid-attr-value",
       "humanReviewRequired": false

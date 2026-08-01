@@ -70,7 +70,7 @@
         "declaredLanguage": "en",
         "expectedLanguage": "he"
       },
-      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a\\626916722c9b.png",
+      "screenshotBefore": "screenshots/626916722c9b.png",
       "recommendedAction": "Serve the he-IL document or correct the lang attribute.",
       "deterministicPredicate": "primarySubtag(document.documentElement.lang) === primarySubtag(requestedLocale)",
       "humanReviewRequired": false
@@ -105,7 +105,7 @@
         "expectedDir": "rtl",
         "script": "Hebr"
       },
-      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a\\626916722c9b.png",
+      "screenshotBefore": "screenshots/626916722c9b.png",
       "recommendedAction": "Set <html dir=\"rtl\"> for right-to-left locales.",
       "deterministicPredicate": "document.documentElement.dir === 'rtl' when locale script is RTL",
       "humanReviewRequired": false
@@ -142,7 +142,7 @@
         "role": null,
         "accessibleName": ""
       },
-      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a\\d7b1b2888531.png",
+      "screenshotBefore": "screenshots/d7b1b2888531.png",
       "recommendedAction": "Add a localised aria-label for en-GB.",
       "deterministicPredicate": "accessibleName(element).trim().length > 0",
       "humanReviewRequired": false
@@ -185,7 +185,7 @@
           "height": 100
         }
       },
-      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a\\d7b1b2888531.png",
+      "screenshotBefore": "screenshots/d7b1b2888531.png",
       "recommendedAction": "Add a localised alt attribute, or alt=\"\" if the image is decorative.",
       "deterministicPredicate": "img.hasAttribute('alt')",
       "humanReviewRequired": false
@@ -222,7 +222,7 @@
         "role": null,
         "accessibleName": ""
       },
-      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a\\d7b1b2888531.png",
+      "screenshotBefore": "screenshots/d7b1b2888531.png",
       "recommendedAction": "Add a localised aria-label for en-GB.",
       "deterministicPredicate": "accessibleName(element).trim().length > 0",
       "humanReviewRequired": false
@@ -265,7 +265,7 @@
           "height": 189
         }
       },
-      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a\\d7b1b2888531.png",
+      "screenshotBefore": "screenshots/d7b1b2888531.png",
       "recommendedAction": "Add a localised alt attribute, or alt=\"\" if the image is decorative.",
       "deterministicPredicate": "img.hasAttribute('alt')",
       "humanReviewRequired": false
@@ -306,7 +306,7 @@
           "#mwWw"
         ]
       },
-      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a\\d7b1b2888531.png",
+      "screenshotBefore": "screenshots/d7b1b2888531.png",
       "recommendedAction": "Resolve the axe rule \"image-alt\".",
       "deterministicPredicate": "axe.run() reports no serious/critical violation of image-alt",
       "humanReviewRequired": false
@@ -353,7 +353,7 @@
           "#mwAjo"
         ]
       },
-      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a\\d7b1b2888531.png",
+      "screenshotBefore": "screenshots/d7b1b2888531.png",
       "recommendedAction": "Resolve the axe rule \"link-name\".",
       "deterministicPredicate": "axe.run() reports no serious/critical violation of link-name",
       "humanReviewRequired": false
@@ -390,7 +390,7 @@
         "declaredLanguage": "en",
         "expectedLanguage": "he"
       },
-      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a\\e95e07f75500.png",
+      "screenshotBefore": "screenshots/e95e07f75500.png",
       "recommendedAction": "Serve the he-IL document or correct the lang attribute.",
       "deterministicPredicate": "primarySubtag(document.documentElement.lang) === primarySubtag(requestedLocale)",
       "humanReviewRequired": false
@@ -425,7 +425,7 @@
         "expectedDir": "rtl",
         "script": "Hebr"
       },
-      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a\\e95e07f75500.png",
+      "screenshotBefore": "screenshots/e95e07f75500.png",
       "recommendedAction": "Set <html dir=\"rtl\"> for right-to-left locales.",
       "deterministicPredicate": "document.documentElement.dir === 'rtl' when locale script is RTL",
       "humanReviewRequired": false
@@ -462,7 +462,7 @@
         "role": null,
         "accessibleName": ""
       },
-      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a\\e95e07f75500.png",
+      "screenshotBefore": "screenshots/e95e07f75500.png",
       "recommendedAction": "Add a localised aria-label for he-IL.",
       "deterministicPredicate": "accessibleName(element).trim().length > 0",
       "humanReviewRequired": false
@@ -505,7 +505,7 @@
           "height": 100
         }
       },
-      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a\\e95e07f75500.png",
+      "screenshotBefore": "screenshots/e95e07f75500.png",
       "recommendedAction": "Add a localised alt attribute, or alt=\"\" if the image is decorative.",
       "deterministicPredicate": "img.hasAttribute('alt')",
       "humanReviewRequired": false
@@ -542,7 +542,7 @@
         "role": null,
         "accessibleName": ""
       },
-      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a\\e95e07f75500.png",
+      "screenshotBefore": "screenshots/e95e07f75500.png",
       "recommendedAction": "Add a localised aria-label for he-IL.",
       "deterministicPredicate": "accessibleName(element).trim().length > 0",
       "humanReviewRequired": false
@@ -585,7 +585,7 @@
           "height": 189
         }
       },
-      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a\\e95e07f75500.png",
+      "screenshotBefore": "screenshots/e95e07f75500.png",
       "recommendedAction": "Add a localised alt attribute, or alt=\"\" if the image is decorative.",
       "deterministicPredicate": "img.hasAttribute('alt')",
       "humanReviewRequired": false
@@ -626,7 +626,7 @@
           "#mwWw"
         ]
       },
-      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a\\e95e07f75500.png",
+      "screenshotBefore": "screenshots/e95e07f75500.png",
       "recommendedAction": "Resolve the axe rule \"image-alt\".",
       "deterministicPredicate": "axe.run() reports no serious/critical violation of image-alt",
       "humanReviewRequired": false
@@ -673,7 +673,7 @@
           "#mwAjo"
         ]
       },
-      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-8182aab1-c3a2-4296-8380-c9b22aab4a3a\\e95e07f75500.png",
+      "screenshotBefore": "screenshots/e95e07f75500.png",
       "recommendedAction": "Resolve the axe rule \"link-name\".",
       "deterministicPredicate": "axe.run() reports no serious/critical violation of link-name",
       "humanReviewRequired": false

@@ -60,8 +60,15 @@ async function scan() {
     path.join(projectRoot, ".bhashafix", "baseline-scan.json"),
     encoded,
   );
+  // public/replay ships with the deployed site, so the absolute project root
+  // must not travel with it. It is a developer home directory, not evidence.
+  const shipped = `${JSON.stringify(
+    { ...result, config: { ...result.config, projectRoot: "<local project root>" } },
+    null,
+    2,
+  )}\n`;
   await mkdir(publicReplayRoot, { recursive: true });
-  await writeFile(path.join(publicReplayRoot, "baseline-scan.json"), encoded);
+  await writeFile(path.join(publicReplayRoot, "baseline-scan.json"), shipped);
   console.log(
     `SCAN ${result.scanId} ${result.issues.length} verified failures across ${result.routesDiscovered.length} routes`,
   );

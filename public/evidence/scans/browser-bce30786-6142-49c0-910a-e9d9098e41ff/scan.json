@@ -77,7 +77,7 @@
         "whiteSpace": "nowrap",
         "clipped": true
       },
-      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-bce30786-6142-49c0-910a-e9d9098e41ff\\a0ae6988f4da.png",
+      "screenshotBefore": "screenshots/a0ae6988f4da.png",
       "recommendedAction": "Remove white-space: nowrap or allow the element to grow.",
       "deterministicPredicate": "element.scrollWidth <= element.clientWidth + 2",
       "humanReviewRequired": false
@@ -120,7 +120,7 @@
         "whiteSpace": "nowrap",
         "clipped": true
       },
-      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-bce30786-6142-49c0-910a-e9d9098e41ff\\a0ae6988f4da.png",
+      "screenshotBefore": "screenshots/a0ae6988f4da.png",
       "recommendedAction": "Remove white-space: nowrap or allow the element to grow.",
       "deterministicPredicate": "element.scrollWidth <= element.clientWidth + 2",
       "humanReviewRequired": false
@@ -157,7 +157,7 @@
         "declaredLanguage": "en",
         "expectedLanguage": "ar"
       },
-      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-bce30786-6142-49c0-910a-e9d9098e41ff\\81a9669ec542.png",
+      "screenshotBefore": "screenshots/81a9669ec542.png",
       "recommendedAction": "Serve the ar-SA document or correct the lang attribute.",
       "deterministicPredicate": "primarySubtag(document.documentElement.lang) === primarySubtag(requestedLocale)",
       "humanReviewRequired": false
@@ -192,7 +192,7 @@
         "expectedDir": "rtl",
         "script": "Arab"
       },
-      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-bce30786-6142-49c0-910a-e9d9098e41ff\\81a9669ec542.png",
+      "screenshotBefore": "screenshots/81a9669ec542.png",
       "recommendedAction": "Set <html dir=\"rtl\"> for right-to-left locales.",
       "deterministicPredicate": "document.documentElement.dir === 'rtl' when locale script is RTL",
       "humanReviewRequired": false
@@ -235,7 +235,7 @@
         "whiteSpace": "nowrap",
         "clipped": true
       },
-      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-bce30786-6142-49c0-910a-e9d9098e41ff\\81a9669ec542.png",
+      "screenshotBefore": "screenshots/81a9669ec542.png",
       "recommendedAction": "Remove white-space: nowrap or allow the element to grow.",
       "deterministicPredicate": "element.scrollWidth <= element.clientWidth + 2",
       "humanReviewRequired": false
@@ -278,7 +278,7 @@
         "whiteSpace": "nowrap",
         "clipped": true
       },
-      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-bce30786-6142-49c0-910a-e9d9098e41ff\\81a9669ec542.png",
+      "screenshotBefore": "screenshots/81a9669ec542.png",
       "recommendedAction": "Remove white-space: nowrap or allow the element to grow.",
       "deterministicPredicate": "element.scrollWidth <= element.clientWidth + 2",
       "humanReviewRequired": false
@@ -315,7 +315,7 @@
         "declaredLanguage": "en",
         "expectedLanguage": "ar"
       },
-      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-bce30786-6142-49c0-910a-e9d9098e41ff\\20f4080953b7.png",
+      "screenshotBefore": "screenshots/20f4080953b7.png",
       "recommendedAction": "Serve the ar-SA document or correct the lang attribute.",
       "deterministicPredicate": "primarySubtag(document.documentElement.lang) === primarySubtag(requestedLocale)",
       "humanReviewRequired": false
@@ -350,7 +350,7 @@
         "expectedDir": "rtl",
         "script": "Arab"
       },
-      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-bce30786-6142-49c0-910a-e9d9098e41ff\\20f4080953b7.png",
+      "screenshotBefore": "screenshots/20f4080953b7.png",
       "recommendedAction": "Set <html dir=\"rtl\"> for right-to-left locales.",
       "deterministicPredicate": "document.documentElement.dir === 'rtl' when locale script is RTL",
       "humanReviewRequired": false
@@ -387,7 +387,7 @@
         "declaredLanguage": "en",
         "expectedLanguage": "ar"
       },
-      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-bce30786-6142-49c0-910a-e9d9098e41ff\\bbb411ffa3d7.png",
+      "screenshotBefore": "screenshots/bbb411ffa3d7.png",
       "recommendedAction": "Serve the ar-SA document or correct the lang attribute.",
       "deterministicPredicate": "primarySubtag(document.documentElement.lang) === primarySubtag(requestedLocale)",
       "humanReviewRequired": false
@@ -422,7 +422,7 @@
         "expectedDir": "rtl",
         "script": "Arab"
       },
-      "screenshotBefore": "C:\\Users\\lalwa\\Documents\\Codex\\2026-07-29\\sh\\work\\bhashafix\\.bhashafix\\scans\\browser-bce30786-6142-49c0-910a-e9d9098e41ff\\bbb411ffa3d7.png",
+      "screenshotBefore": "screenshots/bbb411ffa3d7.png",
       "recommendedAction": "Set <html dir=\"rtl\"> for right-to-left locales.",
       "deterministicPredicate": "document.documentElement.dir === 'rtl' when locale script is RTL",
       "humanReviewRequired": false

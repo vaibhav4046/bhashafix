@@ -36,8 +36,20 @@ export const UNSUPPORTED_LANGUAGE_CLAIM = new RegExp(
   "i",
 );
 
-/** Absolute developer-machine paths that must not appear in shipped artifacts. */
-export const MACHINE_PATH = /(?:[A-Z]:\\Users\\[^\\]+|[A-Z]:\/Users\/[^/]+)/;
+/**
+ * Absolute developer-machine paths that must not appear in shipped artifacts.
+ *
+ * Escaped separators count. A Windows path embedded in JSON doubles each
+ * separator, and a single-separator pattern misses it — that gap let 16
+ * home-directory paths reach `public/evidence` unnoticed. The alternatives are
+ * assembled from fragments so this module never matches its own source.
+ */
+export const MACHINE_PATH = new RegExp(
+  [
+    join("[A-Z]:\\\\{1,2}", "Us", "ers\\\\{1,2}[^\\\\\"]+"),
+    join("[A-Z]:\\/", "Us", "ers\\/[^/\"]+"),
+  ].join("|"),
+);
 
 /** Long-lived credentials. */
 export const EXPOSED_SECRET =

@@ -95,8 +95,18 @@ for (const entry of realSites.scans) {
   // Strip the absolute project root: it is a developer machine path and it is
   // not evidence about the target.
   const config = scan.config as Record<string, unknown>;
+  // Every issue records the absolute path of the screenshot it was measured
+  // against. That is a developer home directory, and it is not evidence about
+  // the target, so re-root it at the published location.
+  const issues = ((scan.issues as Array<Record<string, unknown>>) ?? []).map((issue) => ({
+    ...issue,
+    screenshotBefore: issue.screenshotBefore
+      ? `screenshots/${path.basename(String(issue.screenshotBefore))}`
+      : null,
+  }));
   const publishedScan: Record<string, unknown> = {
     ...scan,
+    issues,
     config: { ...config, projectRoot: "<local project root>" },
   };
   await writeFile(

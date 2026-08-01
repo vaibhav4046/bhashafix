@@ -21,6 +21,9 @@ const textExtensions = new Set([
   ".yaml",
 ]);
 const excludedSegments = new Set([
+  // Local runtime state, gitignored and never shipped. It legitimately holds
+  // absolute paths because it points at files on this machine.
+  ".bhashafix",
   ".git",
   ".next",
   ".vinext",
