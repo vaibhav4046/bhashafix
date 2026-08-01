@@ -236,8 +236,15 @@ async function runAxe(page: PlaywrightPage): Promise<RuntimeSignals["axeViolatio
       help: violation.help,
       nodes: violation.nodes.map((node) => node.target.join(" ")).slice(0, 10),
     }));
-  } catch {
-    return [];
+  } catch (error) {
+    // Never return an empty array here. A swallowed failure is indistinguishable
+    // from a page with no accessibility violations, which would report a clean
+    // result for a check that did not run.
+    throw new Error(
+      `axe could not be run on this page. Install @axe-core/playwright, or pass runAxe: false to scan without accessibility checks. Cause: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+    );
   }
 }
 

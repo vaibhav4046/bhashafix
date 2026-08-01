@@ -16,7 +16,7 @@
     "build:vercel": "pnpm build",
     "build:sites": "vinext build",
     "start": "next start",
-    "lint": "eslint . --ignore-pattern \"dist/**\" --ignore-pattern \"packages/*/dist/**\" --ignore-pattern \".next/**\" --ignore-pattern \".vinext/**\" --ignore-pattern \".npm-cache/**\" --ignore-pattern \"coverage/**\" --ignore-pattern \"fixtures/**/.next/**\" --ignore-pattern \"fixtures/**/out/**\"",
+    "lint": "eslint . --ignore-pattern \"dist/**\" --ignore-pattern \"packages/*/dist/**\" --ignore-pattern \".next/**\" --ignore-pattern \".vinext/**\" --ignore-pattern \".npm-cache/**\" --ignore-pattern \"coverage/**\" --ignore-pattern \"fixtures/**/.next/**\" --ignore-pattern \"fixtures/**/out/**\" --ignore-pattern \"artifacts/**\"",
     "typecheck": "tsc --noEmit -p tsconfig.typecheck.json && pnpm -r --if-present typecheck",
     "test": "vitest run tests/unit --config vitest.config.mjs",
     "test:integration": "vitest run tests/integration --config vitest.config.mjs",
