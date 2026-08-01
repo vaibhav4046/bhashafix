@@ -59,3 +59,4 @@ next-env.d.ts
 /fixtures/nextjs-app/node_modules/
 /.tmp-contract-check/
 /.tmp/
+/.tmp-verify*.mjs
