@@ -44,7 +44,8 @@
     "audit:hostile": "tsx scripts/hostile-audit.ts",
     "db:generate": "drizzle-kit generate",
     "scan:real-sites": "tsx scripts/real-site-scans.ts",
-    "worker:browser": "tsx scripts/browser-worker.ts"
+    "worker:browser": "tsx scripts/browser-worker.ts",
+    "screenshots:capture": "tsx scripts/capture-submission-screenshots.ts"
   },
   "dependencies": {
     "@bhashafix/browser": "workspace:*",
