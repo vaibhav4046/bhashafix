@@ -1,0 +1,17 @@
+{
+  "name": "meridian-pay-fixture",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Minimal real Next.js App Router project used as the repair target for scripts/nextjs-repair-proof.ts.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "16.2.6",
+    "react": "19.2.6",
+    "react-dom": "19.2.6"
+  }
+}

@@ -851,8 +851,8 @@ var require_uri_all = __commonJS({
             wsComponents.secure = void 0;
           }
           if (wsComponents.resourceName) {
-            var _wsComponents$resourc = wsComponents.resourceName.split("?"), _wsComponents$resourc2 = slicedToArray(_wsComponents$resourc, 2), path5 = _wsComponents$resourc2[0], query = _wsComponents$resourc2[1];
-            wsComponents.path = path5 && path5 !== "/" ? path5 : void 0;
+            var _wsComponents$resourc = wsComponents.resourceName.split("?"), _wsComponents$resourc2 = slicedToArray(_wsComponents$resourc, 2), path6 = _wsComponents$resourc2[0], query = _wsComponents$resourc2[1];
+            wsComponents.path = path6 && path6 !== "/" ? path6 : void 0;
             wsComponents.query = query;
             wsComponents.resourceName = void 0;
           }
@@ -1225,12 +1225,12 @@ var require_util = __commonJS({
       return "'" + escapeQuotes(str) + "'";
     }
     function getPathExpr(currentPath, expr, jsonPointers, isNumber) {
-      var path5 = jsonPointers ? "'/' + " + expr + (isNumber ? "" : ".replace(/~/g, '~0').replace(/\\//g, '~1')") : isNumber ? "'[' + " + expr + " + ']'" : "'[\\'' + " + expr + " + '\\']'";
-      return joinPaths(currentPath, path5);
+      var path6 = jsonPointers ? "'/' + " + expr + (isNumber ? "" : ".replace(/~/g, '~0').replace(/\\//g, '~1')") : isNumber ? "'[' + " + expr + " + ']'" : "'[\\'' + " + expr + " + '\\']'";
+      return joinPaths(currentPath, path6);
     }
     function getPath(currentPath, prop, jsonPointers) {
-      var path5 = jsonPointers ? toQuotedString("/" + escapeJsonPointer(prop)) : toQuotedString(getProperty(prop));
-      return joinPaths(currentPath, path5);
+      var path6 = jsonPointers ? toQuotedString("/" + escapeJsonPointer(prop)) : toQuotedString(getProperty(prop));
+      return joinPaths(currentPath, path6);
     }
     var JSON_POINTER = /^\/(?:[^~]|~0|~1)*$/;
     var RELATIVE_JSON_POINTER = /^([0-9]+)(#|\/(?:[^~]|~0|~1)*)?$/;
@@ -6261,7 +6261,7 @@ var require_ajv = __commonJS({
 // src/server.ts
 import { createHash as createHash3, randomUUID } from "node:crypto";
 import { mkdir as mkdir3, readFile as readFile3, writeFile as writeFile3 } from "node:fs/promises";
-import path4 from "node:path";
+import path5 from "node:path";
 
 // ../core/src/index.ts
 import { createHash } from "node:crypto";
@@ -6815,8 +6815,8 @@ function getErrorMap() {
 
 // ../../node_modules/.pnpm/zod@3.25.76/node_modules/zod/v3/helpers/parseUtil.js
 var makeIssue = (params) => {
-  const { data, path: path5, errorMaps, issueData } = params;
-  const fullPath = [...path5, ...issueData.path || []];
+  const { data, path: path6, errorMaps, issueData } = params;
+  const fullPath = [...path6, ...issueData.path || []];
   const fullIssue = {
     ...issueData,
     path: fullPath
@@ -6932,11 +6932,11 @@ var errorUtil;
 
 // ../../node_modules/.pnpm/zod@3.25.76/node_modules/zod/v3/types.js
 var ParseInputLazyPath = class {
-  constructor(parent, value, path5, key) {
+  constructor(parent, value, path6, key) {
     this._cachedPath = [];
     this.parent = parent;
     this.data = value;
-    this._path = path5;
+    this._path = path6;
     this._key = key;
   }
   get path() {
@@ -10380,6 +10380,11 @@ var NEVER = INVALID;
 
 // ../shared/src/index.ts
 var ScanOriginSchema = external_exports.enum([
+  // Rendered in a real browser against a public target.
+  "LIVE_PUBLIC_BROWSER_SCAN",
+  // Bounded static HTTP inspection. No browser, no layout, no axe.
+  "HTTP_PREFLIGHT",
+  // Retained so existing stored scans and artifacts still validate.
   "LIVE_PUBLIC_SCAN",
   "LOCAL_REPOSITORY_SCAN",
   "GUIDED_DEMO",
@@ -10989,19 +10994,12 @@ function extractTextFromHtml(html, route) {
 }
 
 // ../repair-engine/src/index.ts
-import {
-  appendFile,
-  copyFile,
-  lstat,
-  mkdir,
-  readFile as readFile2,
-  realpath,
-  writeFile
-} from "node:fs/promises";
+import { appendFile, copyFile, mkdir, readFile as readFile2, writeFile } from "node:fs/promises";
+import path3 from "node:path";
+
+// ../repair-engine/src/safety.ts
+import { lstat, realpath } from "node:fs/promises";
 import path2 from "node:path";
-var DIFF_CONTEXT_LINES = 3;
-var NO_NEWLINE_MARKER = "\\ No newline at end of file";
-var MAX_LCS_CELLS = 4e6;
 function normaliseRelative(file) {
   return file.replaceAll("\\", "/").replace(/^\.\/+/, "");
 }
@@ -11032,25 +11030,11 @@ async function assertNoSymlink(projectRoot, target) {
     throw new Error("Repair rejected: allowlisted target must not be a symlink.");
   }
 }
-function readPointer(value, pointer) {
-  let current = value;
-  for (const segment of pointer) {
-    if (!current || typeof current !== "object") return void 0;
-    current = current[segment];
-  }
-  return current;
-}
-function writePointer(value, pointer, after) {
-  let current = value;
-  for (const segment of pointer.slice(0, -1)) {
-    const child = current[segment];
-    if (!child || typeof child !== "object") {
-      throw new Error(`Repair pointer does not exist: ${pointer.join(".")}`);
-    }
-    current = child;
-  }
-  current[pointer.at(-1)] = after;
-}
+
+// ../repair-engine/src/diff.ts
+var DIFF_CONTEXT_LINES = 3;
+var NO_NEWLINE_MARKER = "\\ No newline at end of file";
+var MAX_LCS_CELLS = 4e6;
 function toDiffLines(text2) {
   if (text2 === "") return [];
   const endsWithNewline = text2.endsWith("\n");
@@ -11167,6 +11151,27 @@ function buildUnifiedDiff(file, beforeText, afterText) {
   return `${[`--- a/${relative}`, `+++ b/${relative}`, ...hunks].join("\n")}
 `;
 }
+
+// ../repair-engine/src/index.ts
+function readPointer(value, pointer) {
+  let current = value;
+  for (const segment of pointer) {
+    if (!current || typeof current !== "object") return void 0;
+    current = current[segment];
+  }
+  return current;
+}
+function writePointer(value, pointer, after) {
+  let current = value;
+  for (const segment of pointer.slice(0, -1)) {
+    const child = current[segment];
+    if (!child || typeof child !== "object") {
+      throw new Error(`Repair pointer does not exist: ${pointer.join(".")}`);
+    }
+    current = child;
+  }
+  current[pointer.at(-1)] = after;
+}
 function serialiseRepairedJson(json, operations) {
   for (const operation of operations) {
     writePointer(json, operation.pointer, operation.after);
@@ -11233,7 +11238,7 @@ async function applyRepair(plan, options = {}) {
       unifiedDiff: await buildOperationsDiff(plan.projectRoot, selected)
     };
   }
-  const rollbackRoot = path2.join(
+  const rollbackRoot = path3.join(
     plan.projectRoot,
     ".bhashafix",
     "rollback",
@@ -11245,8 +11250,8 @@ async function applyRepair(plan, options = {}) {
     assertAllowlisted(file, plan.allowlist);
     const target = assertConfinedPath(plan.projectRoot, file);
     await assertNoSymlink(plan.projectRoot, target);
-    const rollbackFile = path2.join(rollbackRoot, normaliseRelative(file));
-    await mkdir(path2.dirname(rollbackFile), { recursive: true });
+    const rollbackFile = path3.join(rollbackRoot, normaliseRelative(file));
+    await mkdir(path3.dirname(rollbackFile), { recursive: true });
     await copyFile(target, rollbackFile);
     const beforeText = await readFile2(target, "utf8");
     const afterText = serialiseRepairedJson(
@@ -11265,7 +11270,7 @@ async function applyRepair(plan, options = {}) {
     committed: false
   });
   await appendFile(
-    path2.join(plan.projectRoot, ".bhashafix", "audit.log"),
+    path3.join(plan.projectRoot, ".bhashafix", "audit.log"),
     `${auditRecord}
 `,
     "utf8"
@@ -11281,7 +11286,7 @@ async function applyRepair(plan, options = {}) {
 
 // ../report/src/index.ts
 import { mkdir as mkdir2, writeFile as writeFile2 } from "node:fs/promises";
-import path3 from "node:path";
+import path4 from "node:path";
 function escapeHtml(value) {
   return String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
 }
@@ -11413,11 +11418,11 @@ async function writeReportBundle(outputDirectory, scan, verification) {
   };
   await Promise.all(
     Object.entries(files).map(
-      ([name, contents]) => writeFile2(path3.join(outputDirectory, name), `${contents}
+      ([name, contents]) => writeFile2(path4.join(outputDirectory, name), `${contents}
 `, "utf8")
     )
   );
-  return Object.keys(files).map((name) => path3.join(outputDirectory, name));
+  return Object.keys(files).map((name) => path4.join(outputDirectory, name));
 }
 
 // ../verifier/src/index.ts
@@ -15318,16 +15323,16 @@ async function readJson2(file) {
   return JSON.parse(await readFile3(file, "utf8"));
 }
 function scansDirectory(root) {
-  return path4.join(root, ".bhashafix", "scans");
+  return path5.join(root, ".bhashafix", "scans");
 }
 function scanRequestsDirectory(root) {
-  return path4.join(root, ".bhashafix", "scan-requests");
+  return path5.join(root, ".bhashafix", "scan-requests");
 }
 async function writeScanRequest(root, request) {
   const directory = scanRequestsDirectory(root);
   await mkdir3(directory, { recursive: true });
   await writeFile3(
-    path4.join(directory, `${request.scanId}.json`),
+    path5.join(directory, `${request.scanId}.json`),
     `${JSON.stringify(request, null, 2)}
 `
   );
@@ -15335,21 +15340,21 @@ async function writeScanRequest(root, request) {
 async function loadScanRequest(root, scanId) {
   if (!/^[A-Za-z0-9_-]+$/.test(scanId)) throw new Error("Invalid scan ID.");
   return await readJson2(
-    path4.join(scanRequestsDirectory(root), `${scanId}.json`)
+    path5.join(scanRequestsDirectory(root), `${scanId}.json`)
   );
 }
 async function writeScan(root, scan) {
   const directory = scansDirectory(root);
   await mkdir3(directory, { recursive: true });
   await writeFile3(
-    path4.join(directory, `${scan.scanId}.json`),
+    path5.join(directory, `${scan.scanId}.json`),
     `${JSON.stringify(scan, null, 2)}
 `
   );
 }
 async function loadScan(root, scanId) {
   if (!/^[A-Za-z0-9_-]+$/.test(scanId)) throw new Error("Invalid scan ID.");
-  return await readJson2(path4.join(scansDirectory(root), `${scanId}.json`));
+  return await readJson2(path5.join(scansDirectory(root), `${scanId}.json`));
 }
 function planHash(unifiedDiff) {
   return createHash3("sha256").update(unifiedDiff).digest("hex");
@@ -15365,7 +15370,7 @@ function createMcpServer(projectRoot = process.cwd()) {
       description: "Inspect framework and localisation infrastructure without executing project scripts.",
       inputSchema: { projectRoot: external_exports.string().optional() }
     },
-    async ({ projectRoot: requestedRoot }) => text(await inspectProject(path4.resolve(requestedRoot ?? projectRoot)))
+    async ({ projectRoot: requestedRoot }) => text(await inspectProject(path5.resolve(requestedRoot ?? projectRoot)))
   );
   server.registerTool(
     "bhashafix_list_locales",
@@ -15656,7 +15661,7 @@ function createMcpServer(projectRoot = process.cwd()) {
     async ({ scanId, outputDirectory }) => {
       const scan = await loadScan(projectRoot, scanId);
       const files = await writeReportBundle(
-        path4.resolve(projectRoot, outputDirectory),
+        path5.resolve(projectRoot, outputDirectory),
         scan
       );
       return text({ scanId, files });
@@ -15682,7 +15687,7 @@ function createMcpServer(projectRoot = process.cwd()) {
           {
             uri,
             mimeType: "text/plain",
-            text: await readFile3(path4.join(projectRoot, relative), "utf8").catch(
+            text: await readFile3(path5.join(projectRoot, relative), "utf8").catch(
               () => "Not initialised. Run `bhashafix init`."
             )
           }

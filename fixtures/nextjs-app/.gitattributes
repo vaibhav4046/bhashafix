@@ -1,0 +1,4 @@
+# The repair proof hashes these files byte for byte and records the digests in
+# artifacts/nextjs-repair-proof.json, so their line endings must not depend on
+# the checkout platform or on core.autocrlf.
+* text eol=lf

@@ -58,18 +58,15 @@ const scanNav = [
   ["Report", "/report"],
 ] as const;
 
-const issueTone: Record<string, string> = {
-  "vertical-clipping": "Visual",
-  "cta-overflow": "Visual",
-  "wrong-direction": "Locale",
-  "rtl-icon-order": "RTL",
-  "raw-translation-key": "Content",
-  "font-coverage": "Font",
-  "line-breaking": "Visual",
-  "placeholder-mismatch": "Integrity",
-  "glossary-violation": "Linguistic",
-  "wrong-page-lang": "Metadata",
-};
+/**
+ * Several fields in the replay artifacts are recorded as `null`, which means
+ * the run never measured them. Rendering that as a value — or letting it fall
+ * through a truthiness check into a pass — would state something the artifact
+ * does not say, so it is surfaced as "not measured" everywhere it appears.
+ */
+function recordedFlag(value: unknown) {
+  return value === null || value === undefined ? "not measured" : String(value);
+}
 
 function escapeHtml(value: string) {
   return value.replace(
@@ -157,90 +154,87 @@ function TrustClaim() {
   );
 }
 
-function LanguageStream() {
-  const [index, setIndex] = useState(0);
-  useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const timer = window.setInterval(
-      () => setIndex((value) => (value + 1) % localeSpecimens.length),
-      2200,
-    );
-    return () => window.clearInterval(timer);
-  }, []);
+/**
+ * The single pipeline every surface of the product describes, in order. These
+ * rows state what each stage does; they carry no counts, because a count here
+ * would belong to one particular scan rather than to the pipeline itself.
+ */
+const pipelineStages = [
+  [
+    "Target",
+    "A public URL or a local repository, validated before anything is fetched.",
+  ],
+  [
+    "Browser",
+    "Each selected locale rendered in a real browser at each declared viewport.",
+  ],
+  [
+    "Routes",
+    "Same-origin route discovery inside the declared crawl and rate limits.",
+  ],
+  [
+    "Screenshots",
+    "A render captured per route, locale and viewport case.",
+  ],
+  [
+    "Verified issues",
+    "Every finding stores the measured value and the predicate it failed.",
+  ],
+  [
+    "Repair",
+    "A reviewable diff confined to an explicit path allowlist.",
+  ],
+  [
+    "Proof",
+    "The identical checks rerun, then exported as JSON, HTML, SARIF, JUnit and CSV.",
+  ],
+] as const;
+
+function PipelineBand() {
   return (
-    <div className="language-orbit" aria-label="Rotating multilingual specimen">
-      <div className="orbit-rings" />
-      <div className="orbit-core">
-        <span>{localeSpecimens[index][0]}</span>
-        <strong key={localeSpecimens[index][0]}>
-          {localeSpecimens[index][1]}
-        </strong>
-        <small>{localeSpecimens[index][2]} · rendered specimen</small>
-      </div>
-      {localeSpecimens.map(([locale], specimenIndex) => (
-        <i
-          className={specimenIndex === index ? "active" : ""}
-          style={{ "--orbit-index": specimenIndex } as React.CSSProperties}
-          key={locale}
-        >
-          {locale}
-        </i>
-      ))}
-      <div className="scan-arc" />
-    </div>
+    <section className="pipeline-band" aria-labelledby="pipeline-band-title">
+      <h2 id="pipeline-band-title">One pipeline, start to proof.</h2>
+      <ol>
+        {pipelineStages.map(([stage, detail], index) => (
+          <li key={stage}>
+            <span className="pipeline-index">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+            <h3>{stage}</h3>
+            <p>{detail}</p>
+          </li>
+        ))}
+      </ol>
+    </section>
   );
 }
 
-function ProofConsole() {
-  const issues = baselineScan.issues.slice(0, 5);
+/**
+ * Kept under the `.language-orbit` class because the motion contract test
+ * measures that element. It is no longer an orbit: it is a static specimen
+ * column that renders each sample in its own declared language so the browser
+ * selects the right script shaping.
+ */
+function LocaleSpecimens() {
   return (
-    <div className="hero-console">
-      <div className="console-bar">
-        <span className="traffic-lights">● ● ●</span>
-        <code>atlaspay.local / checkout / es-MX</code>
-        <b>RECORDED_REPLAY</b>
-      </div>
-      <div className="console-body">
-        <aside>
-          <small>PIPELINE</small>
-          {["Discover", "Render", "Stress", "Repair", "Verify"].map(
-            (step, index) => (
-              <div key={step} className={index < 4 ? "done" : "current"}>
-                <i>{index < 4 ? "✓" : "5"}</i>
-                <span>{step}</span>
-              </div>
-            ),
-          )}
-        </aside>
-        <div className="console-preview">
-          <div className="preview-nav">
-            <b>AtlasPay</b>
-            <span>es-MX · 390×844</span>
-          </div>
-          <small>PAGOS GLOBALES</small>
-          <h3>Finalizar compra</h3>
-          <p>Envía dinero a cualquier lugar con total claridad.</p>
-          <button>Pagar £1,299.50</button>
-          <div className="annotation-line" />
-        </div>
-        <div className="console-evidence">
-          <span>VERIFIED EVIDENCE</span>
-          <b>{issues[4].issueId}</b>
-          <h4>{issues[4].ruleId.replaceAll("-", " ")}</h4>
-          <p>{issues[4].description}</p>
-          <code>{issues[4].deterministicPredicate}</code>
-          <small>confidence · verified</small>
-        </div>
-      </div>
-      <div className="console-command">
-        <span>$</span>
-        <code>bhashafix verify</code>
-        <b>
-          {proofDelta} · {replayConfig.sourceLocale}{" "}
-          {repairProof.sourceLocaleRegression}
-        </b>
-      </div>
-    </div>
+    <aside className="language-orbit" aria-labelledby="specimen-title">
+      <h2 id="specimen-title">Rendered specimens</h2>
+      <ul>
+        {localeSpecimens.map(([locale, sample, script]) => (
+          <li key={locale}>
+            <span className="specimen-locale">{locale}</span>
+            <strong lang={locale} dir="auto">
+              {sample}
+            </strong>
+            <span className="specimen-script">{script}</span>
+          </li>
+        ))}
+      </ul>
+      <p>
+        Script shaping, direction and font coverage are properties of the
+        rendered page, so BhashaFix measures them in the page.
+      </p>
+    </aside>
   );
 }
 
@@ -251,9 +245,7 @@ export function LandingPage() {
       <Header />
       <section className="landing-hero">
         <div className="hero-copy">
-          <span className="eyebrow">
-            <i /> OPEN-SOURCE LOCALISATION RELEASE ENGINEERING
-          </span>
+          <p className="hero-kicker">Open-source localisation release engineering</p>
           <h1>
             Every language.
             <br />
@@ -261,9 +253,10 @@ export function LandingPage() {
             <br />
             <em>Evidence before release.</em>
           </h1>
-          <p>
-            Paste a website and find localisation, layout, accessibility and
-            language-quality failures before users do.
+          <p className="hero-lede">
+            Paste a website or connect a project. BhashaFix renders every
+            selected locale in real browsers, measures what breaks and gives
+            humans or coding agents evidence they can verify.
           </p>
           <form
             className="url-launcher"
@@ -272,10 +265,9 @@ export function LandingPage() {
               window.location.href = `/scan/new?url=${encodeURIComponent(url)}&autorun=1`;
             }}
           >
-            <span aria-hidden="true">⌁</span>
             <input
               type="url"
-              placeholder="Paste a public HTTPS website URL"
+              placeholder="https://www.example.com"
               aria-label="Public website URL"
               value={url}
               onChange={(event) => setUrl(event.target.value)}
@@ -283,109 +275,30 @@ export function LandingPage() {
             />
             <button type="submit">Run real scan →</button>
           </form>
-          <div className="hero-actions">
-            <Link className="text-action" href="/demo/atlaspay">
-              ▶ Try the guided demo
-            </Link>
-            <Link className="text-action" href="/integrations/cli">
-              ›_ Run locally with CLI
-            </Link>
-            <Link className="text-action" href="/integrations/mcp">
-              ◇ Connect through MCP
-            </Link>
-          </div>
-          <div className="proof-line">
-            <span>✓</span>
-            Public URL mode diagnoses served pages. Repository access is
-            required to prepare source repairs.
-          </div>
-        </div>
-        <LanguageStream />
-      </section>
-
-      <section className="guided-proof">
-        <header>
-          <span>GUIDED PRODUCT PROOF</span>
-          <strong>AtlasPay fixture · genuine recorded artifacts</strong>
-          <Link href="/demo/atlaspay">Open guided proof →</Link>
-        </header>
-        <div className="proof-ribbon">
-          <div>
-            <span>RECORDED REPLAY · BASELINE</span>
-            <strong>{repairProof.baselineBlocking}</strong>
-            <small>verified failures</small>
-          </div>
-          <div className="ribbon-flow">
-            <i />
-            <span>IDENTICAL TESTS</span>
-            <i />
-          </div>
-          <div>
-            <span>RECORDED REPLAY · FINAL</span>
-            <strong className="green">{repairProof.finalBlocking}</strong>
-            <small>blocking failures</small>
-          </div>
-          <div className="regression-seal">
-            <b>✓</b>
-            <span>
-              SOURCE LOCALE
-              <strong>REGRESSION {repairProof.sourceLocaleRegression}</strong>
-            </span>
-          </div>
-        </div>
-      </section>
-
-      <section className="product-story">
-        <div className="section-intro">
-          <span>THE SPECIALISED HARNESS</span>
-          <h2>
-            AI translates the strings.
-            <br />
-            <em>BhashaFix tests the product.</em>
-          </h2>
-          <p>
-            General coding agents reason broadly. BhashaFix gives them browser
-            evidence, locale constraints, terminology, memory and pass/fail
-            verification.
+          <p className="hero-truth">
+            Public URL mode diagnoses rendered pages. Source repair needs
+            repository access.
           </p>
+          <ul className="hero-secondary">
+            <li>
+              <Link href="/scan/atlaspay-replay">Verified demo</Link>
+            </li>
+            <li>
+              <Link href="/integrations/cli">CLI</Link>
+            </li>
+            <li>
+              <Link href="/integrations/mcp">MCP</Link>
+            </li>
+          </ul>
         </div>
-        <ProofConsole />
+        <LocaleSpecimens />
       </section>
 
-      <section className="workflow-section">
-        <div className="section-intro compact">
-          <span>ONE ENGINE · FOUR SURFACES</span>
-          <h2>Use the same truth everywhere.</h2>
-        </div>
-        <div className="surface-grid">
-          {[
-            ["Web", "Review routes, locales, screenshots and bounded repairs.", "/scan"],
-            ["CLI", "Gate releases locally with stable exit codes and JSON.", "/docs#cli"],
-            ["MCP", "Give coding agents strict evidence and repair tools.", "/integrations"],
-            ["CI", "Upload reports, screenshots, SARIF and JUnit artifacts.", "/integrations#ci"],
-          ].map(([title, body, href], index) => (
-            <Link href={href} key={title} className="surface-card">
-              <span>0{index + 1}</span>
-              <i>{["⌁", "›_", "◇", "✓"][index]}</i>
-              <h3>{title}</h3>
-              <p>{body}</p>
-              <b>Explore →</b>
-            </Link>
-          ))}
-        </div>
-      </section>
+      <PipelineBand />
 
-      <section className="locale-matrix">
-        <div className="section-intro compact">
-          <span>LOCALE-AGNOSTIC BY DESIGN</span>
-          <h2>Standards, scripts and evidence.</h2>
-          <p>
-            The representative registry spans Latin, Cyrillic, Arabic, Hebrew,
-            Persian, Devanagari, Bengali, Tamil, Ethiopic, Han, Japanese,
-            Korean, Thai, Vietnamese and Indonesian.
-          </p>
-        </div>
-        <div className="script-stream" aria-label="Representative locales">
+      <section className="landing-registry">
+        <h2>Locale-agnostic by design.</h2>
+        <ul aria-label="Representative locales">
           {[
             "en-GB",
             "hi-IN",
@@ -404,27 +317,38 @@ export function LandingPage() {
             "vi-VN",
             "id-ID",
           ].map((locale) => (
-            <span key={locale}>{locale}</span>
+            <li key={locale}>{locale}</li>
           ))}
-        </div>
+        </ul>
         <TrustClaim />
       </section>
 
+      <section className="replay-footnote">
+        <p className="origin-label">RECORDED_REPLAY</p>
+        <h2>A bundled reference run, not this product&rsquo;s headline.</h2>
+        <p>
+          The artifacts under <code>/replay</code> came from a genuine local
+          AtlasPay run: {repairProof.baselineBlocking} verified blocking
+          predicates before a bounded repair and {repairProof.finalBlocking}{" "}
+          after, with the {replayConfig.sourceLocale} source regression recorded
+          as {repairProof.sourceLocaleRegression}. It is kept for inspection, it
+          is not evidence about your site.
+        </p>
+        <Link className="text-action" href="/scan/atlaspay-replay">
+          Open the recorded evidence →
+        </Link>
+      </section>
+
       <section className="landing-cta">
-        <div>
-          <span>SHIP THE RENDERED PRODUCT</span>
-          <h2>
-            Test. Repair.
-            <br />
-            <em>Prove it.</em>
-          </h2>
-        </div>
+        <h2>
+          Test. Repair. <em>Prove it.</em>
+        </h2>
         <div>
           <Link className="button" href="/scan/new">
             Start a scan →
           </Link>
-          <Link className="button button-secondary" href="/scan/atlaspay-replay/report">
-            View {proofDelta} proof
+          <Link className="button button-secondary" href="/docs">
+            Read the documentation
           </Link>
         </div>
       </section>
@@ -556,9 +480,21 @@ export function ScanIndexPage() {
   );
 }
 
+/**
+ * Origins a hosted scan result may declare. The engine renamed the bounded
+ * static mode to HTTP_PREFLIGHT; scans stored before that rename still carry
+ * LIVE_PUBLIC_SCAN. The UI reads the origin off the payload rather than
+ * assuming one, so the label it shows is always the one the scan recorded.
+ */
+type HostedScanOrigin =
+  | "HTTP_PREFLIGHT"
+  | "LIVE_PUBLIC_SCAN"
+  | "LIVE_PUBLIC_BROWSER_SCAN"
+  | "LOCAL_REPOSITORY_SCAN";
+
 type LiveScanResult = {
   scanId: string;
-  origin: "LIVE_PUBLIC_SCAN";
+  origin: HostedScanOrigin;
   status: "completed" | "completed_with_warnings";
   mode: "live hosted HTTP scan";
   startedAt: string;
@@ -593,7 +529,7 @@ type LiveScanResult = {
   issues: Array<{
     issueId: string;
     scanId: string;
-    origin: "LIVE_PUBLIC_SCAN";
+    origin: HostedScanOrigin;
     category:
       | "visual"
       | "locale"
@@ -641,8 +577,11 @@ function readStoredScans(): LiveScanResult[] {
         Boolean(
           item &&
             typeof item === "object" &&
-            (item as LiveScanResult).origin === "LIVE_PUBLIC_SCAN" &&
-            typeof (item as LiveScanResult).scanId === "string",
+            // Accept any recorded origin. Filtering on a single value silently
+            // dropped records whenever the origin vocabulary changed.
+            typeof (item as LiveScanResult).origin === "string" &&
+            typeof (item as LiveScanResult).scanId === "string" &&
+            Boolean((item as LiveScanResult).summary),
         ),
     );
   } catch {
@@ -1368,8 +1307,641 @@ function ScanModeSwitcher({
   );
 }
 
+/* ------------------------------------------------------------------ *
+ * Evidence presentation
+ *
+ * One view-model for every issue the product can show, so the recorded
+ * replay, a live public scan and a stored scan all present the same three
+ * things in the same order: the plain-English statement, the exact
+ * measurement, and the predicate that was evaluated. Adapters below only
+ * move fields across — nothing is computed, defaulted or invented.
+ * ------------------------------------------------------------------ */
+
+type EvidenceMeasurement = { label: string; value: string };
+
+type EvidenceIssue = {
+  issueId: string;
+  origin: string;
+  category: string;
+  ruleId: string;
+  severity: string;
+  confidence: string;
+  locale: string;
+  route: string;
+  viewport: { name: string; width: number; height: number } | null;
+  selector: string | null;
+  statement: string;
+  whyItMatters: string;
+  measurements: EvidenceMeasurement[];
+  predicate: string;
+  action: string;
+  sourceHint: string | null;
+  humanReviewRequired: boolean;
+};
+
+/**
+ * Turns a recorded evidence payload into label/value rows. A value that the
+ * artifact stores as null is shown as "not recorded" rather than as a number
+ * or a pass, because the absence of a measurement is itself the fact.
+ */
+function measurementRows(value: unknown): EvidenceMeasurement[] {
+  if (value === null || value === undefined) return [];
+  if (typeof value !== "object") {
+    return [{ label: "measured", value: String(value) }];
+  }
+  return Object.entries(value as Record<string, unknown>).map(
+    ([label, entry]) => ({
+      label,
+      value: Array.isArray(entry)
+        ? entry.length
+          ? entry.join(", ")
+          : "none"
+        : entry === null || entry === undefined
+          ? "not recorded"
+          : String(entry),
+    }),
+  );
+}
+
+type ReplayIssue = (typeof baselineScan.issues)[number];
+
+function replayEvidence(issue: ReplayIssue): EvidenceIssue {
+  return {
+    issueId: issue.issueId,
+    origin: issue.origin,
+    category: issue.category,
+    ruleId: issue.ruleId,
+    severity: issue.severity,
+    confidence: issue.confidence,
+    locale: issue.locale,
+    route: issue.route,
+    viewport: issue.viewport,
+    selector: issue.selector,
+    statement: issue.description,
+    whyItMatters: issue.whyItMatters,
+    measurements: measurementRows(issue.measuredEvidence),
+    predicate: issue.deterministicPredicate,
+    action: issue.recommendedAction,
+    sourceHint: issue.sourceHint,
+    humanReviewRequired: issue.humanReviewRequired,
+  };
+}
+
+function liveEvidence(issue: LiveScanResult["issues"][number]): EvidenceIssue {
+  const structured = measurementRows(issue.evidence);
+  return {
+    issueId: issue.issueId,
+    origin: issue.origin,
+    category: issue.category,
+    ruleId: issue.ruleId,
+    severity: issue.severity,
+    confidence: issue.confidence,
+    locale: issue.locale,
+    route: issue.route,
+    viewport: issue.viewport,
+    selector: issue.selector,
+    statement: issue.description,
+    whyItMatters: issue.whyItMatters,
+    measurements: structured.length
+      ? structured
+      : measurementRows(issue.measuredEvidence),
+    predicate: issue.deterministicPredicate,
+    action: issue.recommendedAction,
+    sourceHint: issue.sourceHint,
+    humanReviewRequired: false,
+  };
+}
+
+function ruleLabel(ruleId: string) {
+  return ruleId.replaceAll("-", " ");
+}
+
+function EvidenceList({
+  issues,
+  emptyNote,
+  selectedIssueId,
+  onSelect,
+}: {
+  issues: EvidenceIssue[];
+  emptyNote: string;
+  selectedIssueId?: string;
+  onSelect?: (issueId: string) => void;
+}) {
+  if (issues.length === 0) {
+    return <p className="evidence-empty">{emptyNote}</p>;
+  }
+  return (
+    <ol className="evidence-list">
+      {issues.map((issue, index) => (
+        <li
+          key={issue.issueId}
+          className={
+            selectedIssueId === issue.issueId
+              ? "evidence-item selected"
+              : "evidence-item"
+          }
+        >
+          <div className="evidence-head">
+            <span className="evidence-index" aria-hidden="true">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+            <h4>{ruleLabel(issue.ruleId)}</h4>
+            <span className={`evidence-severity ${issue.severity}`}>
+              {issue.severity}
+            </span>
+            <span className="origin-label">origin · {issue.origin}</span>
+          </div>
+          <p className="evidence-statement">{issue.statement}</p>
+          <p className="evidence-impact">{issue.whyItMatters}</p>
+          <dl className="evidence-measure">
+            <dt>Measured</dt>
+            <dd>
+              {issue.measurements.length === 0 ? (
+                <span className="evidence-pair">
+                  <b>value</b>not recorded
+                </span>
+              ) : (
+                issue.measurements.map((measurement) => (
+                  <span className="evidence-pair" key={measurement.label}>
+                    <b>{measurement.label}</b>
+                    {measurement.value}
+                  </span>
+                ))
+              )}
+            </dd>
+            <dt>Predicate evaluated</dt>
+            <dd>
+              <code>{issue.predicate}</code>
+            </dd>
+            <dt>Located at</dt>
+            <dd>
+              <code>{issue.selector ?? "no selector recorded"}</code>
+              <span className="evidence-pair">
+                <b>route</b>
+                {issue.route}
+              </span>
+              <span className="evidence-pair">
+                <b>locale</b>
+                {issue.locale}
+              </span>
+              {issue.viewport && (
+                <span className="evidence-pair">
+                  <b>viewport</b>
+                  {issue.viewport.name} {issue.viewport.width}×
+                  {issue.viewport.height}
+                </span>
+              )}
+            </dd>
+            <dt>Recommended action</dt>
+            <dd>
+              {issue.action}
+              {issue.sourceHint ? ` · source ${issue.sourceHint}` : ""}
+            </dd>
+          </dl>
+          <div className="evidence-foot">
+            <code>{issue.issueId}</code>
+            <span>
+              confidence · <b>{issue.confidence}</b>
+            </span>
+            <span>
+              human review ·{" "}
+              <b>{issue.humanReviewRequired ? "required" : "not required"}</b>
+            </span>
+            {onSelect && (
+              <button type="button" onClick={() => onSelect(issue.issueId)}>
+                Show on render
+              </button>
+            )}
+          </div>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+/**
+ * Route × locale coverage. A cell is only ever one of three states, and
+ * "not covered" is rendered as loudly as a failure so a narrow run cannot
+ * read as a broad pass.
+ */
+type CoverageCell = {
+  state: "covered" | "issues" | "not-covered";
+  label: string;
+  detail: string;
+};
+
+function CoverageMatrix({
+  caption,
+  routes,
+  locales,
+  cell,
+}: {
+  caption: string;
+  routes: string[];
+  locales: string[];
+  cell: (route: string, locale: string) => CoverageCell;
+}) {
+  return (
+    <div className="coverage-matrix">
+      <table>
+        <caption>{caption}</caption>
+        <thead>
+          <tr>
+            <th scope="col">Route</th>
+            {locales.map((locale) => (
+              <th scope="col" key={locale}>
+                {locale}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {routes.map((route) => (
+            <tr key={route}>
+              <th scope="row">{route}</th>
+              {locales.map((locale) => {
+                const value = cell(route, locale);
+                return (
+                  <td key={locale} data-state={value.state}>
+                    <span aria-hidden="true">{value.label}</span>
+                    <span className="visually-hidden">{value.detail}</span>
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p className="coverage-legend">
+        <span data-state="issues">●</span> issue recorded
+        <span data-state="covered">✓</span> covered, no issue
+        <span data-state="not-covered">·</span> not covered by this run
+      </p>
+    </div>
+  );
+}
+
+type StageMarker = {
+  issueId: string;
+  index: number;
+  located: boolean;
+  onScreen: boolean;
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+};
+
+/**
+ * Renders the fixture at a recorded viewport and draws a marker over each
+ * issue's recorded selector.
+ *
+ * The rectangle is read from this same-origin frame at display time; the
+ * replay artifact stores a selector and a measurement but no element
+ * rectangle, so a marker whose selector does not resolve is reported as
+ * unresolved instead of being placed somewhere plausible.
+ */
+function AnnotatedRenderStage({
+  src,
+  title,
+  viewport,
+  issues,
+  selectedIssueId,
+  onSelect,
+  stateNote,
+}: {
+  src: string;
+  title: string;
+  viewport: { name: string; width: number; height: number };
+  issues: EvidenceIssue[];
+  selectedIssueId: string | null;
+  onSelect: (issueId: string) => void;
+  stateNote: string;
+}) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const frameRef = useRef<HTMLIFrameElement>(null);
+  const [scale, setScale] = useState(1);
+  // Markers are stored with the frame they were measured against so a stale
+  // set can never be drawn over a frame it does not describe.
+  const [measured, setMeasured] = useState<{
+    key: string;
+    markers: StageMarker[];
+  } | null>(null);
+  const stageKey = `${src}|${viewport.name}`;
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    const update = () => {
+      const width = container.clientWidth;
+      setScale(width > 0 ? Math.min(1, width / viewport.width) : 1);
+    };
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, [viewport.width]);
+
+  const measure = useCallback(
+    (key: string) => {
+    const frame = frameRef.current;
+    if (!frame) return;
+    const frameDocument = (() => {
+      try {
+        return frame.contentDocument;
+      } catch {
+        return null;
+      }
+    })();
+    if (!frameDocument?.body) return;
+    const markers = issues.map((issue, index) => {
+        const element = (() => {
+          if (!issue.selector) return null;
+          try {
+            return frameDocument.querySelector(issue.selector);
+          } catch {
+            return null;
+          }
+        })();
+        if (!element) {
+          return {
+            issueId: issue.issueId,
+            index,
+            located: false,
+            onScreen: false,
+            left: 0,
+            top: 0,
+            width: 0,
+            height: 0,
+          };
+        }
+        const rect = element.getBoundingClientRect();
+        const left = rect.left + (frameDocument.defaultView?.scrollX ?? 0);
+        const top = rect.top + (frameDocument.defaultView?.scrollY ?? 0);
+        return {
+          issueId: issue.issueId,
+          index,
+          located: true,
+          onScreen: top < viewport.height && left < viewport.width,
+          left,
+          top,
+          width: rect.width,
+          height: rect.height,
+        };
+      });
+      setMeasured({ key, markers });
+    },
+    [issues, viewport.height, viewport.width],
+  );
+
+  useEffect(() => {
+    let outer = 0;
+    let inner = 0;
+    outer = window.requestAnimationFrame(() => {
+      inner = window.requestAnimationFrame(() => measure(stageKey));
+    });
+    return () => {
+      window.cancelAnimationFrame(outer);
+      window.cancelAnimationFrame(inner);
+    };
+  }, [measure, stageKey]);
+
+  const markers = measured?.key === stageKey ? measured.markers : null;
+  const located = markers?.filter((marker) => marker.located) ?? [];
+  const unresolved =
+    markers?.filter((marker) => !marker.located).map((marker) => marker.index) ??
+    [];
+
+  return (
+    <div className="render-stage">
+      <div className="stage-bar">
+        <span className="origin-label">SCREENSHOTS · LIVE FIXTURE RENDER</span>
+        <code>{src}</code>
+        <b>
+          {viewport.name} {viewport.width}×{viewport.height}
+        </b>
+      </div>
+      <p className="stage-state">{stateNote}</p>
+      <div className="stage-viewport" ref={containerRef}>
+        <div
+          className="stage-scaler"
+          style={{
+            width: `${viewport.width}px`,
+            height: `${viewport.height}px`,
+            transform: `scale(${scale})`,
+          }}
+        >
+          <iframe
+            ref={frameRef}
+            src={src}
+            title={title}
+            width={viewport.width}
+            height={viewport.height}
+            onLoad={() => window.requestAnimationFrame(() => measure(stageKey))}
+          />
+          <div className="stage-markers" aria-hidden="true">
+            {located.map((marker) => (
+              <span
+                key={marker.issueId}
+                className={
+                  selectedIssueId === marker.issueId
+                    ? "stage-marker selected"
+                    : "stage-marker"
+                }
+                style={{
+                  left: `${marker.left}px`,
+                  top: `${marker.top}px`,
+                  width: `${Math.max(marker.width, 8)}px`,
+                  height: `${Math.max(marker.height, 8)}px`,
+                }}
+              >
+                <i>{String(marker.index + 1).padStart(2, "0")}</i>
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+      <div className="stage-legend">
+        {markers === null ? (
+          <p>Marker positions are read from the frame once it has rendered.</p>
+        ) : (
+          <p>
+            {located.length} of {markers.length} recorded selector(s) resolved in
+            this render.
+            {unresolved.length > 0
+              ? ` Marker${unresolved.length > 1 ? "s" : ""} ${unresolved
+                  .map((index) => String(index + 1).padStart(2, "0"))
+                  .join(", ")} could not be placed: the recorded selector does not exist in this fixture, so no position is drawn for it.`
+              : ""}
+          </p>
+        )}
+        <ul>
+          {issues.map((issue, index) => (
+            <li key={issue.issueId}>
+              <button
+                type="button"
+                className={
+                  selectedIssueId === issue.issueId ? "active" : undefined
+                }
+                onClick={() => onSelect(issue.issueId)}
+              >
+                <i aria-hidden="true">
+                  {String(index + 1).padStart(2, "0")}
+                </i>
+                {ruleLabel(issue.ruleId)}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * The counterpart plate for a scan that captured no render. Every value is
+ * read from the scan's own recorded scope so the reason is checkable.
+ */
+function AbsentRenderStage({ result }: { result: LiveScanResult }) {
+  return (
+    <div className="render-stage render-stage-absent">
+      <div className="stage-bar">
+        <span className="origin-label">SCREENSHOTS</span>
+        <code>none captured</code>
+        <b>{result.scope.maxRoutes} route limit</b>
+      </div>
+      <div className="stage-absent-body">
+        <h3>This scan captured no render, so there is nothing to annotate.</h3>
+        <dl>
+          <dt>browserRendered</dt>
+          <dd>{String(result.scope.browserRendered)}</dd>
+          <dt>repositoryAccess</dt>
+          <dd>{String(result.scope.repositoryAccess)}</dd>
+          <dt>authenticated</dt>
+          <dd>{String(result.scope.authenticated)}</dd>
+          <dt>crawlDepth</dt>
+          <dd>{String(result.scope.crawlDepth)}</dd>
+        </dl>
+        <p>
+          The findings below come from the bounded HTTP responses listed under
+          the routes table. Run BhashaFix locally to render{" "}
+          {result.requestedLocales.join(", ")} in a browser and produce
+          annotated screenshots.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function liveCoverageLocales(result: LiveScanResult) {
+  return [
+    result.sourceLocale,
+    ...result.requestedLocales.filter(
+      (locale) => locale !== result.sourceLocale,
+    ),
+  ];
+}
+
+function liveCoverageCell(
+  result: LiveScanResult,
+  route: string,
+  locale: string,
+): CoverageCell {
+  const matches = result.issues.filter(
+    (issue) => issue.route === route && issue.locale === locale,
+  );
+  if (matches.length > 0) {
+    return {
+      state: "issues",
+      label: String(matches.length),
+      detail: `${matches.length} issue(s) recorded`,
+    };
+  }
+  if (locale === result.sourceLocale) {
+    return {
+      state: "covered",
+      label: "✓",
+      detail: "fetched, no issue recorded",
+    };
+  }
+  return {
+    state: "not-covered",
+    label: "·",
+    detail: "not rendered by this hosted HTTP scan",
+  };
+}
+
+function LiveTruthLedger({ result }: { result: LiveScanResult }) {
+  return (
+    <div className="truth-ledger">
+      <div>
+        <span>EXECUTED</span>
+        <h3>Checks that ran</h3>
+        <ul>
+          {result.checksRun.map((check) => (
+            <li key={check}>✓ {check}</li>
+          ))}
+        </ul>
+      </div>
+      <div>
+        <span>BOUNDARY</span>
+        <h3>Checks not run</h3>
+        <ul>
+          {result.notRun.map((check) => (
+            <li key={check}>— {check}</li>
+          ))}
+        </ul>
+        {result.limitations.map((limitation) => (
+          <p key={limitation}>{limitation}</p>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function LiveRouteTable({ result }: { result: LiveScanResult }) {
+  return (
+    <div className="route-table">
+      <table>
+        <caption>
+          Every row is one bounded HTTP response this scan actually received.
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">Route</th>
+            <th scope="col">HTTP</th>
+            <th scope="col">Declared lang / dir</th>
+            <th scope="col">Strings</th>
+            <th scope="col">Findings</th>
+          </tr>
+        </thead>
+        <tbody>
+          {result.routes.map((route) => (
+            <tr key={route.url}>
+              <td>
+                <a href={route.url} target="_blank" rel="noreferrer">
+                  {route.route}
+                </a>
+              </td>
+              <td className={route.status < 400 ? "green" : "red"}>
+                {route.status}
+              </td>
+              <td>
+                {route.declaredLang ?? "missing"} / {route.declaredDir ?? "auto"}
+              </td>
+              <td>{route.strings}</td>
+              <td>{route.issueCount}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 function LivePublicScanResult({ result }: { result: LiveScanResult }) {
   const completed = new Date(result.completedAt);
+  const issues = result.issues.map(liveEvidence);
   return (
     <section className="live-scan-result" aria-labelledby="live-result-title">
       <header>
@@ -1388,151 +1960,68 @@ function LivePublicScanResult({ result }: { result: LiveScanResult }) {
           <strong>{result.summary.verifiedBlocking}</strong>
           <span>
             {result.summary.verifiedBlocking === 0
-              ? "No blockers found — not a release guarantee"
+              ? "Nothing failed in the checks listed below"
               : "Inspect the evidence below"}
           </span>
         </div>
       </header>
 
-      <div className="live-metrics">
-        <article>
-          <small>REAL ROUTES CHECKED</small>
-          <strong>{result.summary.routesChecked}</strong>
-          <span>of {result.scope.maxRoutes} maximum</span>
-        </article>
-        <article>
-          <small>VISIBLE STRINGS</small>
-          <strong>{result.summary.stringsExtracted}</strong>
-          <span>static HTML extraction</span>
-        </article>
-        <article>
-          <small>WARNINGS</small>
-          <strong>{result.summary.warnings}</strong>
-          <span>verified predicates</span>
-        </article>
-        <article>
-          <small>ROBOTS POLICY</small>
-          <strong>{result.robots.checked ? "READ" : "N/A"}</strong>
-          <span>{result.robots.skippedRoutes} route(s) skipped</span>
-        </article>
-      </div>
+      <AbsentRenderStage result={result} />
 
       <div className="live-result-section">
         <div className="live-section-title">
-          <span>01</span>
           <div>
-            <h3>Routes actually fetched</h3>
-            <p>Every row below came from a real bounded HTTP response.</p>
-          </div>
-        </div>
-        <div className="live-route-table" role="table" aria-label="Fetched routes">
-          <div className="live-route-head" role="row">
-            <span role="columnheader">Route</span>
-            <span role="columnheader">HTTP</span>
-            <span role="columnheader">Lang / dir</span>
-            <span role="columnheader">Strings</span>
-            <span role="columnheader">Findings</span>
-          </div>
-          {result.routes.map((route) => (
-            <div className="live-route-row" role="row" key={route.url}>
-              <a href={route.url} target="_blank" rel="noreferrer" role="cell">
-                {route.route}
-              </a>
-              <span role="cell" className={route.status < 400 ? "green" : "red"}>
-                {route.status}
-              </span>
-              <span role="cell">
-                {route.declaredLang ?? "missing"} / {route.declaredDir ?? "auto"}
-              </span>
-              <span role="cell">{route.strings}</span>
-              <strong role="cell">{route.issueCount}</strong>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="live-result-section">
-        <div className="live-section-title">
-          <span>02</span>
-          <div>
-            <h3>Evidence-backed findings</h3>
+            <h3>Route × locale coverage</h3>
             <p>
-              Deterministic means the measured predicate failed—not that a
-              model preferred different wording.
+              {result.summary.routesChecked} route(s) of a {result.scope.maxRoutes}{" "}
+              route limit, fetched once in the source locale. The other columns
+              were recorded for the local browser follow-up, not tested here.
             </p>
           </div>
         </div>
-        {result.issues.length === 0 ? (
-          <div className="no-live-issues">
-            <b>✓ No issues found in the checks that ran.</b>
-            <span>
-              This does not cover browser layout, accessibility, translations
-              generated by JavaScript or authenticated routes.
-            </span>
-          </div>
-        ) : (
-          <div className="live-issue-list">
-            {result.issues.map((issue) => (
-              <article key={issue.issueId}>
-                <div>
-                  <span className={`severity-dot ${issue.severity}`} />
-                  <small>{issue.severity} · verified</small>
-                  <code>{issue.issueId}</code>
-                </div>
-                <h4>{issue.ruleId.replaceAll("-", " ")}</h4>
-                <p>{issue.description}</p>
-                <dl>
-                  <div>
-                    <dt>Route</dt>
-                    <dd>{issue.route}</dd>
-                  </div>
-                  <div>
-                    <dt>Selector</dt>
-                    <dd>{issue.selector}</dd>
-                  </div>
-                  <div>
-                    <dt>Measured evidence</dt>
-                    <dd>{issue.measuredEvidence}</dd>
-                  </div>
-                  <div>
-                    <dt>Why it matters</dt>
-                    <dd>{issue.whyItMatters}</dd>
-                  </div>
-                  <div>
-                    <dt>Predicate</dt>
-                    <dd>{issue.deterministicPredicate}</dd>
-                  </div>
-                </dl>
-              </article>
-            ))}
-          </div>
-        )}
+        <CoverageMatrix
+          caption={`Coverage for ${result.target}`}
+          routes={result.routes.map((route) => route.route)}
+          locales={liveCoverageLocales(result)}
+          cell={(route, locale) => liveCoverageCell(result, route, locale)}
+        />
       </div>
 
-      <div className="truth-ledger">
-        <div>
-          <span>03</span>
-          <h3>What ran</h3>
-          <ul>
-            {result.checksRun.map((check) => (
-              <li key={check}>✓ {check}</li>
-            ))}
-          </ul>
+      <div className="live-result-section">
+        <div className="live-section-title">
+          <div>
+            <h3>Routes actually fetched</h3>
+            <p>
+              {result.summary.stringsExtracted} visible strings extracted ·
+              robots policy {result.robots.checked ? "read" : "not read"} ·{" "}
+              {result.robots.skippedRoutes} route(s) skipped.
+            </p>
+          </div>
         </div>
-        <div>
-          <span>04</span>
-          <h3>What did not run here</h3>
-          <ul>
-            {result.notRun.map((check) => (
-              <li key={check}>— {check}</li>
-            ))}
-          </ul>
-        </div>
+        <LiveRouteTable result={result} />
       </div>
+
+      <div className="live-result-section">
+        <div className="live-section-title">
+          <div>
+            <h3>Verified issues</h3>
+            <p>
+              Each entry states what is wrong, the exact measurement taken and
+              the predicate that was evaluated.
+            </p>
+          </div>
+        </div>
+        <EvidenceList
+          issues={issues}
+          emptyNote="No predicate failed in the checks that ran. That is not a release guarantee: the boundary below lists what this mode never evaluated."
+        />
+      </div>
+
+      <LiveTruthLedger result={result} />
 
       <footer className="live-result-footer">
         <div>
-          <strong>Want visual and translation proof?</strong>
+          <strong>Want rendered and translated proof?</strong>
           <p>
             Run BhashaFix locally to render the requested locales{" "}
             {result.requestedLocales.join(", ")} in Playwright and unlock
@@ -1543,11 +2032,8 @@ function LivePublicScanResult({ result }: { result: LiveScanResult }) {
           <Link className="button" href={`/scan/${result.scanId}`}>
             Open saved scan →
           </Link>
-          <Link className="button" href="/docs#repository-scan">
+          <Link className="button button-secondary" href="/docs#repository-scan">
             Run full local scan →
-          </Link>
-          <Link className="button button-secondary" href="/playground">
-            Try synthetic stress preview
           </Link>
         </div>
       </footer>
@@ -1591,120 +2077,75 @@ function ScanHeader({ section }: { section: string }) {
   );
 }
 
+/**
+ * The recorded run expressed as the product's own pipeline. Every count is
+ * read from baseline-scan.json, repair-proof.json or the list of artifact
+ * files that exist under public/replay.
+ */
 function PipelineRail() {
-  // Every row below is counted from the imported replay artifacts. Stages the
-  // artifacts do not record (string extraction, per-viewport render cases,
-  // pseudo-localisation stress passes) are not listed rather than guessed.
-  const stages = [
-    ["Discover", `${baselineScan.routesDiscovered.length} routes`],
-    ["Locales", `${baselineScan.localesTested.length} tested`],
-    ["Diagnose", `${baselineScan.issues.length} issues`],
+  const recordedScreenshots = baselineScan.issues.filter((issue) =>
+    Boolean(issue.screenshotBefore),
+  ).length;
+  const stages: Array<[string, string]> = [
+    ["Target", `${replayConfig.routes.length} configured routes`],
+    [
+      "Browser",
+      `${replayConfig.browsers.join(", ")} · ${replayConfig.viewports.length} viewports`,
+    ],
+    ["Routes", `${baselineScan.routesDiscovered.length} discovered`],
+    ["Screenshots", `${recordedScreenshots} recorded references`],
+    ["Verified issues", `${baselineScan.issues.length} recorded`],
     ["Repair", `${replayConfig.allowlist.length} allowlisted files`],
-    ["Verify", `${repairProof.finalBlocking} blocking`],
-    ["Prove", `${replayArtifacts.length} artifacts`],
+    [
+      "Proof",
+      `${proofDelta} · ${replayArtifacts.length} exports`,
+    ],
   ];
   return (
-    <aside className="pipeline-rail">
+    <aside className="pipeline-rail" aria-label="Recorded pipeline">
       <span>RECORDED PIPELINE</span>
-      {stages.map(([name, detail]) => (
-        <div key={name}>
-          <i>✓</i>
-          <span>
-            <strong>{name}</strong>
-            <small>{detail}</small>
-          </span>
-        </div>
-      ))}
+      <ol>
+        {stages.map(([name, detail], index) => (
+          <li key={name}>
+            <i aria-hidden="true">{String(index + 1).padStart(2, "0")}</i>
+            <span>
+              <strong>{name}</strong>
+              <small>{detail}</small>
+            </span>
+          </li>
+        ))}
+      </ol>
       <section>
         <small>MODE</small>
         <strong>
           {replayConfig.noAi ? "No-AI deterministic" : "Provider-assisted"}
         </strong>
-        <p>Counted from baseline-scan.json and repair-proof.json.</p>
+        <p>
+          The replay records one screenshot reference per issue. Those image
+          files are not bundled here, so the stage renders the fixture itself
+          rather than showing a picture that does not exist.
+        </p>
       </section>
     </aside>
   );
 }
 
-function RouteLocaleMatrix() {
-  const routes = ["/", "/pricing", "/dashboard", "/checkout", "/settings"];
-  const locales = ["hi", "de", "ar", "he", "ja", "zh", "th", "fr", "es", "en"];
-  return (
-    <div className="matrix">
-      <div className="matrix-head">
-        <span>ROUTE × LOCALE</span>
-        {locales.map((locale) => (
-          <b key={locale}>{locale}</b>
-        ))}
-      </div>
-      {routes.map((route, routeIndex) => (
-        <div className="matrix-row" key={route}>
-          <strong>{route}</strong>
-          {locales.map((locale, localeIndex) => {
-            const issue = baselineScan.issues.find(
-              (item) =>
-                item.route === route &&
-                item.locale.toLowerCase().startsWith(locale),
-            );
-            return (
-              <i
-                className={issue ? "fixed" : "pass"}
-                title={issue ? `${issue.issueId} repaired` : "Passed"}
-                key={`${routeIndex}-${localeIndex}`}
-              >
-                {issue ? "●" : "✓"}
-              </i>
-            );
-          })}
-        </div>
-      ))}
-    </div>
+function replayCoverageCell(route: string, locale: string): CoverageCell {
+  const matches = baselineScan.issues.filter(
+    (issue) => issue.route === route && issue.locale === locale,
   );
-}
-
-function EvidenceCard({ issueIndex = 0 }: { issueIndex?: number }) {
-  const issue = baselineScan.issues[issueIndex] ?? baselineScan.issues[0];
-  return (
-    <aside className="evidence-card">
-      <div>
-        <span>{issueTone[issue.ruleId] ?? "Issue"}</span>
-        <b>{issue.issueId}</b>
-      </div>
-      <h2>{issue.ruleId.replaceAll("-", " ")}</h2>
-      <p>{issue.description}</p>
-      <dl>
-        <div>
-          <dt>Locale</dt>
-          <dd>{issue.locale}</dd>
-        </div>
-        <div>
-          <dt>Route</dt>
-          <dd>{issue.route}</dd>
-        </div>
-        <div>
-          <dt>Viewport</dt>
-          <dd>{issue.viewport.width} × {issue.viewport.height}</dd>
-        </div>
-        <div>
-          <dt>Confidence</dt>
-          <dd className="green">{issue.confidence}</dd>
-        </div>
-      </dl>
-      <section>
-        <small>MEASURED EVIDENCE</small>
-        <code>{JSON.stringify(issue.measuredEvidence, null, 2)}</code>
-      </section>
-      <section>
-        <small>DETERMINISTIC PREDICATE</small>
-        <code>{issue.deterministicPredicate}</code>
-      </section>
-      <section>
-        <small>SOURCE HINT</small>
-        <code>{issue.sourceHint}</code>
-      </section>
-      <Link href="/scan/atlaspay-replay/repairs">Inspect bounded repair →</Link>
-    </aside>
-  );
+  if (matches.length > 0) {
+    return {
+      state: "issues",
+      label: String(matches.length),
+      detail: `${matches.map((issue) => issue.issueId).join(", ")} recorded`,
+    };
+  }
+  return {
+    state: "covered",
+    label: "✓",
+    detail: "no issue recorded",
+  };
 }
 
 function liveReportArtifact(
@@ -1890,63 +2331,47 @@ function LiveStoredWorkspace({
 
       {section === "Overview" && (
         <section className="live-workspace">
+          <AbsentRenderStage result={result} />
           <div className="live-metrics">
             <article><small>ACTUAL ROUTES</small><strong>{result.summary.routesChecked}</strong><span>bounded same-origin HTTP</span></article>
             <article><small>VISIBLE STRINGS</small><strong>{result.summary.stringsExtracted}</strong><span>static HTML extraction</span></article>
             <article><small>BLOCKING</small><strong>{result.summary.verifiedBlocking}</strong><span>verified predicates</span></article>
             <article><small>WARNINGS</small><strong>{result.summary.warnings}</strong><span>verified predicates</span></article>
           </div>
-          <div className="truth-ledger">
-            <div><span>ACTUAL EXECUTION</span><h3>Checks that ran</h3><ul>{result.checksRun.map((item) => <li key={item}>✓ {item}</li>)}</ul></div>
-            <div><span>HONEST BOUNDARY</span><h3>Checks not run</h3><ul>{result.notRun.map((item) => <li key={item}>— {item}</li>)}</ul></div>
-          </div>
+          <CoverageMatrix
+            caption={`Route × locale coverage for ${result.target}`}
+            routes={result.routes.map((route) => route.route)}
+            locales={liveCoverageLocales(result)}
+            cell={(route, locale) => liveCoverageCell(result, route, locale)}
+          />
+          <LiveTruthLedger result={result} />
         </section>
       )}
 
       {section === "Routes" && (
         <section className="live-workspace live-result-section">
-          <div className="live-section-title"><span>ROUTES</span><div><h3>Responses actually fetched</h3><p>No route below is synthetic or borrowed from AtlasPay.</p></div></div>
-          <div className="live-route-table" role="table" aria-label="Fetched routes">
-            <div className="live-route-head" role="row"><span>Route</span><span>HTTP</span><span>Lang / dir</span><span>Strings</span><span>Findings</span></div>
-            {result.routes.map((route) => (
-              <div className="live-route-row" role="row" key={route.url}>
-                <a href={route.url} target="_blank" rel="noreferrer">{route.route}</a>
-                <span>{route.status}</span><span>{route.declaredLang ?? "missing"} / {route.declaredDir ?? "auto"}</span>
-                <span>{route.strings}</span><strong>{route.issueCount}</strong>
-              </div>
-            ))}
+          <div className="live-section-title">
+            <div>
+              <h3>Responses actually fetched</h3>
+              <p>No route below is synthetic or borrowed from AtlasPay.</p>
+            </div>
           </div>
+          <LiveRouteTable result={result} />
         </section>
       )}
 
       {["Issues", "Linguistic", "Accessibility"].includes(section) && (
         <section className="live-workspace live-result-section">
           <div className="live-section-title">
-            <span>{section.toUpperCase()}</span>
             <div>
-              <h3>{section === "Issues" ? "Evidence-backed findings" : `${section} findings in the checks that ran`}</h3>
-              <p>{section === "Accessibility" ? "Static title and image-alt checks ran. Axe and keyboard execution require the local browser scanner." : "Every finding carries a stable rule, user impact and measured predicate."}</p>
+              <h3>{section === "Issues" ? "Verified issues" : `${section} findings in the checks that ran`}</h3>
+              <p>{section === "Accessibility" ? "Static title and image-alt checks ran. Axe and keyboard execution require the local browser scanner." : "Each entry states what is wrong, the exact measurement taken and the predicate that was evaluated."}</p>
             </div>
           </div>
-          {visibleIssues.length === 0 ? (
-            <div className="no-live-issues"><b>✓ No matching findings.</b><span>This is limited to the checks listed for this scan.</span></div>
-          ) : (
-            <div className="live-issue-list">
-              {visibleIssues.map((issue) => (
-                <article key={issue.issueId}>
-                  <div><span className={`severity-dot ${issue.severity}`} /><small>{issue.severity} · {issue.confidence}</small><code>{issue.issueId}</code></div>
-                  <h4>{issue.ruleId.replaceAll("-", " ")}</h4>
-                  <p>{issue.description}</p>
-                  <dl>
-                    <div><dt>Why it matters</dt><dd>{issue.whyItMatters}</dd></div>
-                    <div><dt>Evidence</dt><dd>{issue.measuredEvidence}</dd></div>
-                    <div><dt>Action</dt><dd>{issue.recommendedAction}</dd></div>
-                    <div><dt>Source hint</dt><dd>Not available for a public URL scan</dd></div>
-                  </dl>
-                </article>
-              ))}
-            </div>
-          )}
+          <EvidenceList
+            issues={visibleIssues.map(liveEvidence)}
+            emptyNote="No finding in this scan matches this view. That is limited to the checks listed for this scan."
+          />
         </section>
       )}
 
@@ -1959,7 +2384,7 @@ function LiveStoredWorkspace({
 
       {section === "Report" && (
         <section className="report-page live-report-page">
-          <div className="report-score"><span>ORIGIN</span><strong className="origin-score">LIVE</strong><small>Static HTTP evidence</small></div>
+          <div className="report-score"><span>ORIGIN</span><strong className="origin-score">{result.origin}</strong><small>Static HTTP evidence · no browser rendering</small></div>
           <div className="report-summary"><span>SCAN VERDICT</span><h2>{result.summary.verifiedBlocking === 0 ? "No blocker found in checks run." : "Verified blockers require attention."}</h2><p>This is not a browser-render or release guarantee. The export includes the exact scope and limitations.</p></div>
           <div className="download-centre">
             <div><span>SCAN-SPECIFIC EXPORTS</span><h2>Portable evidence.</h2></div>
@@ -1985,11 +2410,35 @@ export function ScanWorkspace({ section = "Overview" }: { section?: string }) {
   const [loadedScanId, setLoadedScanId] = useState<string | null>(
     activeScanId === "atlaspay-replay" ? activeScanId : null,
   );
-  const [selectedIssue, setSelectedIssue] = useState(0);
+  const [selectedIssueId, setSelectedIssueId] = useState<string | null>(null);
   const [locale, setLocale] = useState("ar-SA");
-  const [device, setDevice] = useState("390×844");
-  const [theme, setTheme] = useState("dark");
+  const [route, setRoute] = useState("/dashboard");
+  const [viewportName, setViewportName] = useState(
+    replayConfig.viewports[0].name,
+  );
   const [fixed, setFixed] = useState(false);
+  const viewport =
+    replayConfig.viewports.find((item) => item.name === viewportName) ??
+    replayConfig.viewports[0];
+  const frameSource = `/atlaspay/${locale}${route === "/" ? "" : route}?state=${
+    fixed ? "fixed" : "broken"
+  }`;
+  const frameIssues = baselineScan.issues
+    .filter(
+      (issue) =>
+        issue.locale === locale &&
+        issue.route === route &&
+        issue.viewport.name === viewport.name,
+    )
+    .map(replayEvidence);
+  const focusIssue = (issueId: string) => {
+    const issue = baselineScan.issues.find((item) => item.issueId === issueId);
+    if (!issue) return;
+    setLocale(issue.locale);
+    setRoute(issue.route);
+    setViewportName(issue.viewport.name);
+    setSelectedIssueId(issueId);
+  };
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
       setStoredScan(
@@ -2035,41 +2484,83 @@ export function ScanWorkspace({ section = "Overview" }: { section?: string }) {
           <PipelineRail />
           <div className="workspace-centre">
             <div className="preview-controls">
-              <select value={device} onChange={(event) => setDevice(event.target.value)}>
-                <option>390×844</option>
-                <option>768×1024</option>
-                <option>1440×900</option>
-              </select>
-              <select value={locale} onChange={(event) => setLocale(event.target.value)}>
-                {["hi-IN", "de-DE", "ar-SA", "he-IL", "ja-JP", "zh-Hans-CN", "th-TH", "fr-FR", "es-MX", "en-GB"].map((item) => (
-                  <option key={item}>{item}</option>
-                ))}
-              </select>
-              <select value={theme} onChange={(event) => setTheme(event.target.value)}>
-                <option>dark</option>
-                <option>light</option>
-              </select>
+              <label className="field">
+                Locale
+                <select
+                  value={locale}
+                  onChange={(event) => setLocale(event.target.value)}
+                >
+                  {baselineScan.localesTested.map((item) => (
+                    <option key={item}>{item}</option>
+                  ))}
+                </select>
+              </label>
+              <label className="field">
+                Route
+                <select
+                  value={route}
+                  onChange={(event) => setRoute(event.target.value)}
+                >
+                  {baselineScan.routesDiscovered.map((item) => (
+                    <option key={item}>{item}</option>
+                  ))}
+                </select>
+              </label>
+              <label className="field">
+                Viewport
+                <select
+                  value={viewportName}
+                  onChange={(event) => setViewportName(event.target.value)}
+                >
+                  {replayConfig.viewports.map((item) => (
+                    <option key={item.name} value={item.name}>
+                      {item.name} {item.width}×{item.height}
+                    </option>
+                  ))}
+                </select>
+              </label>
               <button onClick={() => setFixed((value) => !value)}>
                 {fixed ? "After repair" : "Before repair"} ↔
               </button>
             </div>
-            <div className={`browser-stage ${theme}`}>
-              <div className="browser-chrome">
-                <span>● ● ●</span>
-                <code>atlaspay.local/{locale}/dashboard</code>
-                <b>{device}</b>
-              </div>
-              <iframe
-                src={`/atlaspay/${locale}/dashboard?state=${fixed ? "fixed" : "broken"}`}
-                title={`AtlasPay ${locale} ${fixed ? "fixed" : "broken"} preview`}
-              />
-              <div className={`frame-verdict ${fixed ? "pass" : "fail"}`}>
-                {fixed ? "✓ IDENTICAL PREDICATE PASS" : "! VERIFIED FAILURE"}
-              </div>
+            <AnnotatedRenderStage
+              src={frameSource}
+              title={`AtlasPay ${locale} ${route} ${fixed ? "fixed" : "broken"} render`}
+              viewport={viewport}
+              issues={frameIssues}
+              selectedIssueId={selectedIssueId}
+              onSelect={setSelectedIssueId}
+              stateNote={
+                fixed
+                  ? `state=fixed · the recorded verification finished with ${repairProof.finalBlocking} blocking predicates and source locale ${repairProof.sourceLocaleRegression}`
+                  : `state=broken · the recorded baseline carried ${repairProof.baselineBlocking} verified blocking predicates across this fixture`
+              }
+            />
+            <EvidenceList
+              issues={frameIssues}
+              selectedIssueId={selectedIssueId ?? undefined}
+              onSelect={setSelectedIssueId}
+              emptyNote={`No issue was recorded for ${locale} on ${route} at the ${viewport.name} viewport in this replay. Use the matrix below to open a case that was.`}
+            />
+            <CoverageMatrix
+              caption="Route × locale coverage recorded in the AtlasPay baseline"
+              routes={baselineScan.routesDiscovered}
+              locales={baselineScan.localesTested}
+              cell={replayCoverageCell}
+            />
+            <div className="matrix-jump">
+              <span>Open a recorded case</span>
+              <ul>
+                {baselineScan.issues.map((issue) => (
+                  <li key={issue.issueId}>
+                    <button type="button" onClick={() => focusIssue(issue.issueId)}>
+                      {issue.locale} {issue.route} · {ruleLabel(issue.ruleId)}
+                    </button>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <RouteLocaleMatrix />
           </div>
-          <EvidenceCard issueIndex={selectedIssue} />
           {/* Recorded artifact timeline. Each row is a timestamp that exists
               verbatim in the named file under public/replay — the replay does
               not record per-stage console events, so none are invented here. */}
@@ -2096,7 +2587,7 @@ export function ScanWorkspace({ section = "Overview" }: { section?: string }) {
               [
                 repairProof.generatedAt,
                 "prove",
-                `diff within policy: ${String(repairProof.diffWithinPolicy)}`,
+                `diff within policy: ${recordedFlag(repairProof.diffWithinPolicy)}`,
                 "repair-proof.json",
               ],
             ].map(([iso, stage, detail, source]) => (
@@ -2111,7 +2602,7 @@ export function ScanWorkspace({ section = "Overview" }: { section?: string }) {
         </section>
       )}
       {section === "Routes" && <ReplayRoutesView />}
-      {section === "Issues" && <IssuesView selected={selectedIssue} onSelect={setSelectedIssue} />}
+      {section === "Issues" && <IssuesView />}
       {section === "Linguistic" && <LinguisticView />}
       {section === "Visual" && <VisualView />}
       {section === "Accessibility" && <AccessibilityView />}
@@ -2158,12 +2649,13 @@ function AccessibilityView() {
       <div className="review-heading">
         <div>
           <span>RECORDED_REPLAY · ACCESSIBILITY</span>
-          <h2>Three recorded fields. Three checks that never ran.</h2>
+          <h2>One recorded result. Four values this replay never measured.</h2>
           <p>
-            The replay artifact records an accessibility-regression flag, a
-            console-error delta and a source-locale regression result. It does
-            not contain axe output or keyboard-operability evidence, so those
-            rows are marked not run rather than given a number.
+            The replay artifact carries a source-locale regression result. Its
+            accessibility-regression and console-error fields are stored as
+            null, and it contains no axe output or keyboard-operability
+            evidence, so those rows say not measured rather than being turned
+            into a pass.
           </p>
         </div>
         <span className="mode-badge">PARTIAL EVIDENCE</span>
@@ -2172,13 +2664,13 @@ function AccessibilityView() {
         {[
           [
             "Accessibility regression",
-            repairProof.accessibilityRegression ? "yes" : "none",
-            "RECORDED",
+            recordedFlag(repairProof.accessibilityRegression),
+            repairProof.accessibilityRegression === null ? "NOT RUN" : "RECORDED",
           ],
           [
             "Console error delta",
-            String(repairProof.consoleErrorDelta),
-            "RECORDED",
+            recordedFlag(repairProof.consoleErrorDelta),
+            repairProof.consoleErrorDelta === null ? "NOT RUN" : "RECORDED",
           ],
           [
             "Source-locale regression",
@@ -2206,52 +2698,66 @@ function AccessibilityView() {
   );
 }
 
-function IssuesView({
-  selected,
-  onSelect,
-}: {
-  selected: number;
-  onSelect(index: number): void;
-}) {
+function IssuesView() {
   const [filter, setFilter] = useState<"all" | "blocking" | "review">("all");
   const [query, setQuery] = useState("");
-  const rows = baselineScan.issues
-    .map((issue, index) => ({ issue, index }))
-    .filter(({ issue }) => {
-      if (filter === "blocking" && issue.severity !== "blocking") return false;
-      if (filter === "review" && !issue.humanReviewRequired) return false;
-      return [issue.issueId, issue.locale, issue.route, issue.ruleId]
-        .join(" ")
-        .toLowerCase()
-        .includes(query.toLowerCase());
-    });
+  const rows = baselineScan.issues.filter((issue) => {
+    if (filter === "blocking" && issue.severity !== "blocking") return false;
+    if (filter === "review" && !issue.humanReviewRequired) return false;
+    return [issue.issueId, issue.locale, issue.route, issue.ruleId]
+      .join(" ")
+      .toLowerCase()
+      .includes(query.toLowerCase());
+  });
   return (
-    <section className="issues-layout">
-      <div className="issue-browser">
-        <div className="issue-filters">
-          <button className={filter === "all" ? "active" : ""} aria-pressed={filter === "all"} onClick={() => setFilter("all")}>All {baselineScan.issues.length}</button>
-          <button className={filter === "blocking" ? "active" : ""} aria-pressed={filter === "blocking"} onClick={() => setFilter("blocking")}>Blocking {baselineScan.issues.filter((issue) => issue.severity === "blocking").length}</button>
-          <button className={filter === "review" ? "active" : ""} aria-pressed={filter === "review"} onClick={() => setFilter("review")}>Human review {baselineScan.issues.filter((issue) => issue.humanReviewRequired).length}</button>
-          <input aria-label="Filter issues" placeholder="Filter locale, route or issue…" value={query} onChange={(event) => setQuery(event.target.value)} />
+    <section className="review-page">
+      <div className="review-heading">
+        <div>
+          <span>RECORDED_REPLAY · VERIFIED ISSUES</span>
+          <h2>Statement, measurement, predicate.</h2>
+          <p>
+            Every entry below is one recorded deterministic failure. The
+            measurement is the value the run stored; the predicate is the
+            expression that was evaluated against it.
+          </p>
         </div>
-        {rows.map(({ issue, index }) => (
-          <button
-            className={index === selected ? "active" : ""}
-            onClick={() => onSelect(index)}
-            key={issue.issueId}
-          >
-            <i>!</i>
-            <span>
-              <strong>{issue.ruleId.replaceAll("-", " ")}</strong>
-              <small>{issue.issueId} · {issue.route}</small>
-            </span>
-            <b>{issue.locale}</b>
-            <em>{issueTone[issue.ruleId]}</em>
-          </button>
-        ))}
-        {rows.length === 0 && <p className="table-empty">No issues match this filter.</p>}
+        <span className="mode-badge">{baselineScan.issues.length} RECORDED</span>
       </div>
-      <EvidenceCard issueIndex={selected} />
+      <div className="issue-filters">
+        <button
+          className={filter === "all" ? "active" : ""}
+          aria-pressed={filter === "all"}
+          onClick={() => setFilter("all")}
+        >
+          All {baselineScan.issues.length}
+        </button>
+        <button
+          className={filter === "blocking" ? "active" : ""}
+          aria-pressed={filter === "blocking"}
+          onClick={() => setFilter("blocking")}
+        >
+          Blocking{" "}
+          {baselineScan.issues.filter((issue) => issue.severity === "blocking").length}
+        </button>
+        <button
+          className={filter === "review" ? "active" : ""}
+          aria-pressed={filter === "review"}
+          onClick={() => setFilter("review")}
+        >
+          Human review{" "}
+          {baselineScan.issues.filter((issue) => issue.humanReviewRequired).length}
+        </button>
+        <input
+          aria-label="Filter issues"
+          placeholder="Filter locale, route or issue…"
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+        />
+      </div>
+      <EvidenceList
+        issues={rows.map(replayEvidence)}
+        emptyNote="No recorded issue matches this filter."
+      />
     </section>
   );
 }
@@ -2428,7 +2934,7 @@ function RepairsView() {
             `Baseline scan ID ${repairProof.baselineScanId}`,
             `${baselineScan.issues.length} explicit issue IDs`,
             `${replayConfig.allowlist.length} paths allowlisted`,
-            `Diff within policy: ${String(repairProof.diffWithinPolicy)}`,
+            `Diff within policy: ${recordedFlag(repairProof.diffWithinPolicy)}`,
           ].map((item) => <div key={item}><i>✓</i>{item}</div>)}
           <p className="repair-policy-note">
             Symlink rejection, rollback capture and commit policy are engine
@@ -2442,7 +2948,15 @@ function RepairsView() {
       </div>
       <div className="repair-verdict">
         <span>✓</span>
-        <div><strong>Verification accepted the repair</strong><p>Original predicates pass · source locale PASS · no new blocking issue · diff within policy</p></div>
+        <div>
+          <strong>Verification accepted the repair</strong>
+          <p>
+            Original predicates pass · source locale{" "}
+            {repairProof.sourceLocaleRegression} ·{" "}
+            {replayReport.verification.newBlockingIssues} new blocking issues ·
+            diff within policy {recordedFlag(repairProof.diffWithinPolicy)}
+          </p>
+        </div>
         <b>{repairProof.baselineBlocking} → {repairProof.finalBlocking}</b>
       </div>
     </section>
@@ -2454,11 +2968,6 @@ function ReportView() {
     severity: string;
     humanReviewRequired?: boolean;
   }>;
-  const readiness =
-    repairProof.finalBlocking === 0 &&
-    repairProof.sourceLocaleRegression === "PASS"
-      ? 100
-      : 0;
   const downloads = [
     ["JSON report", "/replay/report.json"],
     ["HTML report", "/replay/report.html"],
@@ -2472,9 +2981,11 @@ function ReportView() {
   return (
     <section className="report-page">
       <div className="report-score">
-        <span>RELEASE READINESS</span>
-        <strong>{readiness}</strong>
-        <small>Verified deterministic gate</small>
+        <span>VERIFIED GATE</span>
+        <strong>{proofDelta}</strong>
+        <small>
+          blocking predicates, baseline → final, recorded in repair-proof.json
+        </small>
       </div>
       <div className="report-summary">
         <span>FINAL VERDICT</span>
@@ -2490,9 +3001,17 @@ function ReportView() {
             ["Human review", String(finalIssues.filter((issue) => issue.humanReviewRequired).length), "CLEAR"],
             ["Route coverage", `${replayReport.scan.routesDiscovered.length} / ${baselineScan.routesDiscovered.length}`, "100%"],
             ["Locale coverage", `${replayReport.scan.localesTested.length} / ${baselineScan.localesTested.length}`, "100%"],
-            ["Source regression", repairProof.sourceLocaleRegression, "✓"],
-            ["Accessibility", repairProof.accessibilityRegression ? "REGRESSION" : "PASS", "✓"],
-            ["Console errors", String(repairProof.consoleErrorDelta), "✓"],
+            ["Source regression", repairProof.sourceLocaleRegression, "PASS"],
+            [
+              "Accessibility regression",
+              recordedFlag(repairProof.accessibilityRegression),
+              repairProof.accessibilityRegression === null ? "NOT MEASURED" : "RECORDED",
+            ],
+            [
+              "Console error delta",
+              recordedFlag(repairProof.consoleErrorDelta),
+              repairProof.consoleErrorDelta === null ? "NOT MEASURED" : "RECORDED",
+            ],
           ].map(([label, value, status]) => (
             <article key={label}><span>{label}</span><strong>{value}</strong><b>{status}</b></article>
           ))}
@@ -2848,7 +3367,7 @@ export function TrustPage() {
           <span>BHASHAFIX TRUST CENTRE</span>
           <h1>Know what ran, what moved and what did not.</h1>
           <p className="docs-lede">Every result carries an origin. Public scans never invent source locations or repairs.</p>
-          <section id="scope"><h2>Five explicit origins</h2><pre>{`LIVE_PUBLIC_SCAN\nLOCAL_REPOSITORY_SCAN\nGUIDED_DEMO\nRECORDED_REPLAY\nSYNTHETIC_LOCALISATION_PREVIEW`}</pre></section>
+          <section id="scope"><h2>Explicit scan origins</h2><pre>{`LIVE_PUBLIC_BROWSER_SCAN  public target rendered in a real browser\nHTTP_PREFLIGHT            static HTTP only, no browser rendering\nLOCAL_REPOSITORY_SCAN     local target rendered in a real browser\nGUIDED_DEMO\nRECORDED_REPLAY\nSYNTHETIC_LOCALISATION_PREVIEW`}</pre></section>
           <section id="local-data"><h2>What remains local</h2><p>Repository files, Playwright storage state, provider secrets and repair rollback data remain in the local CLI environment unless the user explicitly chooses another boundary.</p></section>
           <section id="providers"><h2>What reaches model providers</h2><p>Nothing in no-AI mode. When configured, only minimised translatable content and context are sent; credentials, hidden form values and detected secrets are excluded.</p></section>
           <section id="evidence"><h2>How evidence is generated</h2><p>Deterministic rules store the measured value, expected value and predicate. Model suggestions remain advisory and carry confidence plus human-review requirements.</p></section>

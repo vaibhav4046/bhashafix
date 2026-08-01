@@ -533,8 +533,8 @@ var init_parseUtil = __esm({
     init_errors();
     init_en();
     makeIssue = (params) => {
-      const { data, path: path10, errorMaps, issueData } = params;
-      const fullPath = [...path10, ...issueData.path || []];
+      const { data, path: path11, errorMaps, issueData } = params;
+      const fullPath = [...path11, ...issueData.path || []];
       const fullIssue = {
         ...issueData,
         path: fullPath
@@ -842,11 +842,11 @@ var init_types = __esm({
     init_parseUtil();
     init_util();
     ParseInputLazyPath = class {
-      constructor(parent, value, path10, key) {
+      constructor(parent, value, path11, key) {
         this._cachedPath = [];
         this.parent = parent;
         this.data = value;
-        this._path = path10;
+        this._path = path11;
         this._key = key;
       }
       get path() {
@@ -4237,6 +4237,11 @@ var init_src2 = __esm({
     "use strict";
     init_zod();
     ScanOriginSchema = external_exports.enum([
+      // Rendered in a real browser against a public target.
+      "LIVE_PUBLIC_BROWSER_SCAN",
+      // Bounded static HTTP inspection. No browser, no layout, no axe.
+      "HTTP_PREFLIGHT",
+      // Retained so existing stored scans and artifacts still validate.
       "LIVE_PUBLIC_SCAN",
       "LOCAL_REPOSITORY_SCAN",
       "GUIDED_DEMO",
@@ -4918,16 +4923,8 @@ var init_src7 = __esm({
   }
 });
 
-// ../repair-engine/src/index.ts
-import {
-  appendFile,
-  copyFile,
-  lstat,
-  mkdir,
-  readFile as readFile3,
-  realpath,
-  writeFile
-} from "node:fs/promises";
+// ../repair-engine/src/safety.ts
+import { lstat, realpath } from "node:fs/promises";
 import path3 from "node:path";
 function normaliseRelative(file) {
   return file.replaceAll("\\", "/").replace(/^\.\/+/, "");
@@ -4959,25 +4956,13 @@ async function assertNoSymlink(projectRoot, target) {
     throw new Error("Repair rejected: allowlisted target must not be a symlink.");
   }
 }
-function readPointer(value, pointer) {
-  let current = value;
-  for (const segment of pointer) {
-    if (!current || typeof current !== "object") return void 0;
-    current = current[segment];
+var init_safety = __esm({
+  "../repair-engine/src/safety.ts"() {
+    "use strict";
   }
-  return current;
-}
-function writePointer(value, pointer, after) {
-  let current = value;
-  for (const segment of pointer.slice(0, -1)) {
-    const child = current[segment];
-    if (!child || typeof child !== "object") {
-      throw new Error(`Repair pointer does not exist: ${pointer.join(".")}`);
-    }
-    current = child;
-  }
-  current[pointer.at(-1)] = after;
-}
+});
+
+// ../repair-engine/src/diff.ts
 function toDiffLines(text2) {
   if (text2 === "") return [];
   const endsWithNewline = text2.endsWith("\n");
@@ -5094,6 +5079,57 @@ function buildUnifiedDiff(file, beforeText, afterText) {
   return `${[`--- a/${relative}`, `+++ b/${relative}`, ...hunks].join("\n")}
 `;
 }
+var DIFF_CONTEXT_LINES, NO_NEWLINE_MARKER, MAX_LCS_CELLS;
+var init_diff = __esm({
+  "../repair-engine/src/diff.ts"() {
+    "use strict";
+    init_safety();
+    DIFF_CONTEXT_LINES = 3;
+    NO_NEWLINE_MARKER = "\\ No newline at end of file";
+    MAX_LCS_CELLS = 4e6;
+  }
+});
+
+// ../repair-engine/src/source-strategies.ts
+var init_source_strategies = __esm({
+  "../repair-engine/src/source-strategies.ts"() {
+    "use strict";
+  }
+});
+
+// ../repair-engine/src/source-repair.ts
+var init_source_repair = __esm({
+  "../repair-engine/src/source-repair.ts"() {
+    "use strict";
+    init_diff();
+    init_safety();
+    init_source_strategies();
+    init_source_strategies();
+  }
+});
+
+// ../repair-engine/src/index.ts
+import { appendFile, copyFile, mkdir, readFile as readFile3, writeFile } from "node:fs/promises";
+import path4 from "node:path";
+function readPointer(value, pointer) {
+  let current = value;
+  for (const segment of pointer) {
+    if (!current || typeof current !== "object") return void 0;
+    current = current[segment];
+  }
+  return current;
+}
+function writePointer(value, pointer, after) {
+  let current = value;
+  for (const segment of pointer.slice(0, -1)) {
+    const child = current[segment];
+    if (!child || typeof child !== "object") {
+      throw new Error(`Repair pointer does not exist: ${pointer.join(".")}`);
+    }
+    current = child;
+  }
+  current[pointer.at(-1)] = after;
+}
 function serialiseRepairedJson(json, operations) {
   for (const operation of operations) {
     writePointer(json, operation.pointer, operation.after);
@@ -5160,7 +5196,7 @@ async function applyRepair(plan, options = {}) {
       unifiedDiff: await buildOperationsDiff(plan.projectRoot, selected)
     };
   }
-  const rollbackRoot = path3.join(
+  const rollbackRoot = path4.join(
     plan.projectRoot,
     ".bhashafix",
     "rollback",
@@ -5172,8 +5208,8 @@ async function applyRepair(plan, options = {}) {
     assertAllowlisted(file, plan.allowlist);
     const target = assertConfinedPath(plan.projectRoot, file);
     await assertNoSymlink(plan.projectRoot, target);
-    const rollbackFile = path3.join(rollbackRoot, normaliseRelative(file));
-    await mkdir(path3.dirname(rollbackFile), { recursive: true });
+    const rollbackFile = path4.join(rollbackRoot, normaliseRelative(file));
+    await mkdir(path4.dirname(rollbackFile), { recursive: true });
     await copyFile(target, rollbackFile);
     const beforeText = await readFile3(target, "utf8");
     const afterText = serialiseRepairedJson(
@@ -5192,7 +5228,7 @@ async function applyRepair(plan, options = {}) {
     committed: false
   });
   await appendFile(
-    path3.join(plan.projectRoot, ".bhashafix", "audit.log"),
+    path4.join(plan.projectRoot, ".bhashafix", "audit.log"),
     `${auditRecord}
 `,
     "utf8"
@@ -5205,15 +5241,16 @@ async function applyRepair(plan, options = {}) {
     unifiedDiff: appliedDiffs.join("")
   };
 }
-var DIFF_CONTEXT_LINES, NO_NEWLINE_MARKER, MAX_LCS_CELLS;
 var init_src8 = __esm({
   "../repair-engine/src/index.ts"() {
     "use strict";
     init_src5();
     init_src2();
-    DIFF_CONTEXT_LINES = 3;
-    NO_NEWLINE_MARKER = "\\ No newline at end of file";
-    MAX_LCS_CELLS = 4e6;
+    init_diff();
+    init_safety();
+    init_diff();
+    init_safety();
+    init_source_repair();
   }
 });
 
@@ -7816,7 +7853,7 @@ var require_axe = __commonJS({
                 return lastId;
               },
               delete: function _delete(id2) {
-                var index = 0, set2 = map, i2, args = cache2[id2], length = args.length, path10 = [];
+                var index = 0, set2 = map, i2, args = cache2[id2], length = args.length, path11 = [];
                 if (length === 0) {
                   delete set2[length];
                 } else if (set2 = set2[length]) {
@@ -7825,7 +7862,7 @@ var require_axe = __commonJS({
                     if (i2 === -1) {
                       return;
                     }
-                    path10.push(set2, i2);
+                    path11.push(set2, i2);
                     set2 = set2[1][i2];
                     ++index;
                   }
@@ -7836,9 +7873,9 @@ var require_axe = __commonJS({
                   id2 = set2[1][i2];
                   set2[0].splice(i2, 1);
                   set2[1].splice(i2, 1);
-                  while (!set2[0].length && path10.length) {
-                    i2 = path10.pop();
-                    set2 = path10.pop();
+                  while (!set2[0].length && path11.length) {
+                    i2 = path11.pop();
+                    set2 = path11.pop();
                     set2[0].splice(i2, 1);
                     set2[1].splice(i2, 1);
                   }
@@ -7924,13 +7961,13 @@ var require_axe = __commonJS({
                 return lastId;
               },
               delete: function _delete(id2) {
-                var index = 0, set2 = map, i2, path10 = [], args = cache2[id2];
+                var index = 0, set2 = map, i2, path11 = [], args = cache2[id2];
                 while (index < length - 1) {
                   i2 = indexOf.call(set2[0], args[index]);
                   if (i2 === -1) {
                     return;
                   }
-                  path10.push(set2, i2);
+                  path11.push(set2, i2);
                   set2 = set2[1][i2];
                   ++index;
                 }
@@ -7941,9 +7978,9 @@ var require_axe = __commonJS({
                 id2 = set2[1][i2];
                 set2[0].splice(i2, 1);
                 set2[1].splice(i2, 1);
-                while (!set2[0].length && path10.length) {
-                  i2 = path10.pop();
-                  set2 = path10.pop();
+                while (!set2[0].length && path11.length) {
+                  i2 = path11.pop();
+                  set2 = path11.pop();
                   set2[0].splice(i2, 1);
                   set2[1].splice(i2, 1);
                 }
@@ -9342,8 +9379,8 @@ var require_axe = __commonJS({
             CssSelectorParser4.prototype.parse = function(str2) {
               return parser_context_1.parseCssSelector(str2, 0, this.pseudos, this.attrEqualityMods, this.ruleNestingOperators, this.substitutesEnabled);
             };
-            CssSelectorParser4.prototype.render = function(path10) {
-              return render_1.renderEntity(path10).trim();
+            CssSelectorParser4.prototype.render = function(path11) {
+              return render_1.renderEntity(path11).trim();
             };
             return CssSelectorParser4;
           })();
@@ -10699,14 +10736,14 @@ var require_axe = __commonJS({
         });
         var require_get_built_in = __commonJS2(function(exports2, module2) {
           "use strict";
-          var path10 = require_path();
+          var path11 = require_path();
           var global2 = require_global();
           var isCallable = require_is_callable2();
           var aFunction = function aFunction2(variable) {
             return isCallable(variable) ? variable : void 0;
           };
           module2.exports = function(namespace, method) {
-            return arguments.length < 2 ? aFunction(path10[namespace]) || aFunction(global2[namespace]) : path10[namespace] && path10[namespace][method] || global2[namespace] && global2[namespace][method];
+            return arguments.length < 2 ? aFunction(path11[namespace]) || aFunction(global2[namespace]) : path11[namespace] && path11[namespace][method] || global2[namespace] && global2[namespace][method];
           };
         });
         var require_object_is_prototype_of = __commonJS2(function(exports2, module2) {
@@ -11124,7 +11161,7 @@ var require_axe = __commonJS({
           var isCallable = require_is_callable2();
           var getOwnPropertyDescriptor = require_object_get_own_property_descriptor().f;
           var isForced = require_is_forced();
-          var path10 = require_path();
+          var path11 = require_path();
           var bind = require_function_bind_context();
           var createNonEnumerableProperty = require_create_non_enumerable_property();
           var hasOwn2 = require_has_own_property();
@@ -11152,7 +11189,7 @@ var require_axe = __commonJS({
             var STATIC = options.stat;
             var PROTO = options.proto;
             var nativeSource = GLOBAL ? global2 : STATIC ? global2[TARGET] : (global2[TARGET] || {}).prototype;
-            var target = GLOBAL ? path10 : path10[TARGET] || createNonEnumerableProperty(path10, TARGET, {})[TARGET];
+            var target = GLOBAL ? path11 : path11[TARGET] || createNonEnumerableProperty(path11, TARGET, {})[TARGET];
             var targetPrototype = target.prototype;
             var FORCED, USE_NATIVE, VIRTUAL_PROTOTYPE;
             var key2, sourceProperty, targetProperty, nativeProperty, resultProperty, descriptor;
@@ -11187,10 +11224,10 @@ var require_axe = __commonJS({
               createNonEnumerableProperty(target, key2, resultProperty);
               if (PROTO) {
                 VIRTUAL_PROTOTYPE = TARGET + "Prototype";
-                if (!hasOwn2(path10, VIRTUAL_PROTOTYPE)) {
-                  createNonEnumerableProperty(path10, VIRTUAL_PROTOTYPE, {});
+                if (!hasOwn2(path11, VIRTUAL_PROTOTYPE)) {
+                  createNonEnumerableProperty(path11, VIRTUAL_PROTOTYPE, {});
                 }
-                createNonEnumerableProperty(path10[VIRTUAL_PROTOTYPE], key2, sourceProperty);
+                createNonEnumerableProperty(path11[VIRTUAL_PROTOTYPE], key2, sourceProperty);
                 if (options.real && targetPrototype && (FORCED || !targetPrototype[key2])) {
                   createNonEnumerableProperty(targetPrototype, key2, sourceProperty);
                 }
@@ -11212,8 +11249,8 @@ var require_axe = __commonJS({
         var require_has_own = __commonJS2(function(exports2, module2) {
           "use strict";
           require_es_object_has_own();
-          var path10 = require_path();
-          module2.exports = path10.Object.hasOwn;
+          var path11 = require_path();
+          module2.exports = path11.Object.hasOwn;
         });
         var require_has_own2 = __commonJS2(function(exports2, module2) {
           "use strict";
@@ -11436,8 +11473,8 @@ var require_axe = __commonJS({
         var require_values = __commonJS2(function(exports2, module2) {
           "use strict";
           require_es_object_values();
-          var path10 = require_path();
-          module2.exports = path10.Object.values;
+          var path11 = require_path();
+          module2.exports = path11.Object.values;
         });
         var require_values2 = __commonJS2(function(exports2, module2) {
           "use strict";
@@ -12302,8 +12339,8 @@ var require_axe = __commonJS({
           "use strict";
           require_es_string_iterator();
           require_es_array_from();
-          var path10 = require_path();
-          module2.exports = path10.Array.from;
+          var path11 = require_path();
+          module2.exports = path11.Array.from;
         });
         var require_from3 = __commonJS2(function(exports2, module2) {
           "use strict";
@@ -13100,7 +13137,7 @@ var require_axe = __commonJS({
         }
         function uriParser(url) {
           var original = url;
-          var protocol = "", domain = "", port = "", path10 = "", query = "", hash = "";
+          var protocol = "", domain = "", port = "", path11 = "", query = "", hash = "";
           if (url.includes("#")) {
             var _splitString = splitString(url, url.indexOf("#"));
             var _splitString2 = _slicedToArray(_splitString, 2);
@@ -13138,13 +13175,13 @@ var require_axe = __commonJS({
             domain = _splitString10[0];
             port = _splitString10[1];
           }
-          path10 = url;
+          path11 = url;
           return {
             original,
             protocol,
             domain,
             port,
-            path: path10,
+            path: path11,
             query,
             hash
           };
@@ -13156,8 +13193,8 @@ var require_axe = __commonJS({
             return;
           }
           var currentDomain = options.currentDomain, _options$maxLength = options.maxLength, maxLength = _options$maxLength === void 0 ? 25 : _options$maxLength;
-          var _uriParser = uriParser(uri), path10 = _uriParser.path, domain = _uriParser.domain, hash = _uriParser.hash;
-          var pathEnd = path10.substr(path10.substr(0, path10.length - 2).lastIndexOf("/") + 1);
+          var _uriParser = uriParser(uri), path11 = _uriParser.path, domain = _uriParser.domain, hash = _uriParser.hash;
+          var pathEnd = path11.substr(path11.substr(0, path11.length - 2).lastIndexOf("/") + 1);
           if (hash) {
             if (pathEnd && (pathEnd + hash).length <= maxLength) {
               return trimRight(pathEnd + hash);
@@ -13166,11 +13203,11 @@ var require_axe = __commonJS({
             } else {
               return;
             }
-          } else if (domain && domain.length < maxLength && path10.length <= 1) {
-            return trimRight(domain + path10);
+          } else if (domain && domain.length < maxLength && path11.length <= 1) {
+            return trimRight(domain + path11);
           }
-          if (path10 === "/" + pathEnd && domain && currentDomain && domain !== currentDomain && (domain + path10).length <= maxLength) {
-            return trimRight(domain + path10);
+          if (path11 === "/" + pathEnd && domain && currentDomain && domain !== currentDomain && (domain + path11).length <= maxLength) {
+            return trimRight(domain + path11);
           }
           var lastDotIndex = pathEnd.lastIndexOf(".");
           if ((lastDotIndex === -1 || lastDotIndex > 1) && (lastDotIndex !== -1 || pathEnd.length > 2) && pathEnd.length <= maxLength && !pathEnd.match(/index(\.[a-zA-Z]{2-4})?/) && !isMostlyNumbers(pathEnd)) {
@@ -13490,20 +13527,20 @@ var require_axe = __commonJS({
         function _getAncestry(elm, options) {
           return _getShadowSelector(generateAncestry, elm, options);
         }
-        function getXPathArray(node, path10) {
+        function getXPathArray(node, path11) {
           var sibling, count;
           if (!node) {
             return [];
           }
-          if (!path10 && node.nodeType === 9) {
-            path10 = [{
+          if (!path11 && node.nodeType === 9) {
+            path11 = [{
               str: "html"
             }];
-            return path10;
+            return path11;
           }
-          path10 = path10 || [];
+          path11 = path11 || [];
           if (node.parentNode && node.parentNode !== node) {
-            path10 = getXPathArray(node.parentNode, path10);
+            path11 = getXPathArray(node.parentNode, path11);
           }
           if (node.previousSibling) {
             count = 1;
@@ -13539,9 +13576,9 @@ var require_axe = __commonJS({
             if (count > 1) {
               element.count = count;
             }
-            path10.push(element);
+            path11.push(element);
           }
-          return path10;
+          return path11;
         }
         function xpathToString(xpathArray) {
           return xpathArray.reduce(function(str2, elm) {
@@ -38884,7 +38921,7 @@ __export(src_exports, {
 });
 import { createHash as createHash4 } from "node:crypto";
 import { mkdir as mkdir2, writeFile as writeFile2 } from "node:fs/promises";
-import path4 from "node:path";
+import path5 from "node:path";
 async function loadPlaywright() {
   const candidates = ["playwright", "@playwright/test", "playwright-core"];
   const failures = [];
@@ -38963,9 +39000,9 @@ async function renderWithBrowser(browser, engine, request) {
     if (request.artifactDir) {
       await mkdir2(request.artifactDir, { recursive: true });
       const prefix = request.artifactPrefix ?? artifactKey(request);
-      screenshotPath = path4.join(request.artifactDir, `${prefix}.png`);
+      screenshotPath = path5.join(request.artifactDir, `${prefix}.png`);
       await page.screenshot({ path: screenshotPath, fullPage: true });
-      domPath = path4.join(request.artifactDir, `${prefix}.html`);
+      domPath = path5.join(request.artifactDir, `${prefix}.html`);
       await writeFile2(domPath, await page.content(), "utf8");
     }
     const axeViolations = request.runAxe ? await runAxe(page) : [];
@@ -39141,7 +39178,7 @@ __export(src_exports2, {
   createScanStore: () => createScanStore,
   scanStorePath: () => scanStorePath
 });
-import path5 from "node:path";
+import path6 from "node:path";
 import { mkdir as mkdir3 } from "node:fs/promises";
 function summarise(scan) {
   return {
@@ -39158,7 +39195,7 @@ function summarise(scan) {
   };
 }
 function scanStorePath(projectRoot) {
-  return path5.join(projectRoot, ".bhashafix", "scans.sqlite");
+  return path6.join(projectRoot, ".bhashafix", "scans.sqlite");
 }
 async function createScanStore(options = {}) {
   const projectRoot = options.projectRoot ?? process.cwd();
@@ -39254,7 +39291,7 @@ CREATE INDEX IF NOT EXISTS scans_started ON scans (started_at DESC);
       }
       async init() {
         if (this.database) return;
-        await mkdir3(path5.dirname(this.file), { recursive: true });
+        await mkdir3(path6.dirname(this.file), { recursive: true });
         const sqlite = await import("node:sqlite");
         this.database = new sqlite.DatabaseSync(this.file);
         this.database.exec(SCHEMA);
@@ -39382,7 +39419,7 @@ CREATE INDEX IF NOT EXISTS scans_started ON scans (started_at DESC);
 
 // ../report/src/index.ts
 import { mkdir as mkdir5, writeFile as writeFile4 } from "node:fs/promises";
-import path7 from "node:path";
+import path8 from "node:path";
 function escapeHtml(value) {
   return String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
 }
@@ -39514,11 +39551,11 @@ async function writeReportBundle(outputDirectory, scan, verification) {
   };
   await Promise.all(
     Object.entries(files).map(
-      ([name, contents]) => writeFile4(path7.join(outputDirectory, name), `${contents}
+      ([name, contents]) => writeFile4(path8.join(outputDirectory, name), `${contents}
 `, "utf8")
     )
   );
-  return Object.keys(files).map((name) => path7.join(outputDirectory, name));
+  return Object.keys(files).map((name) => path8.join(outputDirectory, name));
 }
 var init_src11 = __esm({
   "../report/src/index.ts"() {
@@ -41756,8 +41793,8 @@ var require_uri_all = __commonJS({
             wsComponents.secure = void 0;
           }
           if (wsComponents.resourceName) {
-            var _wsComponents$resourc = wsComponents.resourceName.split("?"), _wsComponents$resourc2 = slicedToArray(_wsComponents$resourc, 2), path10 = _wsComponents$resourc2[0], query = _wsComponents$resourc2[1];
-            wsComponents.path = path10 && path10 !== "/" ? path10 : void 0;
+            var _wsComponents$resourc = wsComponents.resourceName.split("?"), _wsComponents$resourc2 = slicedToArray(_wsComponents$resourc, 2), path11 = _wsComponents$resourc2[0], query = _wsComponents$resourc2[1];
+            wsComponents.path = path11 && path11 !== "/" ? path11 : void 0;
             wsComponents.query = query;
             wsComponents.resourceName = void 0;
           }
@@ -42130,12 +42167,12 @@ var require_util = __commonJS({
       return "'" + escapeQuotes(str) + "'";
     }
     function getPathExpr(currentPath, expr, jsonPointers, isNumber) {
-      var path10 = jsonPointers ? "'/' + " + expr + (isNumber ? "" : ".replace(/~/g, '~0').replace(/\\//g, '~1')") : isNumber ? "'[' + " + expr + " + ']'" : "'[\\'' + " + expr + " + '\\']'";
-      return joinPaths(currentPath, path10);
+      var path11 = jsonPointers ? "'/' + " + expr + (isNumber ? "" : ".replace(/~/g, '~0').replace(/\\//g, '~1')") : isNumber ? "'[' + " + expr + " + ']'" : "'[\\'' + " + expr + " + '\\']'";
+      return joinPaths(currentPath, path11);
     }
     function getPath(currentPath, prop, jsonPointers) {
-      var path10 = jsonPointers ? toQuotedString("/" + escapeJsonPointer(prop)) : toQuotedString(getProperty(prop));
-      return joinPaths(currentPath, path10);
+      var path11 = jsonPointers ? toQuotedString("/" + escapeJsonPointer(prop)) : toQuotedString(getProperty(prop));
+      return joinPaths(currentPath, path11);
     }
     var JSON_POINTER = /^\/(?:[^~]|~0|~1)*$/;
     var RELATIVE_JSON_POINTER = /^([0-9]+)(#|\/(?:[^~]|~0|~1)*)?$/;
@@ -50003,7 +50040,7 @@ __export(server_exports, {
 });
 import { createHash as createHash6, randomUUID as randomUUID2 } from "node:crypto";
 import { mkdir as mkdir6, readFile as readFile5, writeFile as writeFile5 } from "node:fs/promises";
-import path8 from "node:path";
+import path9 from "node:path";
 function text(value, isError = false) {
   return {
     content: [{ type: "text", text: JSON.stringify(value, null, 2) }],
@@ -50014,16 +50051,16 @@ async function readJson2(file) {
   return JSON.parse(await readFile5(file, "utf8"));
 }
 function scansDirectory(root) {
-  return path8.join(root, ".bhashafix", "scans");
+  return path9.join(root, ".bhashafix", "scans");
 }
 function scanRequestsDirectory(root) {
-  return path8.join(root, ".bhashafix", "scan-requests");
+  return path9.join(root, ".bhashafix", "scan-requests");
 }
 async function writeScanRequest(root, request) {
   const directory = scanRequestsDirectory(root);
   await mkdir6(directory, { recursive: true });
   await writeFile5(
-    path8.join(directory, `${request.scanId}.json`),
+    path9.join(directory, `${request.scanId}.json`),
     `${JSON.stringify(request, null, 2)}
 `
   );
@@ -50031,21 +50068,21 @@ async function writeScanRequest(root, request) {
 async function loadScanRequest(root, scanId) {
   if (!/^[A-Za-z0-9_-]+$/.test(scanId)) throw new Error("Invalid scan ID.");
   return await readJson2(
-    path8.join(scanRequestsDirectory(root), `${scanId}.json`)
+    path9.join(scanRequestsDirectory(root), `${scanId}.json`)
   );
 }
 async function writeScan(root, scan) {
   const directory = scansDirectory(root);
   await mkdir6(directory, { recursive: true });
   await writeFile5(
-    path8.join(directory, `${scan.scanId}.json`),
+    path9.join(directory, `${scan.scanId}.json`),
     `${JSON.stringify(scan, null, 2)}
 `
   );
 }
 async function loadScan(root, scanId) {
   if (!/^[A-Za-z0-9_-]+$/.test(scanId)) throw new Error("Invalid scan ID.");
-  return await readJson2(path8.join(scansDirectory(root), `${scanId}.json`));
+  return await readJson2(path9.join(scansDirectory(root), `${scanId}.json`));
 }
 function planHash(unifiedDiff) {
   return createHash6("sha256").update(unifiedDiff).digest("hex");
@@ -50061,7 +50098,7 @@ function createMcpServer(projectRoot = process.cwd()) {
       description: "Inspect framework and localisation infrastructure without executing project scripts.",
       inputSchema: { projectRoot: external_exports.string().optional() }
     },
-    async ({ projectRoot: requestedRoot }) => text(await inspectProject(path8.resolve(requestedRoot ?? projectRoot)))
+    async ({ projectRoot: requestedRoot }) => text(await inspectProject(path9.resolve(requestedRoot ?? projectRoot)))
   );
   server.registerTool(
     "bhashafix_list_locales",
@@ -50352,7 +50389,7 @@ function createMcpServer(projectRoot = process.cwd()) {
     async ({ scanId, outputDirectory }) => {
       const scan = await loadScan(projectRoot, scanId);
       const files = await writeReportBundle(
-        path8.resolve(projectRoot, outputDirectory),
+        path9.resolve(projectRoot, outputDirectory),
         scan
       );
       return text({ scanId, files });
@@ -50378,7 +50415,7 @@ function createMcpServer(projectRoot = process.cwd()) {
           {
             uri,
             mimeType: "text/plain",
-            text: await readFile5(path8.join(projectRoot, relative), "utf8").catch(
+            text: await readFile5(path9.join(projectRoot, relative), "utf8").catch(
               () => "Not initialised. Run `bhashafix init`."
             )
           }
@@ -50490,7 +50527,7 @@ var init_server2 = __esm({
 // src/cli.ts
 init_src5();
 import { mkdir as mkdir7, readFile as readFile6, writeFile as writeFile6 } from "node:fs/promises";
-import path9 from "node:path";
+import path10 from "node:path";
 import { fileURLToPath } from "node:url";
 
 // ../config/src/index.ts
@@ -50536,7 +50573,7 @@ init_src10();
 init_src2();
 import { createHash as createHash5, randomUUID } from "node:crypto";
 import { mkdir as mkdir4, readFile as readFile4, writeFile as writeFile3 } from "node:fs/promises";
-import path6 from "node:path";
+import path7 from "node:path";
 function selectViewports(names) {
   if (!names || names.length === 0) return [...DEFAULT_VIEWPORTS];
   const selected = DEFAULT_VIEWPORTS.filter(
@@ -50557,8 +50594,9 @@ async function runBrowserProjectScan(options) {
   );
   const viewports = selectViewports(options.viewports);
   const themes = options.themes?.length ? options.themes : ["light"];
+  const scanOrigin = validated.hostname === "localhost" || validated.hostname === "127.0.0.1" || validated.hostname === "::1" ? "LOCAL_REPOSITORY_SCAN" : "LIVE_PUBLIC_BROWSER_SCAN";
   const scanId = `browser-${randomUUID()}`;
-  const artifactDir = path6.join(options.projectRoot, ".bhashafix", "scans", scanId);
+  const artifactDir = path7.join(options.projectRoot, ".bhashafix", "scans", scanId);
   await mkdir4(artifactDir, { recursive: true });
   let routes = options.routes;
   let discoveredRoutes = routes?.length ?? 0;
@@ -50576,7 +50614,7 @@ async function runBrowserProjectScan(options) {
   );
   const result = await runBrowserScan({
     scanId,
-    origin: "LOCAL_REPOSITORY_SCAN",
+    origin: scanOrigin,
     target: validated.origin,
     routes,
     locales,
@@ -50595,7 +50633,7 @@ async function runBrowserProjectScan(options) {
   });
   const scan = ScanSchema.parse({
     scanId,
-    origin: "LOCAL_REPOSITORY_SCAN",
+    origin: scanOrigin,
     status: result.issues.length > 0 ? "completed_with_warnings" : "completed",
     startedAt: result.startedAt,
     completedAt: result.completedAt,
@@ -50624,12 +50662,12 @@ async function runBrowserProjectScan(options) {
   });
   const screenshots = result.renders.map((render) => render.screenshotPath).filter((value) => Boolean(value));
   await writeFile3(
-    path6.join(artifactDir, "scan.json"),
+    path7.join(artifactDir, "scan.json"),
     `${JSON.stringify(scan, null, 2)}
 `
   );
   await writeFile3(
-    path6.join(artifactDir, "renders.json"),
+    path7.join(artifactDir, "renders.json"),
     `${JSON.stringify(
       result.renders.map((render) => ({
         route: render.request.route,
@@ -50698,7 +50736,7 @@ async function persistScan(store, scan, renders, artifactDir) {
         route: render.request.route,
         locale: render.request.locale,
         viewport: render.request.viewport.name,
-        filePath: path6.relative(path6.dirname(artifactDir), file).replaceAll("\\", "/"),
+        filePath: path7.relative(path7.dirname(artifactDir), file).replaceAll("\\", "/"),
         byteLength: bytes.byteLength,
         sha256: await sha256File(file)
       });
@@ -50775,7 +50813,7 @@ function parseArgs(args) {
   for (let index = 1; index < args.length; index += 1) {
     const value = args[index + 1];
     if (args[index] === "--output" && value) options.output = value;
-    if (args[index] === "--project" && value) options.project = path9.resolve(value);
+    if (args[index] === "--project" && value) options.project = path10.resolve(value);
     if (args[index] === "--url" && value) options.url = value;
     if (args[index] === "--source-locale" && value) {
       options.sourceLocale = localeProfile(value).canonical;
@@ -50838,8 +50876,8 @@ function emit(io, options, value, human) {
   io.out(options.json ? JSON.stringify(value, null, 2) : human);
 }
 async function initialise(projectRoot) {
-  const directory = path9.join(projectRoot, ".bhashafix");
-  await mkdir7(path9.join(directory, "locale-rules"), { recursive: true });
+  const directory = path10.join(projectRoot, ".bhashafix");
+  await mkdir7(path10.join(directory, "locale-rules"), { recursive: true });
   const files = {
     "config.yml": `sourceLocale: en-GB
 locales: [hi-IN, de-DE, ar-SA, he-IL, ja-JP, zh-Hans-CN, th-TH, fr-FR, es-MX]
@@ -50875,7 +50913,7 @@ repair:
   };
   await Promise.all(
     Object.entries(files).map(
-      ([name, contents]) => writeFile6(path9.join(directory, name), contents, { flag: "wx" }).catch(
+      ([name, contents]) => writeFile6(path10.join(directory, name), contents, { flag: "wx" }).catch(
         (error) => {
           if (error.code !== "EEXIST") throw error;
         }
@@ -50885,7 +50923,7 @@ repair:
   return Object.keys(files);
 }
 async function readBaseline(projectRoot) {
-  const file = path9.join(projectRoot, ".bhashafix", "baseline-scan.json");
+  const file = path10.join(projectRoot, ".bhashafix", "baseline-scan.json");
   return JSON.parse(await readFile6(file, "utf8"));
 }
 async function probeBrowser() {
@@ -51013,13 +51051,13 @@ Unknown scripts require approval before execution.`
           onProgress: options.verbose ? (message) => io.error(`\xB7 ${message}`) : void 0
         });
         await writeFile6(
-          path9.join(options.project, ".bhashafix", "baseline-scan.json"),
+          path10.join(options.project, ".bhashafix", "baseline-scan.json"),
           `${JSON.stringify(outcome.scan, null, 2)}
 `
         );
         if (options.output) {
           await writeFile6(
-            path9.resolve(options.output),
+            path10.resolve(options.output),
             `${JSON.stringify(outcome.scan, null, 2)}
 `
           );
@@ -51038,14 +51076,14 @@ Unknown scripts require approval before execution.`
         return outcome.scan.issues.some((issue) => issue.severity === "blocking") ? EXIT.blocking : EXIT.passed;
       }
       const scan = await scanLocalProject(options.project, options);
-      await mkdir7(path9.join(options.project, ".bhashafix"), { recursive: true });
+      await mkdir7(path10.join(options.project, ".bhashafix"), { recursive: true });
       await writeFile6(
-        path9.join(options.project, ".bhashafix", "baseline-scan.json"),
+        path10.join(options.project, ".bhashafix", "baseline-scan.json"),
         `${JSON.stringify(scan, null, 2)}
 `
       );
       if (options.output) {
-        await writeFile6(path9.resolve(options.output), `${JSON.stringify(scan, null, 2)}
+        await writeFile6(path10.resolve(options.output), `${JSON.stringify(scan, null, 2)}
 `);
       }
       emit(
@@ -51136,7 +51174,7 @@ ${preview.target}`
       const scan = await scanLocalProject(options.project, options);
       const plan = await prepareRepair(options.project, scan);
       const result = options.apply ? await applyRepair(plan, { dryRun: options.dryRun }) : { applied: false, dryRun: true, unifiedDiff: plan.unifiedDiff };
-      if (options.output) await writeFile6(path9.resolve(options.output), plan.unifiedDiff);
+      if (options.output) await writeFile6(path10.resolve(options.output), plan.unifiedDiff);
       emit(
         io,
         options,
@@ -51159,7 +51197,7 @@ ${plan.unifiedDiff}`
     }
     if (command === "report") {
       const scan = await scanLocalProject(options.project, options);
-      const output = path9.resolve(options.output ?? "artifacts/report");
+      const output = path10.resolve(options.output ?? "artifacts/report");
       const files = await writeReportBundle(output, scan);
       emit(io, options, { output, files }, `Wrote ${files.length} reports to ${output}.`);
       return EXIT.passed;
@@ -51183,8 +51221,8 @@ ${plan.unifiedDiff}`
         issues: scan.issues.length
       };
       if (options.output) {
-        const output = path9.resolve(options.output);
-        await mkdir7(path9.dirname(output), { recursive: true });
+        const output = path10.resolve(options.output);
+        await mkdir7(path10.dirname(output), { recursive: true });
         await writeFile6(output, `${JSON.stringify(ciResult, null, 2)}
 `);
       }
@@ -51241,7 +51279,7 @@ ${HELP}`);
     return /config|locale|allowlist|issue ID|required/i.test(message) ? EXIT.invalidConfig : /fetch|target|URL|ENOTFOUND|ECONN/i.test(message) ? EXIT.unavailable : EXIT.runtime;
   }
 }
-var isEntrypoint = process.argv[1] && path9.resolve(process.argv[1]) === path9.resolve(fileURLToPath(import.meta.url));
+var isEntrypoint = process.argv[1] && path10.resolve(process.argv[1]) === path10.resolve(fileURLToPath(import.meta.url));
 if (isEntrypoint) {
   process.exitCode = await runCli(process.argv.slice(2));
 }
