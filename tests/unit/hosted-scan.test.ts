@@ -75,7 +75,11 @@ describe("hosted public scan", () => {
     expect(result.summary.routesChecked).toBe(2);
     expect(result.summary.stringsExtracted).toBeGreaterThan(3);
     expect(result.scope.browserRendered).toBe(false);
-    expect(result.origin).toBe("LIVE_PUBLIC_SCAN");
+    // The hosted path never launches a browser, so it must not claim a live
+// browser scan. The origin and the capability flag are asserted together so
+// they cannot drift apart again.
+    expect(result.origin).toBe("HTTP_PREFLIGHT");
+    expect(result.scope.browserRendered).toBe(false);
     expect(result.notRun).toContain("JavaScript browser rendering");
     expect(result.robots.skippedRoutes).toBe(1);
     expect(result.issues.map((issue) => issue.ruleId)).toEqual(

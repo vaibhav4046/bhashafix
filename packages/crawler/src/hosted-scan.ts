@@ -26,7 +26,7 @@ export type HostedHttpScanInput = {
 export type HostedScanIssue = {
   issueId: string;
   scanId: string;
-  origin: "LIVE_PUBLIC_SCAN";
+  origin: "HTTP_PREFLIGHT";
   category: IssueCategory;
   ruleId:
     | "missing-page-lang"
@@ -68,7 +68,7 @@ export type HostedScanRoute = {
 
 export type HostedHttpScanResult = {
   scanId: string;
-  origin: "LIVE_PUBLIC_SCAN";
+  origin: "HTTP_PREFLIGHT";
   status: "completed" | "completed_with_warnings";
   mode: "live hosted HTTP scan";
   startedAt: string;
@@ -275,7 +275,7 @@ function createIssue(
       input.measuredEvidence,
     ),
     scanId,
-    origin: "LIVE_PUBLIC_SCAN",
+    origin: "HTTP_PREFLIGHT",
     category: issueCategoryForRule(input.ruleId),
     confidence: "verified",
     locale: sourceLocale,
@@ -583,7 +583,7 @@ export async function runHostedHttpScan(
 
   return {
     scanId,
-    origin: "LIVE_PUBLIC_SCAN",
+    origin: "HTTP_PREFLIGHT",
     status: issues.length > 0 ? "completed_with_warnings" : "completed",
     mode: "live hosted HTTP scan",
     startedAt: started.toISOString(),

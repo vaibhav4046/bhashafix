@@ -1,6 +1,11 @@
 import { z } from "zod";
 
 export const ScanOriginSchema = z.enum([
+  // Rendered in a real browser against a public target.
+  "LIVE_PUBLIC_BROWSER_SCAN",
+  // Bounded static HTTP inspection. No browser, no layout, no axe.
+  "HTTP_PREFLIGHT",
+  // Retained so existing stored scans and artifacts still validate.
   "LIVE_PUBLIC_SCAN",
   "LOCAL_REPOSITORY_SCAN",
   "GUIDED_DEMO",

@@ -61,6 +61,14 @@ export async function runBrowserProjectScan(
   );
   const viewports = selectViewports(options.viewports);
   const themes = options.themes?.length ? options.themes : (["light"] as const);
+  // A public http(s) target rendered in a real browser is a different claim
+  // from scanning a project on this machine. Say which one happened.
+  const scanOrigin =
+    validated.hostname === "localhost" ||
+    validated.hostname === "127.0.0.1" ||
+    validated.hostname === "::1"
+      ? ("LOCAL_REPOSITORY_SCAN" as const)
+      : ("LIVE_PUBLIC_BROWSER_SCAN" as const);
   const scanId = `browser-${randomUUID()}`;
   const artifactDir = path.join(options.projectRoot, ".bhashafix", "scans", scanId);
   await mkdir(artifactDir, { recursive: true });
@@ -83,7 +91,7 @@ export async function runBrowserProjectScan(
 
   const result = await runBrowserScan({
     scanId,
-    origin: "LOCAL_REPOSITORY_SCAN",
+    origin: scanOrigin,
     target: validated.origin,
     routes,
     locales,
@@ -104,7 +112,7 @@ export async function runBrowserProjectScan(
 
   const scan = ScanSchema.parse({
     scanId,
-    origin: "LOCAL_REPOSITORY_SCAN",
+    origin: scanOrigin,
     status: result.issues.length > 0 ? "completed_with_warnings" : "completed",
     startedAt: result.startedAt,
     completedAt: result.completedAt,
