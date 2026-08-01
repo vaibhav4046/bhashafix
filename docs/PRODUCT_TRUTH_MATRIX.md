@@ -123,12 +123,31 @@ BF-VIS-TEXT-OVERFLOW-X [blocking] en-GB / …code  "bhashafix verify --changed-o
 Artifacts written: 4 PNG screenshots (182–357 KB, verified magic `89504e47`),
 4 DOM snapshots, `scan.json` and `renders.json`.
 
+## Second pass — verified 2026-08-01
+
+| Capability | Was | Now | Evidence |
+| --- | --- | --- | --- |
+| Scan persistence | browser `localStorage` only | **VERIFIED for CLI and local runs** | `packages/persistence` with `node:sqlite`. A scan written by one process is read back by another: `bhashafix scans --scan browser-4064c9a4…` returned 8 issues, 8 artifacts, 6 events |
+| Artifact ledger | none | VERIFIED | every screenshot and DOM snapshot recorded with byte length and SHA-256 |
+| Real-site operability | claimed, unproven | **VERIFIED** | `pnpm scan:real-sites` — 3 targets, 16 renders, 35 issues, receipt in `artifacts/real-site-scans.json` |
+| Overflow rule precision on real sites | **BROKEN** | VERIFIED | the 1px visually-hidden pattern produced 64 false positives on en.wikipedia.org; now guarded, findings fell 92 → 16 |
+| Accessible-name computation | PARTIAL | VERIFIED | icon-only controls took their name from a descendant `img[alt]` / `svg > title`; previously every one looked unnamed |
+| Web scan persistence | localStorage | **unchanged** | the hosted deployment still has no configured database; `UnavailableScanStore` refuses writes rather than pretending |
+
+Cross-corroboration on Wikipedia after the fix: the engine's 4
+`BF-A11Y-IMG-ALT-MISSING` and 4 `BF-A11Y-NAME-MISSING` findings sit alongside
+axe independently reporting `image-alt` and `link-name` on the same pages. Two
+independent implementations agreeing is the strongest available signal that
+these are real defects rather than rule artefacts.
+
 ## Known limitations, stated plainly
 
 - The hosted Vercel scan remains HTTP-only. Browser rendering requires the local
   CLI, or a remote endpoint supplied through `BHASHAFIX_BROWSER_WS_ENDPOINT`.
   No browser is bundled into the serverless function.
-- There is no server-side scan store. Web scan history is per browser.
+- Durable scan persistence covers the CLI and local runs. The hosted deployment
+  has no configured database, so its scan history is still per browser and the
+  store refuses to claim otherwise.
 - Repair still only rewrites allowlisted JSON. It cannot repair `.tsx` or CSS.
 - Firefox and WebKit are selectable in the engine but only Chromium has been
   exercised in this environment.
