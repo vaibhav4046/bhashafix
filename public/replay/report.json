@@ -1,13 +1,13 @@
 {
   "schemaVersion": "1.0",
-  "generatedAt": "2026-07-31T19:51:59.394Z",
+  "generatedAt": "2026-08-01T08:09:02.488Z",
   "claim": "Deterministic engineering checks are authoritative. Linguistic judgements include confidence levels and human-review gates.",
   "scan": {
     "scanId": "atlaspay-75123a28884f",
     "origin": "RECORDED_REPLAY",
     "status": "completed",
-    "startedAt": "2026-07-31T19:51:59.376Z",
-    "completedAt": "2026-07-31T19:51:59.513Z",
+    "startedAt": "2026-08-01T08:09:02.482Z",
+    "completedAt": "2026-08-01T08:09:02.619Z",
     "config": {
       "projectRoot": ".",
       "sourceLocale": "en-GB",
@@ -91,14 +91,19 @@
   },
   "verification": {
     "scanId": "atlaspay-83210b0daea2",
-    "verifiedAt": "2026-07-31T19:51:59.388Z",
+    "verifiedAt": "2026-08-01T08:09:02.486Z",
     "status": "verified",
     "baselineBlocking": 10,
     "finalBlocking": 0,
     "sourceLocaleRegression": "PASS",
-    "consoleErrorDelta": 0,
-    "accessibilityRegression": false,
+    "consoleErrorDelta": null,
+    "accessibilityRegression": null,
     "newBlockingIssues": 0,
-    "diffWithinPolicy": true
+    "diffWithinPolicy": null,
+    "notMeasured": [
+      "consoleErrorDelta",
+      "accessibilityRegression",
+      "diffWithinPolicy"
+    ]
   }
 }

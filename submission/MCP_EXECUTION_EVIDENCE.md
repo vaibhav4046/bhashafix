@@ -1,6 +1,6 @@
 # MCP execution evidence
 
-Generated: 2026-07-30T17:42:46.505Z
+Generated: 2026-08-01T08:08:28.042Z
 
 This evidence was produced by an independent MCP TypeScript client connected to
 the built `@bhashafix/mcp` server over a spawned STDIO process.
@@ -9,7 +9,7 @@ the built `@bhashafix/mcp` server over a spawned STDIO process.
 | --- | --- |
 | Tools/list | PASS · 18 tools |
 | Project inspection | PASS · nextjs |
-| Create scan | PASS · scan_5e37be0cc322401792a7615935d606f9 |
+| Create scan | PASS · scan_7b7381abcb8a48948b5f2933e1eb7cac |
 | Run scan | PASS · 10 verified issues |
 | Issue listing | PASS · 10 issues |
 | Report generation | PASS · 5 files |

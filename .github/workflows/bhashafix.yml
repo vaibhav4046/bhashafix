@@ -43,6 +43,13 @@ jobs:
       - name: Run mandatory quality and browser checks
         run: pnpm verify
 
+      # `verify` finishes by restoring the demo fixture to its broken baseline,
+      # which is the "before" state of the 10 -> 0 proof. Re-apply the repair so
+      # the severity gate below runs against the repaired state, which is what
+      # the gate is meant to assert.
+      - name: Restore the repaired demo state
+        run: pnpm demo:scan && pnpm demo:repair
+
       - name: Run configured severity gate
         run: >-
           pnpm bhashafix ci

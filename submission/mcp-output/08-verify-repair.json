@@ -1,12 +1,17 @@
 {
-  "scanId": "scan_5e37be0cc322401792a7615935d606f9",
-  "verifiedAt": "2026-07-30T17:42:46.493Z",
+  "scanId": "scan_7b7381abcb8a48948b5f2933e1eb7cac",
+  "verifiedAt": "2026-08-01T08:08:28.033Z",
   "status": "verified",
   "baselineBlocking": 10,
   "finalBlocking": 0,
   "sourceLocaleRegression": "PASS",
-  "consoleErrorDelta": 0,
-  "accessibilityRegression": false,
+  "consoleErrorDelta": null,
+  "accessibilityRegression": null,
   "newBlockingIssues": 0,
-  "diffWithinPolicy": true
+  "diffWithinPolicy": null,
+  "notMeasured": [
+    "consoleErrorDelta",
+    "accessibilityRegression",
+    "diffWithinPolicy"
+  ]
 }

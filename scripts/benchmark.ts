@@ -178,6 +178,17 @@ console.log(
   ].join(" · "),
 );
 
+/** Release thresholds. Failing these fails the build; they are never relaxed. */
+const THRESHOLDS = { recall: 1, precision: 0.95, cleanFalsePositives: 0 };
+const failures = [
+  recall < THRESHOLDS.recall &&
+    `recall ${(recall * 100).toFixed(1)}% is below the required ${THRESHOLDS.recall * 100}%`,
+  precision < THRESHOLDS.precision &&
+    `precision ${(precision * 100).toFixed(1)}% is below the required ${THRESHOLDS.precision * 100}%`,
+  cleanIssues.length > THRESHOLDS.cleanFalsePositives &&
+    `${cleanIssues.length} false positive(s) on the clean variant; the limit is ${THRESHOLDS.cleanFalsePositives}`,
+].filter((entry): entry is string => typeof entry === "string");
+
 if (missed.length > 0) {
   console.log("\nMissed seeded defects:");
   for (const { defect, viewport } of missed) {
@@ -199,4 +210,9 @@ if (unexpected.length > 0) {
       `  - ${issue.ruleId} ${issue.locale} ${issue.route} @${issue.viewport.name} ${issue.selector ?? "-"}`,
     );
   }
+}
+
+if (failures.length > 0) {
+  console.error(`\nBENCHMARK FAILED:\n${failures.map((entry) => `  - ${entry}`).join("\n")}`);
+  process.exit(1);
 }

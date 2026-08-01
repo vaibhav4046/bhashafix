@@ -28,7 +28,7 @@ await writeFile(
       mcpServers: {
         bhashafix: {
           command: process.execPath,
-          args: [path.join(root, "packages/mcp/dist/server.js")],
+          args: [path.join(root, "packages/mcp/dist/bin.js")],
         },
       },
     },

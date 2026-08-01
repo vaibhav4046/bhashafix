@@ -73,6 +73,28 @@ pnpm demo:repair
 pnpm demo:prove
 ```
 
+## Scan a real site in a real browser
+
+`scan --url` launches Chromium, renders every route × locale × viewport,
+measures the rendered DOM, runs axe, and writes screenshots and DOM snapshots
+to `.bhashafix/scans/<scanId>/`.
+
+```bash
+pnpm bhashafix doctor
+pnpm bhashafix scan --url https://example.com --locales en-GB,de-DE,ar-SA --viewports mobile,desktop --verbose
+```
+
+Every issue carries the measurement that produced it, for example
+`scrollWidth 212 / clientWidth 144 / overflowPx 68`, together with the predicate
+that was evaluated. Set `BHASHAFIX_BROWSER_WS_ENDPOINT` to render through a
+remote browser instead of a local install.
+
+Accuracy is measured, not asserted. `pnpm benchmark` scans a generated
+six-locale fixture site with 33 labelled defects across 12 rule families and
+scores the engine against that ground truth; the receipt is written to
+`artifacts/benchmark.json` and the run fails the build if recall drops below
+100%, precision below 95%, or the clean variant produces any finding.
+
 ## Scan a website
 
 The hosted form accepts a public HTTP(S) URL and applies protocol, DNS,

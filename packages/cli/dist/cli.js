@@ -5382,6 +5382,13 @@ var init_measure = __esm({
 
 // ../browser/src/rules.ts
 import { createHash as createHash3 } from "node:crypto";
+function looksLikeTranslationKey(text2) {
+  if (!RAW_KEY.test(text2)) return false;
+  const segments = text2.split(".");
+  if (segments.some((segment) => segment.length < 2)) return false;
+  const last = segments.at(-1)?.toLowerCase() ?? "";
+  return !NON_KEY_TRAILING_SEGMENTS.has(last);
+}
 function stableIssueId(parts) {
   return createHash3("sha256").update(
     [
@@ -5610,7 +5617,7 @@ function linguisticRules(page, context) {
   const seen = /* @__PURE__ */ new Set();
   for (const element of page.elements) {
     const text2 = element.text.trim();
-    if (!text2 || text2.includes(" ") || !RAW_KEY.test(text2)) continue;
+    if (!text2 || text2.includes(" ") || !looksLikeTranslationKey(text2)) continue;
     if (seen.has(text2)) continue;
     seen.add(text2);
     issues.push(
@@ -5764,13 +5771,47 @@ function evaluateRules(page, context, runtime) {
     ...runtimeRules(context, runtime)
   ];
 }
-var RAW_KEY, SCROLLABLE, OVERFLOW_TOLERANCE_PX, IMPLEMENTED_RULE_IDS;
+var RAW_KEY, NON_KEY_TRAILING_SEGMENTS, SCROLLABLE, OVERFLOW_TOLERANCE_PX, IMPLEMENTED_RULE_IDS;
 var init_rules = __esm({
   "../browser/src/rules.ts"() {
     "use strict";
     init_src();
     init_src4();
     RAW_KEY = /^(?:[a-z][a-z0-9]*(?:[_-][a-z0-9]+)*\.){1,}[a-z][a-z0-9]*(?:[_-][a-z0-9]+)*$/i;
+    NON_KEY_TRAILING_SEGMENTS = /* @__PURE__ */ new Set([
+      "app",
+      "co",
+      "com",
+      "dev",
+      "example",
+      "invalid",
+      "io",
+      "local",
+      "net",
+      "org",
+      "test",
+      "uk",
+      "css",
+      "csv",
+      "html",
+      "jpeg",
+      "jpg",
+      "js",
+      "json",
+      "jsx",
+      "md",
+      "pdf",
+      "png",
+      "svg",
+      "ts",
+      "tsx",
+      "txt",
+      "webp",
+      "xml",
+      "yaml",
+      "yml",
+      "zip"
+    ]);
     SCROLLABLE = /* @__PURE__ */ new Set(["auto", "scroll", "overlay"]);
     OVERFLOW_TOLERANCE_PX = 2;
     IMPLEMENTED_RULE_IDS = [

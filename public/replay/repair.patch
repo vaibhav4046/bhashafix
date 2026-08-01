@@ -1,50 +1,63 @@
 --- a/apps/demo-target/data/layout.json
 +++ b/apps/demo-target/data/layout.json
-@@ hi-IN.heroLineHeight @@
--28
-+40
---- a/apps/demo-target/data/layout.json
-+++ b/apps/demo-target/data/layout.json
-@@ de-DE.ctaClientWidth @@
--160
-+232
+@@ -1,20 +1,20 @@
+ {
+   "hi-IN": {
+-    "heroLineHeight": 28,
++    "heroLineHeight": 40,
+     "measuredGlyphHeight": 36
+   },
+   "de-DE": {
+-    "ctaClientWidth": 160,
++    "ctaClientWidth": 232,
+     "ctaScrollWidth": 212
+   },
+   "he-IL": {
+-    "iconOrder": "after"
++    "iconOrder": "before"
+   },
+   "zh-Hans-CN": {
+-    "fontCoverage": false
++    "fontCoverage": true
+   },
+   "th-TH": {
+-    "whiteSpace": "nowrap",
++    "whiteSpace": "normal",
+     "clientWidth": 220,
+     "scrollWidth": 316
+   }
 --- a/apps/demo-target/data/locale-state.json
 +++ b/apps/demo-target/data/locale-state.json
-@@ directions.ar-SA @@
--"ltr"
-+"rtl"
---- a/apps/demo-target/data/layout.json
-+++ b/apps/demo-target/data/layout.json
-@@ he-IL.iconOrder @@
--"after"
-+"before"
+@@ -1,7 +1,7 @@
+ {
+-  "pageLang": "en",
++  "pageLang": "en-GB",
+   "directions": {
+-    "ar-SA": "ltr",
++    "ar-SA": "rtl",
+     "he-IL": "rtl"
+   }
+ }
 --- a/apps/demo-target/data/translations.json
 +++ b/apps/demo-target/data/translations.json
-@@ ja-JP.checkout.pay_now @@
--"checkout.pay_now"
-+"{amount}を支払う"
---- a/apps/demo-target/data/layout.json
-+++ b/apps/demo-target/data/layout.json
-@@ zh-Hans-CN.fontCoverage @@
--false
-+true
---- a/apps/demo-target/data/layout.json
-+++ b/apps/demo-target/data/layout.json
-@@ th-TH.whiteSpace @@
--"nowrap"
-+"normal"
---- a/apps/demo-target/data/translations.json
-+++ b/apps/demo-target/data/translations.json
-@@ fr-FR.checkout.pay_now @@
--"Payer le montant"
-+"Payer {amount}"
---- a/apps/demo-target/data/translations.json
-+++ b/apps/demo-target/data/translations.json
-@@ es-MX.checkout.term @@
--"Finalizar compra"
-+"Pagar"
---- a/apps/demo-target/data/locale-state.json
-+++ b/apps/demo-target/data/locale-state.json
-@@ pageLang @@
--"en"
-+"en-GB"
+@@ -16,7 +16,7 @@
+     "settings.back": "חזרה להגדרות"
+   },
+   "ja-JP": {
+-    "checkout.pay_now": "checkout.pay_now"
++    "checkout.pay_now": "{amount}を支払う"
+   },
+   "zh-Hans-CN": {
+     "dashboard.activity": "近期交易"
+@@ -25,9 +25,9 @@
+     "pricing.description": "โอนเงินระหว่างประเทศได้รวดเร็วและปลอดภัยสำหรับทุกธุรกิจ"
+   },
+   "fr-FR": {
+-    "checkout.pay_now": "Payer le montant"
++    "checkout.pay_now": "Payer {amount}"
+   },
+   "es-MX": {
+-    "checkout.term": "Finalizar compra"
++    "checkout.term": "Pagar"
+   }
+ }

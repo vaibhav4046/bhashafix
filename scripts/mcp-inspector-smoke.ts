@@ -11,7 +11,7 @@ function requirePnpmEntry(): string {
   return value;
 }
 const pnpmEntry = requirePnpmEntry();
-const target = ["node", "packages/mcp/dist/server.js"];
+const target = ["node", "packages/mcp/dist/bin.js"];
 
 function inspector(args: string[]) {
   const result = spawnSync(

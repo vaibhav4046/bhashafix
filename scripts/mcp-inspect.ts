@@ -4,7 +4,7 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 
 const root = process.cwd();
-const serverEntry = path.join(root, "packages/mcp/dist/server.js");
+const serverEntry = path.join(root, "packages/mcp/dist/bin.js");
 const clientTransport = new StdioClientTransport({
   command: process.execPath,
   args: [serverEntry],
@@ -140,7 +140,7 @@ try {
   }
   const receipt = {
     transport: "spawned STDIO process",
-    serverEntry: "packages/mcp/dist/server.js",
+    serverEntry: "packages/mcp/dist/bin.js",
     tools: tools.tools.length,
     resources: resources.resources.length,
     prompts: prompts.prompts.length,

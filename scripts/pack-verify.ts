@@ -200,7 +200,7 @@ const serverEntry = path.join(
   "@bhashafix",
   "mcp",
   "dist",
-  "server.js",
+  "bin.js",
 );
 await readFile(serverEntry);
 const resolvedServerEntry = await realpath(serverEntry);

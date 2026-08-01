@@ -1,6 +1,6 @@
 # MCP and MCPC evidence
 
-Generated: 2026-07-30T17:43:31.743Z
+Generated: 2026-08-01T08:10:47.116Z
 
 | Client | Transport | Tools | Baseline | Final | Result |
 | --- | --- | ---: | ---: | ---: | --- |
@@ -16,5 +16,5 @@ pnpm mcpc:smoke
 ```
 
 The Inspector and MCPC receipts were produced by external clients against
-`packages/mcp/dist/server.js`. The in-memory Vitest suite remains an
+`packages/mcp/dist/bin.js`. The in-memory Vitest suite remains an
 additional schema and handler test, not the release proof by itself.
