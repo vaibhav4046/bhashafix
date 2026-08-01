@@ -30,6 +30,13 @@ export type SummaryInput = {
   exitCode: number;
 };
 
+/** Engine names as their projects spell them. */
+const ENGINE_LABELS: Record<string, string> = {
+  chromium: "Chromium",
+  firefox: "Firefox",
+  webkit: "WebKit",
+};
+
 /**
  * Render the scan result for a human.
  *
@@ -47,7 +54,7 @@ export function formatScanSummary(input: SummaryInput): string {
   lines.push(
     field(
       "Mode",
-      `Real ${input.engine.charAt(0).toUpperCase()}${input.engine.slice(1)}${
+      `Real ${ENGINE_LABELS[input.engine] ?? input.engine}${
         input.remote ? " (remote endpoint)" : ""
       }`,
     ),

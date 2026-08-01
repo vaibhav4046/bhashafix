@@ -51412,6 +51412,11 @@ var STAGE_WIDTH = 22;
 function field(label, value) {
   return `${label.padEnd(LABEL_WIDTH)}${value}`;
 }
+var ENGINE_LABELS = {
+  chromium: "Chromium",
+  firefox: "Firefox",
+  webkit: "WebKit"
+};
 function formatScanSummary(input) {
   const { scan } = input;
   const lines = [];
@@ -51420,7 +51425,7 @@ function formatScanSummary(input) {
   lines.push(
     field(
       "Mode",
-      `Real ${input.engine.charAt(0).toUpperCase()}${input.engine.slice(1)}${input.remote ? " (remote endpoint)" : ""}`
+      `Real ${ENGINE_LABELS[input.engine] ?? input.engine}${input.remote ? " (remote endpoint)" : ""}`
     )
   );
   lines.push(field("Browser", scan.config.browsers.join(", ")));
