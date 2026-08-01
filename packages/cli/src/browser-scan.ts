@@ -6,6 +6,13 @@ import { validateTargetUrl } from "@bhashafix/crawler";
 import { localeProfile } from "@bhashafix/locale-engine";
 import { createScanStore, type ScanStore } from "@bhashafix/persistence";
 import { DEFAULT_VIEWPORTS, ScanSchema, type Scan } from "@bhashafix/shared";
+import { REPORT_FILE } from "./open-report";
+import {
+  artifactFileName,
+  renderScanReportHtml,
+  type ReportRender,
+} from "./report-html";
+import { deriveScanStages, type ScanStage } from "./scan-stages";
 
 export type BrowserScanOptions = {
   url: string;
@@ -29,6 +36,14 @@ export type BrowserScanOutcome = {
   remote: boolean;
   discoveredRoutes: number;
   persistence: { driver: string; durable: boolean };
+  /** Browser engine that actually rendered the pages. */
+  engine: string;
+  /** What each pipeline stage did, derived from the render results. */
+  stages: ScanStage[];
+  /** Screenshot paths confirmed present and non-empty on disk. */
+  screenshotsOnDisk: string[];
+  /** Absolute path to the offline report, or null if it could not be written. */
+  reportPath: string | null;
 };
 
 function selectViewports(names?: string[]) {
@@ -75,6 +90,7 @@ export async function runBrowserProjectScan(
 
   let routes = options.routes;
   let discoveredRoutes = routes?.length ?? 0;
+  const routesFromFlag = Boolean(routes && routes.length > 0);
   if (!routes || routes.length === 0) {
     options.onProgress?.(`Discovering routes from ${validated.href}`);
     const discovery = await discoverRoutes(validated.href, {
@@ -172,6 +188,54 @@ export async function runBrowserProjectScan(
     )}\n`,
   );
 
+  const staged = await deriveScanStages({
+    routesFromFlag,
+    routes,
+    discoveredRoutes,
+    renders: result.renders,
+    engine: result.engine,
+    remote: result.remote,
+  });
+
+  const reportRenders: ReportRender[] = result.renders.map((render) => ({
+    route: render.request.route,
+    locale: render.request.locale,
+    viewport: render.request.viewport.name,
+    theme: render.request.theme ?? "light",
+    url: render.request.url,
+    status: render.runtime.status,
+    durationMs: render.durationMs,
+    measuredElements: render.measurement.elements.length,
+    consoleErrors: render.runtime.consoleErrors.length,
+    failedRequests: render.runtime.failedRequests.length,
+    axeViolations: render.runtime.axeViolations.length,
+    screenshotFile: artifactFileName(render.screenshotPath),
+    domFile: artifactFileName(render.domPath),
+  }));
+
+  // The report sits beside the screenshots it references so it opens from disk
+  // with no server. A failure to write it must not discard a completed scan,
+  // but it must also never be reported as written.
+  const reportTarget = path.join(artifactDir, REPORT_FILE);
+  let reportPath: string | null = null;
+  try {
+    await writeFile(
+      reportTarget,
+      renderScanReportHtml({
+        scan,
+        stages: staged.stages,
+        renders: reportRenders,
+        generatedAt: new Date().toISOString(),
+      }),
+      "utf8",
+    );
+    reportPath = reportTarget;
+  } catch (error) {
+    options.onProgress?.(
+      `Could not write ${REPORT_FILE}: ${error instanceof Error ? error.message : String(error)}`,
+    );
+  }
+
   const store = await createScanStore({ projectRoot: options.projectRoot });
   await persistScan(store, scan, result.renders, artifactDir);
   await store.close();
@@ -184,6 +248,10 @@ export async function runBrowserProjectScan(
     remote: result.remote,
     discoveredRoutes,
     persistence: { driver: store.driver, durable: store.durable },
+    engine: result.engine,
+    stages: staged.stages,
+    screenshotsOnDisk: staged.screenshotsOnDisk,
+    reportPath,
   };
 }
 

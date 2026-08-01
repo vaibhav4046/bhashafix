@@ -533,8 +533,8 @@ var init_parseUtil = __esm({
     init_errors();
     init_en();
     makeIssue = (params) => {
-      const { data, path: path11, errorMaps, issueData } = params;
-      const fullPath = [...path11, ...issueData.path || []];
+      const { data, path: path14, errorMaps, issueData } = params;
+      const fullPath = [...path14, ...issueData.path || []];
       const fullIssue = {
         ...issueData,
         path: fullPath
@@ -842,11 +842,11 @@ var init_types = __esm({
     init_parseUtil();
     init_util();
     ParseInputLazyPath = class {
-      constructor(parent, value, path11, key) {
+      constructor(parent, value, path14, key) {
         this._cachedPath = [];
         this.parent = parent;
         this.data = value;
-        this._path = path11;
+        this._path = path14;
         this._key = key;
       }
       get path() {
@@ -7853,7 +7853,7 @@ var require_axe = __commonJS({
                 return lastId;
               },
               delete: function _delete(id2) {
-                var index = 0, set2 = map, i2, args = cache2[id2], length = args.length, path11 = [];
+                var index = 0, set2 = map, i2, args = cache2[id2], length = args.length, path14 = [];
                 if (length === 0) {
                   delete set2[length];
                 } else if (set2 = set2[length]) {
@@ -7862,7 +7862,7 @@ var require_axe = __commonJS({
                     if (i2 === -1) {
                       return;
                     }
-                    path11.push(set2, i2);
+                    path14.push(set2, i2);
                     set2 = set2[1][i2];
                     ++index;
                   }
@@ -7873,9 +7873,9 @@ var require_axe = __commonJS({
                   id2 = set2[1][i2];
                   set2[0].splice(i2, 1);
                   set2[1].splice(i2, 1);
-                  while (!set2[0].length && path11.length) {
-                    i2 = path11.pop();
-                    set2 = path11.pop();
+                  while (!set2[0].length && path14.length) {
+                    i2 = path14.pop();
+                    set2 = path14.pop();
                     set2[0].splice(i2, 1);
                     set2[1].splice(i2, 1);
                   }
@@ -7961,13 +7961,13 @@ var require_axe = __commonJS({
                 return lastId;
               },
               delete: function _delete(id2) {
-                var index = 0, set2 = map, i2, path11 = [], args = cache2[id2];
+                var index = 0, set2 = map, i2, path14 = [], args = cache2[id2];
                 while (index < length - 1) {
                   i2 = indexOf.call(set2[0], args[index]);
                   if (i2 === -1) {
                     return;
                   }
-                  path11.push(set2, i2);
+                  path14.push(set2, i2);
                   set2 = set2[1][i2];
                   ++index;
                 }
@@ -7978,9 +7978,9 @@ var require_axe = __commonJS({
                 id2 = set2[1][i2];
                 set2[0].splice(i2, 1);
                 set2[1].splice(i2, 1);
-                while (!set2[0].length && path11.length) {
-                  i2 = path11.pop();
-                  set2 = path11.pop();
+                while (!set2[0].length && path14.length) {
+                  i2 = path14.pop();
+                  set2 = path14.pop();
                   set2[0].splice(i2, 1);
                   set2[1].splice(i2, 1);
                 }
@@ -9379,8 +9379,8 @@ var require_axe = __commonJS({
             CssSelectorParser4.prototype.parse = function(str2) {
               return parser_context_1.parseCssSelector(str2, 0, this.pseudos, this.attrEqualityMods, this.ruleNestingOperators, this.substitutesEnabled);
             };
-            CssSelectorParser4.prototype.render = function(path11) {
-              return render_1.renderEntity(path11).trim();
+            CssSelectorParser4.prototype.render = function(path14) {
+              return render_1.renderEntity(path14).trim();
             };
             return CssSelectorParser4;
           })();
@@ -10736,14 +10736,14 @@ var require_axe = __commonJS({
         });
         var require_get_built_in = __commonJS2(function(exports2, module2) {
           "use strict";
-          var path11 = require_path();
+          var path14 = require_path();
           var global2 = require_global();
           var isCallable = require_is_callable2();
           var aFunction = function aFunction2(variable) {
             return isCallable(variable) ? variable : void 0;
           };
           module2.exports = function(namespace, method) {
-            return arguments.length < 2 ? aFunction(path11[namespace]) || aFunction(global2[namespace]) : path11[namespace] && path11[namespace][method] || global2[namespace] && global2[namespace][method];
+            return arguments.length < 2 ? aFunction(path14[namespace]) || aFunction(global2[namespace]) : path14[namespace] && path14[namespace][method] || global2[namespace] && global2[namespace][method];
           };
         });
         var require_object_is_prototype_of = __commonJS2(function(exports2, module2) {
@@ -11161,7 +11161,7 @@ var require_axe = __commonJS({
           var isCallable = require_is_callable2();
           var getOwnPropertyDescriptor = require_object_get_own_property_descriptor().f;
           var isForced = require_is_forced();
-          var path11 = require_path();
+          var path14 = require_path();
           var bind = require_function_bind_context();
           var createNonEnumerableProperty = require_create_non_enumerable_property();
           var hasOwn2 = require_has_own_property();
@@ -11189,7 +11189,7 @@ var require_axe = __commonJS({
             var STATIC = options.stat;
             var PROTO = options.proto;
             var nativeSource = GLOBAL ? global2 : STATIC ? global2[TARGET] : (global2[TARGET] || {}).prototype;
-            var target = GLOBAL ? path11 : path11[TARGET] || createNonEnumerableProperty(path11, TARGET, {})[TARGET];
+            var target = GLOBAL ? path14 : path14[TARGET] || createNonEnumerableProperty(path14, TARGET, {})[TARGET];
             var targetPrototype = target.prototype;
             var FORCED, USE_NATIVE, VIRTUAL_PROTOTYPE;
             var key2, sourceProperty, targetProperty, nativeProperty, resultProperty, descriptor;
@@ -11224,10 +11224,10 @@ var require_axe = __commonJS({
               createNonEnumerableProperty(target, key2, resultProperty);
               if (PROTO) {
                 VIRTUAL_PROTOTYPE = TARGET + "Prototype";
-                if (!hasOwn2(path11, VIRTUAL_PROTOTYPE)) {
-                  createNonEnumerableProperty(path11, VIRTUAL_PROTOTYPE, {});
+                if (!hasOwn2(path14, VIRTUAL_PROTOTYPE)) {
+                  createNonEnumerableProperty(path14, VIRTUAL_PROTOTYPE, {});
                 }
-                createNonEnumerableProperty(path11[VIRTUAL_PROTOTYPE], key2, sourceProperty);
+                createNonEnumerableProperty(path14[VIRTUAL_PROTOTYPE], key2, sourceProperty);
                 if (options.real && targetPrototype && (FORCED || !targetPrototype[key2])) {
                   createNonEnumerableProperty(targetPrototype, key2, sourceProperty);
                 }
@@ -11249,8 +11249,8 @@ var require_axe = __commonJS({
         var require_has_own = __commonJS2(function(exports2, module2) {
           "use strict";
           require_es_object_has_own();
-          var path11 = require_path();
-          module2.exports = path11.Object.hasOwn;
+          var path14 = require_path();
+          module2.exports = path14.Object.hasOwn;
         });
         var require_has_own2 = __commonJS2(function(exports2, module2) {
           "use strict";
@@ -11473,8 +11473,8 @@ var require_axe = __commonJS({
         var require_values = __commonJS2(function(exports2, module2) {
           "use strict";
           require_es_object_values();
-          var path11 = require_path();
-          module2.exports = path11.Object.values;
+          var path14 = require_path();
+          module2.exports = path14.Object.values;
         });
         var require_values2 = __commonJS2(function(exports2, module2) {
           "use strict";
@@ -12339,8 +12339,8 @@ var require_axe = __commonJS({
           "use strict";
           require_es_string_iterator();
           require_es_array_from();
-          var path11 = require_path();
-          module2.exports = path11.Array.from;
+          var path14 = require_path();
+          module2.exports = path14.Array.from;
         });
         var require_from3 = __commonJS2(function(exports2, module2) {
           "use strict";
@@ -13137,7 +13137,7 @@ var require_axe = __commonJS({
         }
         function uriParser(url) {
           var original = url;
-          var protocol = "", domain = "", port = "", path11 = "", query = "", hash = "";
+          var protocol = "", domain = "", port = "", path14 = "", query = "", hash = "";
           if (url.includes("#")) {
             var _splitString = splitString(url, url.indexOf("#"));
             var _splitString2 = _slicedToArray(_splitString, 2);
@@ -13175,13 +13175,13 @@ var require_axe = __commonJS({
             domain = _splitString10[0];
             port = _splitString10[1];
           }
-          path11 = url;
+          path14 = url;
           return {
             original,
             protocol,
             domain,
             port,
-            path: path11,
+            path: path14,
             query,
             hash
           };
@@ -13193,8 +13193,8 @@ var require_axe = __commonJS({
             return;
           }
           var currentDomain = options.currentDomain, _options$maxLength = options.maxLength, maxLength = _options$maxLength === void 0 ? 25 : _options$maxLength;
-          var _uriParser = uriParser(uri), path11 = _uriParser.path, domain = _uriParser.domain, hash = _uriParser.hash;
-          var pathEnd = path11.substr(path11.substr(0, path11.length - 2).lastIndexOf("/") + 1);
+          var _uriParser = uriParser(uri), path14 = _uriParser.path, domain = _uriParser.domain, hash = _uriParser.hash;
+          var pathEnd = path14.substr(path14.substr(0, path14.length - 2).lastIndexOf("/") + 1);
           if (hash) {
             if (pathEnd && (pathEnd + hash).length <= maxLength) {
               return trimRight(pathEnd + hash);
@@ -13203,11 +13203,11 @@ var require_axe = __commonJS({
             } else {
               return;
             }
-          } else if (domain && domain.length < maxLength && path11.length <= 1) {
-            return trimRight(domain + path11);
+          } else if (domain && domain.length < maxLength && path14.length <= 1) {
+            return trimRight(domain + path14);
           }
-          if (path11 === "/" + pathEnd && domain && currentDomain && domain !== currentDomain && (domain + path11).length <= maxLength) {
-            return trimRight(domain + path11);
+          if (path14 === "/" + pathEnd && domain && currentDomain && domain !== currentDomain && (domain + path14).length <= maxLength) {
+            return trimRight(domain + path14);
           }
           var lastDotIndex = pathEnd.lastIndexOf(".");
           if ((lastDotIndex === -1 || lastDotIndex > 1) && (lastDotIndex !== -1 || pathEnd.length > 2) && pathEnd.length <= maxLength && !pathEnd.match(/index(\.[a-zA-Z]{2-4})?/) && !isMostlyNumbers(pathEnd)) {
@@ -13527,20 +13527,20 @@ var require_axe = __commonJS({
         function _getAncestry(elm, options) {
           return _getShadowSelector(generateAncestry, elm, options);
         }
-        function getXPathArray(node, path11) {
+        function getXPathArray(node, path14) {
           var sibling, count;
           if (!node) {
             return [];
           }
-          if (!path11 && node.nodeType === 9) {
-            path11 = [{
+          if (!path14 && node.nodeType === 9) {
+            path14 = [{
               str: "html"
             }];
-            return path11;
+            return path14;
           }
-          path11 = path11 || [];
+          path14 = path14 || [];
           if (node.parentNode && node.parentNode !== node) {
-            path11 = getXPathArray(node.parentNode, path11);
+            path14 = getXPathArray(node.parentNode, path14);
           }
           if (node.previousSibling) {
             count = 1;
@@ -13576,9 +13576,9 @@ var require_axe = __commonJS({
             if (count > 1) {
               element.count = count;
             }
-            path11.push(element);
+            path14.push(element);
           }
-          return path11;
+          return path14;
         }
         function xpathToString(xpathArray) {
           return xpathArray.reduce(function(str2, elm) {
@@ -23796,15 +23796,15 @@ var require_axe = __commonJS({
           }, []);
         }
         var shadow_elements_from_point_default = shadowElementsFromPoint;
-        function urlPropsFromAttribute(node, attribute) {
-          if (!node.hasAttribute(attribute)) {
+        function urlPropsFromAttribute(node, attribute2) {
+          if (!node.hasAttribute(attribute2)) {
             return void 0;
           }
           var nodeName2 = node.nodeName.toUpperCase();
           var parser2 = node;
           if (!["A", "AREA"].includes(nodeName2) || node.ownerSVGElement) {
             parser2 = document2.createElement("a");
-            parser2.href = node.getAttribute(attribute);
+            parser2.href = node.getAttribute(attribute2);
           }
           var protocol = ["https:", "ftps:"].includes(parser2.protocol) ? parser2.protocol.replace(/s:$/, ":") : parser2.protocol;
           var parserPathname = /^\//.test(parser2.pathname) ? parser2.pathname : "/".concat(parser2.pathname);
@@ -31588,8 +31588,8 @@ var require_axe = __commonJS({
             });
             return false;
           }
-          var attribute = vNode.attr(options.attribute);
-          var attributeIsEmpty = !sanitize_default(attribute);
+          var attribute2 = vNode.attr(options.attribute);
+          var attributeIsEmpty = !sanitize_default(attribute2);
           if (attributeIsEmpty) {
             this.data({
               messageKey: "emptyAttr"
@@ -32198,11 +32198,11 @@ var require_axe = __commonJS({
         var aria_valid_attr_evaluate_default = ariaValidAttrEvaluate;
         function ariaUnsupportedAttrEvaluate(node, options, virtualNode) {
           var unsupportedAttrs = virtualNode.attrNames.filter(function(name) {
-            var attribute = standards_default.ariaAttrs[name];
+            var attribute2 = standards_default.ariaAttrs[name];
             if (!validate_attr_default(name)) {
               return false;
             }
-            var unsupported = attribute.unsupported;
+            var unsupported = attribute2.unsupported;
             if (_typeof(unsupported) !== "object") {
               return !!unsupported;
             }
@@ -39421,8 +39421,8 @@ CREATE INDEX IF NOT EXISTS scans_started ON scans (started_at DESC);
 
 // ../report/src/index.ts
 import { mkdir as mkdir5, writeFile as writeFile4 } from "node:fs/promises";
-import path8 from "node:path";
-function escapeHtml(value) {
+import path11 from "node:path";
+function escapeHtml2(value) {
   return String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
 }
 function csvCell(value) {
@@ -39449,22 +39449,22 @@ function buildJsonReport(scan, verification) {
 function buildHtmlReport(scan, verification) {
   const rows = scan.issues.map(
     (issue) => `<tr>
-<td>${escapeHtml(issue.issueId)}</td>
-<td>${escapeHtml(issue.locale)}</td>
-<td>${escapeHtml(issue.route)}</td>
-<td>${escapeHtml(issue.ruleId)}</td>
-<td>${escapeHtml(issue.severity)}</td>
-<td>${escapeHtml(issue.description)}</td>
-<td><code>${escapeHtml(issue.deterministicPredicate)}</code></td>
+<td>${escapeHtml2(issue.issueId)}</td>
+<td>${escapeHtml2(issue.locale)}</td>
+<td>${escapeHtml2(issue.route)}</td>
+<td>${escapeHtml2(issue.ruleId)}</td>
+<td>${escapeHtml2(issue.severity)}</td>
+<td>${escapeHtml2(issue.description)}</td>
+<td><code>${escapeHtml2(issue.deterministicPredicate)}</code></td>
 </tr>`
   ).join("");
   return `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
-<title>BhashaFix report ${escapeHtml(scan.scanId)}</title>
+<title>BhashaFix report ${escapeHtml2(scan.scanId)}</title>
 <style>body{font:16px/1.5 system-ui;margin:40px;color:#1a1025;background:#fbf8ff}table{border-collapse:collapse;width:100%}th,td{padding:12px;border:1px solid #d8b4fe;text-align:left}th{background:#f1e8ff}code{font-size:12px}.pass{color:#166534}.fail{color:#9f1239}</style></head>
 <body><h1>BhashaFix release report</h1>
-<p>Scan <code>${escapeHtml(scan.scanId)}</code> \xB7 origin <strong>${escapeHtml(scan.origin)}</strong> \xB7 ${scan.issues.length} open issue(s)</p>
-<p class="${verification?.status === "verified" ? "pass" : "fail"}">Verification: ${escapeHtml(verification?.status ?? "unverified")} \xB7 source-locale regression ${escapeHtml(verification?.sourceLocaleRegression ?? "not run")}</p>
+<p>Scan <code>${escapeHtml2(scan.scanId)}</code> \xB7 origin <strong>${escapeHtml2(scan.origin)}</strong> \xB7 ${scan.issues.length} open issue(s)</p>
+<p class="${verification?.status === "verified" ? "pass" : "fail"}">Verification: ${escapeHtml2(verification?.status ?? "unverified")} \xB7 source-locale regression ${escapeHtml2(verification?.sourceLocaleRegression ?? "not run")}</p>
 <table><thead><tr><th>Issue</th><th>Locale</th><th>Route</th><th>Category</th><th>Severity</th><th>Evidence</th><th>Predicate</th></tr></thead><tbody>${rows}</tbody></table>
 <p><small>Deterministic engineering checks are authoritative. Linguistic judgements require confidence and human review where indicated.</small></p>
 </body></html>`;
@@ -39513,7 +39513,7 @@ function buildSarif(scan) {
 }
 function buildJunit(scan) {
   const cases = scan.issues.map(
-    (issue) => `<testcase classname="${escapeHtml(issue.ruleId)}" name="${escapeHtml(issue.issueId)}"><failure message="${escapeHtml(issue.description)}">${escapeHtml(issue.deterministicPredicate)}</failure></testcase>`
+    (issue) => `<testcase classname="${escapeHtml2(issue.ruleId)}" name="${escapeHtml2(issue.issueId)}"><failure message="${escapeHtml2(issue.description)}">${escapeHtml2(issue.deterministicPredicate)}</failure></testcase>`
   ).join("");
   return `<?xml version="1.0" encoding="UTF-8"?><testsuite name="BhashaFix" tests="${scan.issues.length}" failures="${scan.issues.length}">${cases}</testsuite>`;
 }
@@ -39553,11 +39553,11 @@ async function writeReportBundle(outputDirectory, scan, verification) {
   };
   await Promise.all(
     Object.entries(files).map(
-      ([name, contents]) => writeFile4(path8.join(outputDirectory, name), `${contents}
+      ([name, contents]) => writeFile4(path11.join(outputDirectory, name), `${contents}
 `, "utf8")
     )
   );
-  return Object.keys(files).map((name) => path8.join(outputDirectory, name));
+  return Object.keys(files).map((name) => path11.join(outputDirectory, name));
 }
 var init_src11 = __esm({
   "../report/src/index.ts"() {
@@ -41464,8 +41464,8 @@ var require_uri_all = __commonJS({
           if (isLastFieldIPv4Address) {
             fields[fieldCount - 1] = _normalizeIPv4(fields[fieldCount - 1], protocol);
           }
-          var allZeroFields = fields.reduce(function(acc, field, index) {
-            if (!field || field === "0") {
+          var allZeroFields = fields.reduce(function(acc, field2, index) {
+            if (!field2 || field2 === "0") {
               var lastLongest = acc[acc.length - 1];
               if (lastLongest && lastLongest.index + lastLongest.length === index) {
                 lastLongest.length++;
@@ -41795,8 +41795,8 @@ var require_uri_all = __commonJS({
             wsComponents.secure = void 0;
           }
           if (wsComponents.resourceName) {
-            var _wsComponents$resourc = wsComponents.resourceName.split("?"), _wsComponents$resourc2 = slicedToArray(_wsComponents$resourc, 2), path11 = _wsComponents$resourc2[0], query = _wsComponents$resourc2[1];
-            wsComponents.path = path11 && path11 !== "/" ? path11 : void 0;
+            var _wsComponents$resourc = wsComponents.resourceName.split("?"), _wsComponents$resourc2 = slicedToArray(_wsComponents$resourc, 2), path14 = _wsComponents$resourc2[0], query = _wsComponents$resourc2[1];
+            wsComponents.path = path14 && path14 !== "/" ? path14 : void 0;
             wsComponents.query = query;
             wsComponents.resourceName = void 0;
           }
@@ -42169,12 +42169,12 @@ var require_util = __commonJS({
       return "'" + escapeQuotes(str) + "'";
     }
     function getPathExpr(currentPath, expr, jsonPointers, isNumber) {
-      var path11 = jsonPointers ? "'/' + " + expr + (isNumber ? "" : ".replace(/~/g, '~0').replace(/\\//g, '~1')") : isNumber ? "'[' + " + expr + " + ']'" : "'[\\'' + " + expr + " + '\\']'";
-      return joinPaths(currentPath, path11);
+      var path14 = jsonPointers ? "'/' + " + expr + (isNumber ? "" : ".replace(/~/g, '~0').replace(/\\//g, '~1')") : isNumber ? "'[' + " + expr + " + ']'" : "'[\\'' + " + expr + " + '\\']'";
+      return joinPaths(currentPath, path14);
     }
     function getPath(currentPath, prop, jsonPointers) {
-      var path11 = jsonPointers ? toQuotedString("/" + escapeJsonPointer(prop)) : toQuotedString(getProperty(prop));
-      return joinPaths(currentPath, path11);
+      var path14 = jsonPointers ? toQuotedString("/" + escapeJsonPointer(prop)) : toQuotedString(getProperty(prop));
+      return joinPaths(currentPath, path14);
     }
     var JSON_POINTER = /^\/(?:[^~]|~0|~1)*$/;
     var RELATIVE_JSON_POINTER = /^([0-9]+)(#|\/(?:[^~]|~0|~1)*)?$/;
@@ -49306,10 +49306,10 @@ function isZodTypeLike(value) {
   return value !== null && typeof value === "object" && "parse" in value && typeof value.parse === "function" && "safeParse" in value && typeof value.safeParse === "function";
 }
 function promptArgumentsFromSchema(schema) {
-  return Object.entries(schema.shape).map(([name, field]) => ({
+  return Object.entries(schema.shape).map(([name, field2]) => ({
     name,
-    description: field.description,
-    required: !field.isOptional()
+    description: field2.description,
+    required: !field2.isOptional()
   }));
 }
 function createCompletionResult(suggestions) {
@@ -49473,11 +49473,11 @@ var init_mcp = __esm({
         if (!prompt.argsSchema) {
           return EMPTY_COMPLETION_RESULT;
         }
-        const field = prompt.argsSchema.shape[request.params.argument.name];
-        if (!(field instanceof Completable)) {
+        const field2 = prompt.argsSchema.shape[request.params.argument.name];
+        if (!(field2 instanceof Completable)) {
           return EMPTY_COMPLETION_RESULT;
         }
-        const def = field._def;
+        const def = field2._def;
         const suggestions = await def.complete(request.params.argument.value, request.params.context);
         return createCompletionResult(suggestions);
       }
@@ -50042,7 +50042,7 @@ __export(server_exports, {
 });
 import { createHash as createHash6, randomUUID as randomUUID2 } from "node:crypto";
 import { mkdir as mkdir6, readFile as readFile5, writeFile as writeFile5 } from "node:fs/promises";
-import path9 from "node:path";
+import path12 from "node:path";
 function text(value, isError = false) {
   return {
     content: [{ type: "text", text: JSON.stringify(value, null, 2) }],
@@ -50052,17 +50052,17 @@ function text(value, isError = false) {
 async function readJson2(file) {
   return JSON.parse(await readFile5(file, "utf8"));
 }
-function scansDirectory(root) {
-  return path9.join(root, ".bhashafix", "scans");
+function scansDirectory2(root) {
+  return path12.join(root, ".bhashafix", "scans");
 }
 function scanRequestsDirectory(root) {
-  return path9.join(root, ".bhashafix", "scan-requests");
+  return path12.join(root, ".bhashafix", "scan-requests");
 }
 async function writeScanRequest(root, request) {
   const directory = scanRequestsDirectory(root);
   await mkdir6(directory, { recursive: true });
   await writeFile5(
-    path9.join(directory, `${request.scanId}.json`),
+    path12.join(directory, `${request.scanId}.json`),
     `${JSON.stringify(request, null, 2)}
 `
   );
@@ -50070,21 +50070,21 @@ async function writeScanRequest(root, request) {
 async function loadScanRequest(root, scanId) {
   if (!/^[A-Za-z0-9_-]+$/.test(scanId)) throw new Error("Invalid scan ID.");
   return await readJson2(
-    path9.join(scanRequestsDirectory(root), `${scanId}.json`)
+    path12.join(scanRequestsDirectory(root), `${scanId}.json`)
   );
 }
 async function writeScan(root, scan) {
-  const directory = scansDirectory(root);
+  const directory = scansDirectory2(root);
   await mkdir6(directory, { recursive: true });
   await writeFile5(
-    path9.join(directory, `${scan.scanId}.json`),
+    path12.join(directory, `${scan.scanId}.json`),
     `${JSON.stringify(scan, null, 2)}
 `
   );
 }
 async function loadScan(root, scanId) {
   if (!/^[A-Za-z0-9_-]+$/.test(scanId)) throw new Error("Invalid scan ID.");
-  return await readJson2(path9.join(scansDirectory(root), `${scanId}.json`));
+  return await readJson2(path12.join(scansDirectory2(root), `${scanId}.json`));
 }
 function planHash(unifiedDiff) {
   return createHash6("sha256").update(unifiedDiff).digest("hex");
@@ -50100,7 +50100,7 @@ function createMcpServer(projectRoot = process.cwd()) {
       description: "Inspect framework and localisation infrastructure without executing project scripts.",
       inputSchema: { projectRoot: external_exports.string().optional() }
     },
-    async ({ projectRoot: requestedRoot }) => text(await inspectProject(path9.resolve(requestedRoot ?? projectRoot)))
+    async ({ projectRoot: requestedRoot }) => text(await inspectProject(path12.resolve(requestedRoot ?? projectRoot)))
   );
   server.registerTool(
     "bhashafix_list_locales",
@@ -50391,7 +50391,7 @@ function createMcpServer(projectRoot = process.cwd()) {
     async ({ scanId, outputDirectory }) => {
       const scan = await loadScan(projectRoot, scanId);
       const files = await writeReportBundle(
-        path9.resolve(projectRoot, outputDirectory),
+        path12.resolve(projectRoot, outputDirectory),
         scan
       );
       return text({ scanId, files });
@@ -50417,7 +50417,7 @@ function createMcpServer(projectRoot = process.cwd()) {
           {
             uri,
             mimeType: "text/plain",
-            text: await readFile5(path9.join(projectRoot, relative), "utf8").catch(
+            text: await readFile5(path12.join(projectRoot, relative), "utf8").catch(
               () => "Not initialised. Run `bhashafix init`."
             )
           }
@@ -50529,7 +50529,7 @@ var init_server2 = __esm({
 // src/cli.ts
 init_src5();
 import { mkdir as mkdir7, readFile as readFile6, writeFile as writeFile6 } from "node:fs/promises";
-import path10 from "node:path";
+import path13 from "node:path";
 import { fileURLToPath } from "node:url";
 
 // ../config/src/index.ts
@@ -50575,7 +50575,468 @@ init_src10();
 init_src2();
 import { createHash as createHash5, randomUUID } from "node:crypto";
 import { mkdir as mkdir4, readFile as readFile4, writeFile as writeFile3 } from "node:fs/promises";
+import path9 from "node:path";
+
+// src/open-report.ts
+import { spawn } from "node:child_process";
+import { readdir, stat } from "node:fs/promises";
 import path7 from "node:path";
+var REPORT_FILE = "report.html";
+function scansDirectory(projectRoot) {
+  return path7.join(projectRoot, ".bhashafix", "scans");
+}
+async function reportIn(projectRoot, scanId) {
+  const file = path7.join(scansDirectory(projectRoot), scanId, REPORT_FILE);
+  try {
+    const info = await stat(file);
+    return info.isFile() && info.size > 0 ? file : null;
+  } catch {
+    return null;
+  }
+}
+async function scanIdsByRecency(projectRoot) {
+  let entries;
+  try {
+    entries = await readdir(scansDirectory(projectRoot), { withFileTypes: true });
+  } catch {
+    return [];
+  }
+  const dated = [];
+  for (const entry of entries) {
+    if (!entry.isDirectory()) continue;
+    try {
+      const info = await stat(path7.join(scansDirectory(projectRoot), entry.name));
+      dated.push({ scanId: entry.name, at: info.mtimeMs });
+    } catch {
+    }
+  }
+  return dated.sort((a, b) => b.at - a.at).map((entry) => entry.scanId);
+}
+async function scanIdsFromStore(projectRoot) {
+  try {
+    const { createScanStore: createScanStore2, scanStorePath: scanStorePath2 } = await Promise.resolve().then(() => (init_src10(), src_exports2));
+    await stat(scanStorePath2(projectRoot));
+    const store = await createScanStore2({ projectRoot });
+    try {
+      const scans = await store.listScans();
+      return scans.map((scan) => scan.scanId);
+    } finally {
+      await store.close();
+    }
+  } catch {
+    return [];
+  }
+}
+async function resolveReport(projectRoot, requestedScanId) {
+  if (requestedScanId) {
+    const reportPath = await reportIn(projectRoot, requestedScanId);
+    return reportPath ? { scanId: requestedScanId, reportPath, source: "requested" } : null;
+  }
+  for (const [source2, ids] of [
+    ["store", await scanIdsFromStore(projectRoot)],
+    ["directory", await scanIdsByRecency(projectRoot)]
+  ]) {
+    for (const scanId of ids) {
+      const reportPath = await reportIn(projectRoot, scanId);
+      if (reportPath) return { scanId, reportPath, source: source2 };
+    }
+  }
+  return null;
+}
+async function openInViewer(target) {
+  const windows = process.platform === "win32";
+  const command = windows ? "cmd.exe" : process.platform === "darwin" ? "open" : "xdg-open";
+  const args = windows ? ["/c", `start "" "${target}"`] : [target];
+  await new Promise((resolve, reject) => {
+    const child = spawn(command, args, {
+      detached: !windows,
+      stdio: "ignore",
+      windowsHide: true,
+      windowsVerbatimArguments: windows
+    });
+    child.once("error", (error) => {
+      reject(
+        new Error(
+          error.code === "ENOENT" ? `No "${command}" opener is available on this system.` : `"${command}" could not open the report: ${error.message}`
+        )
+      );
+    });
+    child.once("spawn", () => {
+      child.unref();
+      resolve();
+    });
+  });
+}
+
+// src/report-html.ts
+import path8 from "node:path";
+var SEVERITY_ORDER = [
+  "blocking",
+  "serious",
+  "warning",
+  "review",
+  "advisory"
+];
+var SEVERITY_LABEL = {
+  blocking: ["blocking issue", "blocking issues"],
+  serious: ["serious issue", "serious issues"],
+  warning: ["warning", "warnings"],
+  review: ["review item", "review items"],
+  advisory: ["advisory note", "advisory notes"]
+};
+function countBySeverity(issues) {
+  return SEVERITY_ORDER.map((severity) => {
+    const count = issues.filter((issue) => issue.severity === severity).length;
+    const [singular, plural2] = SEVERITY_LABEL[severity];
+    return { severity, count, label: count === 1 ? singular : plural2 };
+  }).filter((entry) => entry.count > 0);
+}
+function humanReviewCount(issues) {
+  return issues.filter((issue) => issue.humanReviewRequired).length;
+}
+function artifactFileName(file) {
+  return file ? path8.basename(file) : null;
+}
+function escapeHtml(value) {
+  return String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
+}
+function attribute(value) {
+  return escapeHtml(value).replaceAll("\n", " ");
+}
+var STAGE_MARK = {
+  ok: "&#10003;",
+  skipped: "&#183;",
+  failed: "&#10007;"
+};
+var STYLE = `
+:root{
+  color-scheme:light dark;
+  --bg:#fbfaf7;--panel:#ffffff;--ink:#171320;--muted:#5d566e;--line:#e2ddf0;
+  --accent:#5b2bd9;--ok:#116149;--skip:#6b6478;--fail:#a4123f;
+  --blocking:#a4123f;--serious:#b4530c;--warning:#8a6a00;--review:#3f4fa8;--advisory:#5d566e;
+  --mono:ui-monospace,"Cascadia Mono","SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#131019;--panel:#1c1826;--ink:#f2eefb;--muted:#a79fbb;--line:#2f2842;
+    --accent:#b49bff;--ok:#5fd3ab;--skip:#8b83a0;--fail:#ff8098;
+    --blocking:#ff8098;--serious:#ffab5e;--warning:#e8c65a;--review:#9fb0ff;--advisory:#a79fbb;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.55 ui-sans-serif,system-ui,"Segoe UI",Roboto,sans-serif}
+main{max-width:1140px;margin:0 auto;padding:clamp(24px,4vw,64px) clamp(16px,4vw,40px) 96px}
+a{color:var(--accent)}
+h1{font-size:clamp(1.9rem,1.2rem+2.4vw,3rem);line-height:1.05;letter-spacing:-.02em;margin:0}
+h2{font-size:1.05rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+  margin:56px 0 16px;font-weight:600}
+h3{font-size:1rem;margin:0 0 6px}
+header p{color:var(--muted);margin:10px 0 0}
+.id{font-family:var(--mono);font-size:.8rem;color:var(--muted);word-break:break-all}
+.rule{height:1px;background:var(--line);border:0;margin:28px 0 0}
+.meta{display:grid;gap:0;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+  border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--panel);margin-top:28px}
+.meta div{padding:14px 18px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+.meta dt{font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 4px}
+.meta dd{margin:0;font-family:var(--mono);font-size:.85rem;word-break:break-word}
+.stages{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.stages li{display:grid;grid-template-columns:1.4rem minmax(150px,auto) 1fr;gap:12px;align-items:baseline;
+  padding:11px 16px;background:var(--panel);border:1px solid var(--line);border-radius:11px}
+.stages .mark{font-weight:700}
+.stages .ok .mark{color:var(--ok)}
+.stages .skipped .mark{color:var(--skip)}
+.stages .failed .mark{color:var(--fail)}
+.stages .detail{color:var(--muted);font-family:var(--mono);font-size:.82rem}
+.tally{display:flex;flex-wrap:wrap;gap:10px;margin:0;padding:0;list-style:none}
+.tally li{border:1px solid var(--line);border-radius:999px;padding:7px 16px;background:var(--panel);
+  font-family:var(--mono);font-size:.85rem}
+.tally b{font-size:1.05rem}
+.tally .blocking b{color:var(--blocking)}.tally .serious b{color:var(--serious)}
+.tally .warning b{color:var(--warning)}.tally .review b{color:var(--review)}
+.tally .advisory b{color:var(--advisory)}.tally .human b{color:var(--accent)}
+.clean{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px;color:var(--muted)}
+.issue{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:0 0 12px}
+.issue.blocking{border-left:4px solid var(--blocking)}
+.issue.serious{border-left:4px solid var(--serious)}
+.issue.warning{border-left:4px solid var(--warning)}
+.issue.review{border-left:4px solid var(--review)}
+.issue.advisory{border-left:4px solid var(--advisory)}
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 0;font-family:var(--mono);font-size:.76rem;color:var(--muted)}
+.tags span{border:1px solid var(--line);border-radius:6px;padding:2px 8px}
+.sev{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase}
+.issue.blocking .sev{color:var(--blocking)}.issue.serious .sev{color:var(--serious)}
+.issue.warning .sev{color:var(--warning)}.issue.review .sev{color:var(--review)}
+.issue.advisory .sev{color:var(--advisory)}
+.issue dl{display:grid;grid-template-columns:minmax(130px,auto) 1fr;gap:6px 18px;margin:14px 0 0;font-size:.9rem}
+.issue dt{color:var(--muted);font-size:.78rem;letter-spacing:.06em;text-transform:uppercase}
+.issue dd{margin:0}
+code{font-family:var(--mono);font-size:.82rem;word-break:break-word}
+.shots{display:grid;gap:20px;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));padding:0;margin:0;list-style:none}
+.shots figure{margin:0;background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.shots img{display:block;width:100%;height:auto;background:#fff}
+.shots figcaption{padding:12px 16px;font-family:var(--mono);font-size:.78rem;color:var(--muted);
+  border-top:1px solid var(--line)}
+.shots strong{color:var(--ink);font-weight:600}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;min-width:660px;font-size:.85rem;background:var(--panel)}
+th,td{padding:10px 14px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600}
+td{font-family:var(--mono);font-size:.8rem}
+footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:.85rem}
+`;
+function renderStages(stages) {
+  return stages.map(
+    (stage) => `<li class="${stage.status}"><span class="mark">${STAGE_MARK[stage.status]}</span><span>${escapeHtml(stage.name)}</span><span class="detail">${escapeHtml(
+      stage.detail
+    )}</span></li>`
+  ).join("");
+}
+function renderIssue(issue) {
+  const rows = [
+    ["Why it matters", escapeHtml(issue.whyItMatters)],
+    ["Recommended action", escapeHtml(issue.recommendedAction)]
+  ];
+  if (issue.selector) {
+    rows.push(["Selector", `<code>${escapeHtml(issue.selector)}</code>`]);
+  }
+  if (issue.deterministicPredicate) {
+    rows.push(["Predicate", `<code>${escapeHtml(issue.deterministicPredicate)}</code>`]);
+  }
+  const screenshot = artifactFileName(issue.screenshotBefore);
+  if (screenshot) {
+    rows.push([
+      "Screenshot",
+      `<a href="${attribute(screenshot)}">${escapeHtml(screenshot)}</a>`
+    ]);
+  }
+  rows.push([
+    "Evidence",
+    `<code>${escapeHtml(JSON.stringify(issue.measuredEvidence))}</code>`
+  ]);
+  return `<article class="issue ${escapeHtml(issue.severity)}">
+<p class="sev">${escapeHtml(issue.severity)} &middot; ${escapeHtml(issue.confidence)}${issue.humanReviewRequired ? " &middot; human review required" : ""}</p>
+<h3>${escapeHtml(issue.description)}</h3>
+<p class="tags"><span>${escapeHtml(issue.ruleId)}</span><span>${escapeHtml(
+    issue.category
+  )}</span><span>${escapeHtml(issue.locale)}</span><span>${escapeHtml(
+    issue.route
+  )}</span><span>${escapeHtml(issue.viewport.name)} ${issue.viewport.width}&times;${issue.viewport.height}</span><span>${escapeHtml(issue.browser)}</span></p>
+<dl>${rows.map(([term, value]) => `<dt>${escapeHtml(term)}</dt><dd>${value}</dd>`).join("")}</dl>
+</article>`;
+}
+function renderScreenshots(renders) {
+  const withShots = renders.filter((render) => render.screenshotFile);
+  if (withShots.length === 0) {
+    return `<p class="clean">No screenshot was captured for this scan.</p>`;
+  }
+  return `<ul class="shots">${withShots.map(
+    (render) => `<li><figure>
+<a href="${attribute(render.screenshotFile)}"><img src="${attribute(
+      render.screenshotFile
+    )}" alt="${attribute(
+      `${render.route} rendered in ${render.locale} at ${render.viewport}`
+    )}" loading="lazy"></a>
+<figcaption><strong>${escapeHtml(render.route)}</strong> &middot; ${escapeHtml(
+      render.locale
+    )} &middot; ${escapeHtml(render.viewport)} &middot; ${escapeHtml(
+      render.theme
+    )}<br>HTTP ${render.status} &middot; ${render.measuredElements} elements &middot; ${render.durationMs} ms</figcaption>
+</figure></li>`
+  ).join("")}</ul>`;
+}
+function renderRenderTable(renders) {
+  return `<div class="scroll"><table>
+<thead><tr><th>Route</th><th>Locale</th><th>Viewport</th><th>Theme</th><th>HTTP</th><th>Elements</th><th>Console</th><th>Failed</th><th>axe</th><th>Duration</th><th>DOM</th></tr></thead>
+<tbody>${renders.map(
+    (render) => `<tr>
+<td>${escapeHtml(render.route)}</td><td>${escapeHtml(render.locale)}</td>
+<td>${escapeHtml(render.viewport)}</td><td>${escapeHtml(render.theme)}</td>
+<td>${render.status}</td><td>${render.measuredElements}</td>
+<td>${render.consoleErrors}</td><td>${render.failedRequests}</td>
+<td>${render.axeViolations}</td><td>${render.durationMs} ms</td>
+<td>${render.domFile ? `<a href="${attribute(render.domFile)}">${escapeHtml(render.domFile)}</a>` : "&mdash;"}</td>
+</tr>`
+  ).join("")}</tbody></table></div>`;
+}
+function renderScanReportHtml(input) {
+  const { scan, renders, stages } = input;
+  const counts = countBySeverity(scan.issues);
+  const humanReview = humanReviewCount(scan.issues);
+  const tally = [
+    ...counts.map(
+      (entry) => `<li class="${escapeHtml(entry.severity)}"><b>${entry.count}</b> ${escapeHtml(
+        entry.label
+      )}</li>`
+    ),
+    ...humanReview > 0 ? [
+      `<li class="human"><b>${humanReview}</b> human review ${humanReview === 1 ? "item" : "items"}</li>`
+    ] : []
+  ].join("");
+  const issuesBySeverity = SEVERITY_ORDER.flatMap(
+    (severity) => scan.issues.filter((issue) => issue.severity === severity)
+  );
+  const meta = [
+    ["Target", scan.config.url ?? scan.config.projectRoot],
+    ["Origin", scan.origin],
+    ["Status", scan.status],
+    ["Browser", scan.config.browsers.join(", ")],
+    ["Source locale", scan.config.sourceLocale],
+    ["Locales", scan.localesTested.join(", ")],
+    ["Routes", scan.routesDiscovered.join(", ")],
+    [
+      "Viewports",
+      scan.config.viewports.map((viewport) => `${viewport.name} ${viewport.width}\xD7${viewport.height}`).join(", ")
+    ],
+    ["Themes", scan.config.themes.join(", ")],
+    ["Started", scan.startedAt],
+    ["Completed", scan.completedAt],
+    ["Engine", `BhashaFix ${scan.engineVersion}`]
+  ];
+  return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BhashaFix scan ${escapeHtml(scan.scanId)}</title>
+<style>${STYLE}</style>
+</head>
+<body>
+<main>
+<header>
+<h1>Localisation scan</h1>
+<p>${escapeHtml(scan.config.url ?? scan.config.projectRoot)}</p>
+<p class="id">${escapeHtml(scan.scanId)} &middot; generated ${escapeHtml(
+    input.generatedAt
+  )}</p>
+<hr class="rule">
+<dl class="meta">${meta.map(
+    ([term, value]) => `<div><dt>${escapeHtml(term)}</dt><dd>${escapeHtml(value)}</dd></div>`
+  ).join("")}</dl>
+</header>
+
+<h2>What ran</h2>
+<ul class="stages">${renderStages(stages)}</ul>
+
+<h2>What was found</h2>
+${tally ? `<ul class="tally">${tally}</ul>` : `<p class="clean">No issue was measured on any rendered page.</p>`}
+
+${issuesBySeverity.length > 0 ? `<h2>Issues</h2>${issuesBySeverity.map(renderIssue).join("")}` : ""}
+
+<h2>Screenshots</h2>
+${renderScreenshots(renders)}
+
+<h2>Renders</h2>
+${renderRenderTable(renders)}
+
+<footer>
+<p>Deterministic engineering checks are authoritative. Linguistic judgements
+carry a confidence level and are gated for human review where indicated.
+Every count on this page was measured on a page rendered in
+${escapeHtml(scan.config.browsers.join(", "))}.</p>
+</footer>
+</main>
+</body>
+</html>
+`;
+}
+
+// src/scan-stages.ts
+import { stat as stat2 } from "node:fs/promises";
+function plural(count, singular, pluralForm = `${singular}s`) {
+  return `${count} ${count === 1 ? singular : pluralForm}`;
+}
+async function verifyScreenshots(renders) {
+  const files = [];
+  let bytes = 0;
+  for (const render of renders) {
+    if (!render.screenshotPath) continue;
+    try {
+      const info = await stat2(render.screenshotPath);
+      if (!info.isFile() || info.size === 0) continue;
+      files.push(render.screenshotPath);
+      bytes += info.size;
+    } catch {
+    }
+  }
+  return { files, bytes };
+}
+async function deriveScanStages(evidence) {
+  const { renders } = evidence;
+  const renderCount = renders.length;
+  const measuredElements = renders.reduce(
+    (total, render) => total + render.measurement.elements.length,
+    0
+  );
+  const axeRenders = renders.filter(
+    (render) => render.request.runAxe === true
+  ).length;
+  const axeViolations = renders.reduce(
+    (total, render) => total + render.runtime.axeViolations.length,
+    0
+  );
+  const consoleErrors = renders.reduce(
+    (total, render) => total + render.runtime.consoleErrors.length,
+    0
+  );
+  const failedRequests = renders.reduce(
+    (total, render) => total + render.runtime.failedRequests.length,
+    0
+  );
+  const respondingRenders = renders.filter(
+    (render) => render.runtime.status > 0
+  ).length;
+  const screenshots = await verifyScreenshots(renders);
+  const stages = [];
+  stages.push(
+    evidence.routesFromFlag ? {
+      name: "Route discovery",
+      status: "skipped",
+      detail: `${plural(evidence.routes.length, "route")} supplied with --routes`
+    } : {
+      name: "Route discovery",
+      status: evidence.routes.length > 0 ? "ok" : "failed",
+      detail: evidence.routes.length > 0 ? `${plural(evidence.routes.length, "route")} scanned of ${evidence.discoveredRoutes} found on the entry page` : "no route could be derived from the entry page"
+    }
+  );
+  stages.push({
+    name: "Browser rendering",
+    status: renderCount > 0 ? "ok" : "failed",
+    detail: renderCount > 0 ? `${plural(renderCount, "render")} on ${evidence.engine} (${evidence.remote ? "remote endpoint" : "local install"})` : "no page was rendered"
+  });
+  stages.push({
+    name: "DOM measurement",
+    status: measuredElements > 0 ? "ok" : "failed",
+    detail: measuredElements > 0 ? `${plural(measuredElements, "element")} measured across ${plural(renderCount, "render")}` : "no element was measured"
+  });
+  stages.push({
+    name: "Accessibility checks",
+    status: axeRenders > 0 ? "ok" : "skipped",
+    detail: axeRenders === 0 ? "axe-core did not run on any render" : `axe-core ran on ${axeRenders} of ${plural(renderCount, "render")}, ${plural(axeViolations, "violation")}`
+  });
+  stages.push({
+    name: "Screenshot capture",
+    status: screenshots.files.length > 0 ? "ok" : "skipped",
+    detail: screenshots.files.length > 0 ? `${plural(screenshots.files.length, "PNG")} written, ${Math.round(screenshots.bytes / 1024)} KB on disk` : "no screenshot was written"
+  });
+  stages.push({
+    name: "Runtime inspection",
+    status: respondingRenders > 0 ? "ok" : "failed",
+    detail: respondingRenders > 0 ? `${plural(respondingRenders, "response")} recorded, ${plural(consoleErrors, "console error")}, ${plural(failedRequests, "failed request")}` : "no HTTP response was recorded"
+  });
+  return {
+    stages,
+    measuredElements,
+    axeRenders,
+    axeViolations,
+    screenshotsOnDisk: screenshots.files,
+    screenshotBytes: screenshots.bytes,
+    consoleErrors,
+    failedRequests
+  };
+}
+
+// src/browser-scan.ts
 function selectViewports(names) {
   if (!names || names.length === 0) return [...DEFAULT_VIEWPORTS];
   const selected = DEFAULT_VIEWPORTS.filter(
@@ -50598,10 +51059,11 @@ async function runBrowserProjectScan(options) {
   const themes = options.themes?.length ? options.themes : ["light"];
   const scanOrigin = validated.hostname === "localhost" || validated.hostname === "127.0.0.1" || validated.hostname === "::1" ? "LOCAL_REPOSITORY_SCAN" : "LIVE_PUBLIC_BROWSER_SCAN";
   const scanId = `browser-${randomUUID()}`;
-  const artifactDir = path7.join(options.projectRoot, ".bhashafix", "scans", scanId);
+  const artifactDir = path9.join(options.projectRoot, ".bhashafix", "scans", scanId);
   await mkdir4(artifactDir, { recursive: true });
   let routes = options.routes;
   let discoveredRoutes = routes?.length ?? 0;
+  const routesFromFlag = Boolean(routes && routes.length > 0);
   if (!routes || routes.length === 0) {
     options.onProgress?.(`Discovering routes from ${validated.href}`);
     const discovery = await discoverRoutes(validated.href, {
@@ -50664,12 +51126,12 @@ async function runBrowserProjectScan(options) {
   });
   const screenshots = result.renders.map((render) => render.screenshotPath).filter((value) => Boolean(value));
   await writeFile3(
-    path7.join(artifactDir, "scan.json"),
+    path9.join(artifactDir, "scan.json"),
     `${JSON.stringify(scan, null, 2)}
 `
   );
   await writeFile3(
-    path7.join(artifactDir, "renders.json"),
+    path9.join(artifactDir, "renders.json"),
     `${JSON.stringify(
       result.renders.map((render) => ({
         route: render.request.route,
@@ -50692,6 +51154,48 @@ async function runBrowserProjectScan(options) {
     )}
 `
   );
+  const staged = await deriveScanStages({
+    routesFromFlag,
+    routes,
+    discoveredRoutes,
+    renders: result.renders,
+    engine: result.engine,
+    remote: result.remote
+  });
+  const reportRenders = result.renders.map((render) => ({
+    route: render.request.route,
+    locale: render.request.locale,
+    viewport: render.request.viewport.name,
+    theme: render.request.theme ?? "light",
+    url: render.request.url,
+    status: render.runtime.status,
+    durationMs: render.durationMs,
+    measuredElements: render.measurement.elements.length,
+    consoleErrors: render.runtime.consoleErrors.length,
+    failedRequests: render.runtime.failedRequests.length,
+    axeViolations: render.runtime.axeViolations.length,
+    screenshotFile: artifactFileName(render.screenshotPath),
+    domFile: artifactFileName(render.domPath)
+  }));
+  const reportTarget = path9.join(artifactDir, REPORT_FILE);
+  let reportPath = null;
+  try {
+    await writeFile3(
+      reportTarget,
+      renderScanReportHtml({
+        scan,
+        stages: staged.stages,
+        renders: reportRenders,
+        generatedAt: (/* @__PURE__ */ new Date()).toISOString()
+      }),
+      "utf8"
+    );
+    reportPath = reportTarget;
+  } catch (error) {
+    options.onProgress?.(
+      `Could not write ${REPORT_FILE}: ${error instanceof Error ? error.message : String(error)}`
+    );
+  }
   const store = await createScanStore({ projectRoot: options.projectRoot });
   await persistScan(store, scan, result.renders, artifactDir);
   await store.close();
@@ -50702,7 +51206,11 @@ async function runBrowserProjectScan(options) {
     renderCount: result.coverage.renderCount,
     remote: result.remote,
     discoveredRoutes,
-    persistence: { driver: store.driver, durable: store.durable }
+    persistence: { driver: store.driver, durable: store.durable },
+    engine: result.engine,
+    stages: staged.stages,
+    screenshotsOnDisk: staged.screenshotsOnDisk,
+    reportPath
   };
 }
 async function sha256File(file) {
@@ -50738,7 +51246,7 @@ async function persistScan(store, scan, renders, artifactDir) {
         route: render.request.route,
         locale: render.request.locale,
         viewport: render.request.viewport.name,
-        filePath: path7.relative(path7.dirname(artifactDir), file).replaceAll("\\", "/"),
+        filePath: path9.relative(path9.dirname(artifactDir), file).replaceAll("\\", "/"),
         byteLength: bytes.byteLength,
         sha256: await sha256File(file)
       });
@@ -50750,6 +51258,90 @@ async function persistScan(store, scan, renders, artifactDir) {
     stage: scan.status,
     message: `${scan.issues.length} measured issue(s).`
   });
+}
+
+// src/display-path.ts
+import path10 from "node:path";
+function displayPath(absolute, options = {}) {
+  const cwd = options.cwd ?? process.cwd();
+  const suffix = options.directory ? "/" : "";
+  const absoluteDisplay = absolute.split(path10.sep).join("/") + suffix;
+  let relative;
+  try {
+    relative = path10.relative(cwd, absolute);
+  } catch {
+    return absoluteDisplay;
+  }
+  if (!relative || relative.startsWith("..") || path10.isAbsolute(relative)) {
+    return absoluteDisplay;
+  }
+  const posix = relative.split(path10.sep).join("/");
+  const candidate = `${posix.startsWith("./") ? posix : `./${posix}`}${suffix}`;
+  return candidate.length < absoluteDisplay.length ? candidate : absoluteDisplay;
+}
+
+// src/scan-summary.ts
+var STAGE_MARK2 = {
+  ok: "\u2713",
+  skipped: "\xB7",
+  failed: "\u2717"
+};
+var LABEL_WIDTH = 13;
+var STAGE_WIDTH = 22;
+function field(label, value) {
+  return `${label.padEnd(LABEL_WIDTH)}${value}`;
+}
+function formatScanSummary(input) {
+  const { scan } = input;
+  const lines = [];
+  lines.push(`BhashaFix ${scan.engineVersion}`, "");
+  lines.push(field("Target", scan.config.url ?? scan.config.projectRoot));
+  lines.push(
+    field(
+      "Mode",
+      `Real ${input.engine.charAt(0).toUpperCase()}${input.engine.slice(1)}${input.remote ? " (remote endpoint)" : ""}`
+    )
+  );
+  lines.push(field("Browser", scan.config.browsers.join(", ")));
+  lines.push(field("Routes", String(scan.routesDiscovered.length)));
+  lines.push(field("Locales", scan.localesTested.join(", ")));
+  lines.push(
+    field("Viewports", scan.config.viewports.map((view) => view.name).join(", "))
+  );
+  lines.push("");
+  for (const stage of input.stages) {
+    lines.push(
+      `${STAGE_MARK2[stage.status]} ${stage.name.padEnd(STAGE_WIDTH)}${stage.detail}`
+    );
+  }
+  lines.push("");
+  const counts = countBySeverity(scan.issues);
+  const humanReview = humanReviewCount(scan.issues);
+  if (counts.length === 0) {
+    lines.push("No issues found");
+  } else {
+    for (const entry of counts) lines.push(`${entry.count} ${entry.label}`);
+  }
+  if (humanReview > 0) {
+    lines.push(
+      `${humanReview} human review ${humanReview === 1 ? "item" : "items"}`
+    );
+  }
+  const paths = [];
+  if (input.reportPath) {
+    paths.push(field("Report:", displayPath(input.reportPath)));
+  }
+  if (input.screenshots.length > 0) {
+    paths.push(
+      field(
+        "Screenshots:",
+        `${displayPath(input.artifactDir, { directory: true })} (${input.screenshots.length})`
+      )
+    );
+  }
+  if (paths.length > 0) lines.push("", ...paths);
+  lines.push("", `Exit code: ${input.exitCode}`);
+  return lines.join("\n");
 }
 
 // src/cli.ts
@@ -50779,6 +51371,7 @@ Commands:
   translate-preview
               Generate a protected synthetic localisation preview
   scans       List persisted scans, or show one with --scan <id>
+  open        Open the most recent local HTML report in a browser
   issues      List evidence-backed issues
   translate   Generate missing translations through a configured provider
   diagnose    Compatibility alias for issues
@@ -50797,8 +51390,22 @@ Options:
   --text <value> --locale <bcp47> --mode <pseudo-mode> --scan <id>
   --config <path> --fail-on <blocking|warning|advisory>
 
+Examples:
+  bhashafix doctor
+  bhashafix locales
+  bhashafix scan --url https://example.com
+  bhashafix scan --url https://example.com --locales en-GB,de-DE --viewports mobile
+  bhashafix open
+  bhashafix scans
+  bhashafix crawl --url https://example.com
+  bhashafix extract --url https://example.com
+  bhashafix translate-preview --locale ar-SA --text "Pay {amount} with AtlasPay"
+
 Exit codes: 0 passed \xB7 1 blocking issues \xB7 2 invalid config \xB7
             3 target unavailable \xB7 4 runtime failure \xB7 5 provider failure`;
+function splitList(value) {
+  return value.split(/[\s,]+/).filter((entry) => entry.length > 0);
+}
 function parseArgs(args) {
   const command = args[0] ?? "help";
   const options = {
@@ -50815,29 +51422,31 @@ function parseArgs(args) {
   for (let index = 1; index < args.length; index += 1) {
     const value = args[index + 1];
     if (args[index] === "--output" && value) options.output = value;
-    if (args[index] === "--project" && value) options.project = path10.resolve(value);
+    if (args[index] === "--project" && value) options.project = path13.resolve(value);
     if (args[index] === "--url" && value) options.url = value;
     if (args[index] === "--source-locale" && value) {
       options.sourceLocale = localeProfile(value).canonical;
     }
     if (args[index] === "--locales" && value) {
-      options.locales = value.split(",").map((locale) => localeProfile(locale).canonical);
+      options.locales = splitList(value).map(
+        (locale) => localeProfile(locale).canonical
+      );
     }
     if (args[index] === "--routes" && value) {
-      options.routes = value.split(",").map((route) => {
+      options.routes = splitList(value).map((route) => {
         if (!route.startsWith("/")) throw new Error(`Invalid route "${route}".`);
         return route;
       });
     }
     if (args[index] === "--viewports" && value) {
-      const viewports = value.split(",");
+      const viewports = splitList(value);
       if (viewports.some((viewport) => !["mobile", "tablet", "desktop"].includes(viewport))) {
         throw new Error(`Invalid viewport list "${value}".`);
       }
       options.viewports = viewports;
     }
     if (args[index] === "--themes" && value) {
-      const themes = value.split(",");
+      const themes = splitList(value);
       if (themes.some((theme) => !["light", "dark"].includes(theme))) {
         throw new Error(`Invalid theme list "${value}".`);
       }
@@ -50878,8 +51487,8 @@ function emit(io, options, value, human) {
   io.out(options.json ? JSON.stringify(value, null, 2) : human);
 }
 async function initialise(projectRoot) {
-  const directory = path10.join(projectRoot, ".bhashafix");
-  await mkdir7(path10.join(directory, "locale-rules"), { recursive: true });
+  const directory = path13.join(projectRoot, ".bhashafix");
+  await mkdir7(path13.join(directory, "locale-rules"), { recursive: true });
   const files = {
     "config.yml": `sourceLocale: en-GB
 locales: [hi-IN, de-DE, ar-SA, he-IL, ja-JP, zh-Hans-CN, th-TH, fr-FR, es-MX]
@@ -50915,7 +51524,7 @@ repair:
   };
   await Promise.all(
     Object.entries(files).map(
-      ([name, contents]) => writeFile6(path10.join(directory, name), contents, { flag: "wx" }).catch(
+      ([name, contents]) => writeFile6(path13.join(directory, name), contents, { flag: "wx" }).catch(
         (error) => {
           if (error.code !== "EEXIST") throw error;
         }
@@ -50925,23 +51534,125 @@ repair:
   return Object.keys(files);
 }
 async function readBaseline(projectRoot) {
-  const file = path10.join(projectRoot, ".bhashafix", "baseline-scan.json");
+  const file = path13.join(projectRoot, ".bhashafix", "baseline-scan.json");
   return JSON.parse(await readFile6(file, "utf8"));
 }
+function fallbackExit(message) {
+  return /config|locale|allowlist|issue ID|required/i.test(message) ? EXIT.invalidConfig : /fetch|target|URL|ENOTFOUND|ECONN/i.test(message) ? EXIT.unavailable : EXIT.runtime;
+}
+function describeFailure(error) {
+  const raw = redactSecrets(
+    error instanceof Error ? error.message : String(error)
+  );
+  const first = raw.split("\n").map((line) => line.trim()).filter((line) => line.length > 0 && !/^at\s/.test(line))[0] ?? raw;
+  if (/Executable doesn't exist|playwright install/i.test(raw)) {
+    return {
+      message: "The Chromium build Playwright needs is not installed here.",
+      remedy: 'Run "npx playwright install chromium", then try again.',
+      exit: EXIT.runtime
+    };
+  }
+  if (/Playwright is not installed/i.test(raw)) {
+    return {
+      message: "Playwright is not installed alongside this CLI.",
+      remedy: 'Run "npm install playwright" and then "npx playwright install chromium".',
+      exit: EXIT.runtime
+    };
+  }
+  if (/ERR_NAME_NOT_RESOLVED|ENOTFOUND|EAI_AGAIN|getaddrinfo/i.test(raw)) {
+    return {
+      message: "The target host could not be resolved.",
+      remedy: "Check the spelling of --url and this machine's network access.",
+      exit: EXIT.unavailable
+    };
+  }
+  if (/ERR_CONNECTION_REFUSED|ECONNREFUSED/i.test(raw)) {
+    return {
+      message: "Nothing accepted a connection at the target address.",
+      remedy: "Start the site, or point --url at an origin that is already serving.",
+      exit: EXIT.unavailable
+    };
+  }
+  if (/ERR_CERT|ERR_SSL|CERT_HAS_EXPIRED|self.signed certificate/i.test(raw)) {
+    return {
+      message: "The target rejected the TLS handshake.",
+      remedy: "Fix the certificate, or scan the http:// origin instead.",
+      exit: EXIT.unavailable
+    };
+  }
+  if (/Timeout .*exceeded|ERR_TIMED_OUT|ETIMEDOUT/i.test(raw)) {
+    return {
+      message: "The target did not finish loading before the render timeout.",
+      remedy: "Confirm the URL responds, then narrow --routes, --locales or --viewports.",
+      exit: EXIT.unavailable
+    };
+  }
+  if (/ERR_ABORTED|ERR_EMPTY_RESPONSE|ERR_CONNECTION_RESET/i.test(raw)) {
+    return {
+      message: "The target closed the connection while the page was loading.",
+      remedy: "Confirm the URL serves HTML, then try again.",
+      exit: EXIT.unavailable
+    };
+  }
+  if (/axe could not be run/i.test(raw)) {
+    return {
+      message: "The accessibility pass could not run on the rendered page.",
+      remedy: 'Install "@axe-core/playwright" alongside the CLI, then rescan.',
+      exit: EXIT.runtime
+    };
+  }
+  return { message: first, remedy: null, exit: fallbackExit(raw) };
+}
+async function withInterruptHandling(io, work) {
+  const graceMs = 3e3;
+  let interrupted = false;
+  const onInterrupt = () => {
+    if (interrupted) {
+      process.exit(130);
+    }
+    interrupted = true;
+    io.error("Interrupted. Closing the browser and exiting.");
+    setTimeout(() => process.exit(130), graceMs).unref();
+  };
+  process.on("SIGINT", onInterrupt);
+  try {
+    return await work();
+  } catch (error) {
+    if (interrupted) {
+      throw new Error(
+        "The scan was interrupted before it finished, so no report was written."
+      );
+    }
+    throw error;
+  } finally {
+    process.off("SIGINT", onInterrupt);
+  }
+}
 async function probeBrowser() {
+  const started = Date.now();
   try {
     const { openBrowserSession: openBrowserSession2 } = await Promise.resolve().then(() => (init_src9(), src_exports));
     const session = await openBrowserSession2();
     const engine = session.engine;
     const remote = session.remote;
     await session.close();
-    return { available: true, engine, remote, error: null };
+    return {
+      available: true,
+      engine,
+      remote,
+      error: null,
+      launchMs: Date.now() - started,
+      remedy: null
+    };
   } catch (error) {
+    const failure = describeFailure(error);
     return {
       available: false,
       engine: null,
       remote: false,
-      error: error instanceof Error ? error.message.split("\n")[0] : String(error)
+      error: failure.message,
+      launchMs: Date.now() - started,
+      remedy: failure.remedy
     };
   }
 }
@@ -51042,50 +51753,69 @@ Unknown scripts require approval before execution.`
     }
     if (command === "scan") {
       if (options.url) {
-        const outcome = await runBrowserProjectScan({
-          url: options.url,
-          projectRoot: options.project,
-          sourceLocale: options.sourceLocale,
-          locales: options.locales,
-          routes: options.routes,
-          viewports: options.viewports,
-          themes: options.themes,
-          onProgress: options.verbose ? (message) => io.error(`\xB7 ${message}`) : void 0
-        });
+        const url = options.url;
+        const outcome = await withInterruptHandling(
+          io,
+          () => runBrowserProjectScan({
+            url,
+            projectRoot: options.project,
+            sourceLocale: options.sourceLocale,
+            locales: options.locales,
+            routes: options.routes,
+            viewports: options.viewports,
+            themes: options.themes,
+            onProgress: options.verbose ? (message) => io.error(`\xB7 ${message}`) : void 0
+          })
+        );
         await writeFile6(
-          path10.join(options.project, ".bhashafix", "baseline-scan.json"),
+          path13.join(options.project, ".bhashafix", "baseline-scan.json"),
           `${JSON.stringify(outcome.scan, null, 2)}
 `
         );
         if (options.output) {
           await writeFile6(
-            path10.resolve(options.output),
+            path13.resolve(options.output),
             `${JSON.stringify(outcome.scan, null, 2)}
 `
           );
         }
+        const exitCode = outcome.scan.issues.some(
+          (issue) => issue.severity === "blocking"
+        ) ? EXIT.blocking : EXIT.passed;
         emit(
           io,
           options,
-          { ...outcome.scan, artifacts: { directory: outcome.artifactDir, screenshots: outcome.screenshots } },
-          [
-            outcome.scan.scanId,
-            `${outcome.renderCount} browser render(s) on ${outcome.scan.config.browsers[0]}${outcome.remote ? " (remote)" : ""}.`,
-            `${outcome.scan.issues.length} measured issue(s) across ${outcome.scan.routesDiscovered.length} route(s) and ${outcome.scan.localesTested.length} locale(s).`,
-            `${outcome.screenshots.length} screenshot(s) in ${outcome.artifactDir}`
-          ].join("\n")
+          {
+            ...outcome.scan,
+            artifacts: {
+              directory: outcome.artifactDir,
+              screenshots: outcome.screenshots,
+              report: outcome.reportPath
+            },
+            stages: outcome.stages
+          },
+          formatScanSummary({
+            scan: outcome.scan,
+            stages: outcome.stages,
+            engine: outcome.engine,
+            remote: outcome.remote,
+            reportPath: outcome.reportPath,
+            artifactDir: outcome.artifactDir,
+            screenshots: outcome.screenshotsOnDisk,
+            exitCode
+          })
         );
-        return outcome.scan.issues.some((issue) => issue.severity === "blocking") ? EXIT.blocking : EXIT.passed;
+        return exitCode;
       }
       const scan = await scanLocalProject(options.project, options);
-      await mkdir7(path10.join(options.project, ".bhashafix"), { recursive: true });
+      await mkdir7(path13.join(options.project, ".bhashafix"), { recursive: true });
       await writeFile6(
-        path10.join(options.project, ".bhashafix", "baseline-scan.json"),
+        path13.join(options.project, ".bhashafix", "baseline-scan.json"),
         `${JSON.stringify(scan, null, 2)}
 `
       );
       if (options.output) {
-        await writeFile6(path10.resolve(options.output), `${JSON.stringify(scan, null, 2)}
+        await writeFile6(path13.resolve(options.output), `${JSON.stringify(scan, null, 2)}
 `);
       }
       emit(
@@ -51134,6 +51864,35 @@ ${scan.issues.length} verified blocking issue(s) across ${scan.routesDiscovered.
         await store.close();
       }
     }
+    if (command === "open") {
+      const directory = displayPath(scansDirectory(options.project), {
+        directory: true
+      });
+      const resolved = await resolveReport(options.project, options.scanId);
+      if (!resolved) {
+        io.error(
+          options.scanId ? `No report.html for scan "${options.scanId}" in ${directory}. Run "bhashafix scan --url <url>" to produce one.` : `No local report found in ${directory}. Run "bhashafix scan --url <url>" first, then "bhashafix open".`
+        );
+        return EXIT.invalidConfig;
+      }
+      const shown = displayPath(resolved.reportPath);
+      try {
+        await openInViewer(resolved.reportPath);
+      } catch (error) {
+        io.error(
+          `${error instanceof Error ? error.message : String(error)} Open this file yourself: ${shown}`
+        );
+        return EXIT.runtime;
+      }
+      emit(
+        io,
+        options,
+        { ...resolved, opened: true },
+        `Opened ${shown}
+Scan ${resolved.scanId} (resolved from the ${resolved.source === "requested" ? "--scan argument" : `${resolved.source}`}).`
+      );
+      return EXIT.passed;
+    }
     if (command === "issues" || command === "diagnose") {
       const scan = await scanLocalProject(options.project, options);
       emit(
@@ -51176,7 +51935,7 @@ ${preview.target}`
       const scan = await scanLocalProject(options.project, options);
       const plan = await prepareRepair(options.project, scan);
       const result = options.apply ? await applyRepair(plan, { dryRun: options.dryRun }) : { applied: false, dryRun: true, unifiedDiff: plan.unifiedDiff };
-      if (options.output) await writeFile6(path10.resolve(options.output), plan.unifiedDiff);
+      if (options.output) await writeFile6(path13.resolve(options.output), plan.unifiedDiff);
       emit(
         io,
         options,
@@ -51199,7 +51958,7 @@ ${plan.unifiedDiff}`
     }
     if (command === "report") {
       const scan = await scanLocalProject(options.project, options);
-      const output = path10.resolve(options.output ?? "artifacts/report");
+      const output = path13.resolve(options.output ?? "artifacts/report");
       const files = await writeReportBundle(output, scan);
       emit(io, options, { output, files }, `Wrote ${files.length} reports to ${output}.`);
       return EXIT.passed;
@@ -51223,8 +51982,8 @@ ${plan.unifiedDiff}`
         issues: scan.issues.length
       };
       if (options.output) {
-        const output = path10.resolve(options.output);
-        await mkdir7(path10.dirname(output), { recursive: true });
+        const output = path13.resolve(options.output);
+        await mkdir7(path13.dirname(output), { recursive: true });
         await writeFile6(output, `${JSON.stringify(ciResult, null, 2)}
 `);
       }
@@ -51262,9 +52021,9 @@ ${plan.unifiedDiff}`
         options,
         report,
         [
-          `Node ${report.node}: ${report.nodeSupported ? "PASS" : "FAIL"}`,
-          "No-AI deterministic mode: PASS",
-          `Browser rendering: ${browser.available ? `PASS (${browser.engine}${browser.remote ? ", remote" : ", local"})` : `UNAVAILABLE \u2014 ${browser.error}`}`
+          report.nodeSupported ? `Node ${report.node}: PASS` : `Node ${report.node}: FAIL \u2014 BhashaFix needs Node 22 or newer. Upgrade Node, then re-run "bhashafix doctor".`,
+          "No-AI deterministic mode: PASS \u2014 every check runs locally and needs no model provider or API key.",
+          browser.available ? `Browser rendering: PASS \u2014 ${browser.engine} launched from a ${browser.remote ? "remote endpoint" : "local install"} in ${browser.launchMs} ms, so "bhashafix scan --url" will render pages for real.` : `Browser rendering: UNAVAILABLE \u2014 ${browser.error}${browser.remedy ? ` ${browser.remedy}` : ""} Until then "bhashafix scan --url" cannot run, but "bhashafix scan --project" still does its deterministic checks.`
         ].join("\n")
       );
       return report.nodeSupported ? EXIT.passed : EXIT.runtime;
@@ -51274,14 +52033,15 @@ ${plan.unifiedDiff}`
 ${HELP}`);
     return EXIT.invalidConfig;
   } catch (error) {
-    const message = redactSecrets(
-      error instanceof Error ? error.message : String(error)
+    const failure = describeFailure(error);
+    io.error(
+      failure.remedy ? `${failure.message}
+${failure.remedy}` : failure.message
     );
-    io.error(message);
-    return /config|locale|allowlist|issue ID|required/i.test(message) ? EXIT.invalidConfig : /fetch|target|URL|ENOTFOUND|ECONN/i.test(message) ? EXIT.unavailable : EXIT.runtime;
+    return failure.exit;
   }
 }
-var isEntrypoint = process.argv[1] && path10.resolve(process.argv[1]) === path10.resolve(fileURLToPath(import.meta.url));
+var isEntrypoint = process.argv[1] && path13.resolve(process.argv[1]) === path13.resolve(fileURLToPath(import.meta.url));
 if (isEntrypoint) {
   process.exitCode = await runCli(process.argv.slice(2));
 }

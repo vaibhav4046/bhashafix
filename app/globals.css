@@ -58,9 +58,7 @@ html {
 
 body {
   margin: 0;
-  background:
-    radial-gradient(circle at 15% -10%, rgba(124, 58, 237, 0.2), transparent 30rem),
-    var(--background);
+  background: var(--background);
   color: var(--text);
   font-family:
     Inter, "Noto Sans", "Noto Sans Devanagari", "Noto Sans Tamil",
@@ -149,54 +147,12 @@ pre {
   flex: 0 0 auto;
 }
 
+/* The brand mark, inlined as SVG and drawn in the current text colour. */
 .bf-mark {
-  width: 38px;
-  height: 38px;
-  position: relative;
-  display: grid;
-  place-items: center;
-  border: 2px solid var(--lavender);
-  border-radius: 48% 52% 52% 48% / 38% 44% 56% 62%;
-  transform: rotate(-8deg);
-}
-
-.bf-mark::before,
-.bf-mark::after,
-.bf-mark i {
-  content: "";
-  position: absolute;
-  border-radius: 50%;
-  border: 1px solid var(--purple);
-}
-
-.bf-mark::before {
-  width: 27px;
-  height: 19px;
-  transform: rotate(38deg);
-}
-
-.bf-mark::after {
-  width: 17px;
-  height: 27px;
-  transform: rotate(-34deg);
-}
-
-.bf-mark i {
-  width: 5px;
-  height: 5px;
-  background: var(--yellow-fill);
-  border: 0;
-  right: -2px;
-  top: 7px;
-  box-shadow: -32px 17px 0 var(--violet);
-}
-
-.bf-mark b {
-  font-size: 11px;
-  color: var(--text);
-  transform: rotate(8deg);
-  position: relative;
-  z-index: 2;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  color: var(--lavender);
 }
 
 .bf-wordmark {
@@ -242,18 +198,18 @@ pre {
   font-weight: 820;
   font-size: 14px;
   cursor: pointer;
-  transition: transform 160ms ease, box-shadow 160ms ease;
+  transition: background-color 160ms ease, color 160ms ease;
 }
 
 .button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(250, 204, 21, 0.16);
+  background: var(--text);
+  border-color: var(--text);
+  color: var(--background);
 }
 
 .button:disabled {
   opacity: 0.45;
   cursor: not-allowed;
-  transform: none;
 }
 
 .button-small {
@@ -280,21 +236,6 @@ pre {
   overflow-x: clip;
 }
 
-.landing-hero {
-  width: min(1180px, calc(100% - 80px));
-  margin: 0 auto;
-  padding: 92px 0 84px;
-  display: grid;
-  grid-template-columns: minmax(0, 1.42fr) minmax(0, 0.58fr);
-  gap: 64px;
-  align-items: start;
-}
-
-.hero-copy {
-  min-width: 0;
-}
-
-.hero-kicker,
 .origin-label,
 .page-heading > div > span,
 .wizard-title > span,
@@ -305,33 +246,6 @@ pre {
   font-weight: 850;
   letter-spacing: 0.19em;
   text-transform: uppercase;
-}
-
-.hero-kicker {
-  margin: 0;
-}
-
-.hero-copy h1 {
-  max-width: 15ch;
-  margin: 24px 0 26px;
-  font-size: clamp(46px, 5.4vw, 80px);
-  line-height: 0.98;
-  letter-spacing: -0.055em;
-  font-weight: 850;
-}
-
-.hero-copy h1 em,
-.landing-cta h2 em {
-  color: var(--yellow);
-  font-style: normal;
-}
-
-.hero-lede {
-  max-width: 56ch;
-  margin: 0 0 34px;
-  color: var(--muted);
-  font-size: 18px;
-  line-height: 1.7;
 }
 
 .url-launcher {
@@ -371,26 +285,6 @@ pre {
   cursor: pointer;
 }
 
-.hero-truth {
-  max-width: 54ch;
-  margin: 24px 0 0;
-  padding-left: 15px;
-  border-left: 2px solid var(--yellow);
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.65;
-}
-
-.hero-secondary {
-  margin: 28px 0 0;
-  padding: 0;
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 24px;
-}
-
-.hero-secondary a,
 .text-action {
   padding-bottom: 3px;
   border-bottom: 1px solid var(--border-strong);
@@ -399,72 +293,9 @@ pre {
   font-weight: 720;
 }
 
-.hero-secondary a:hover,
 .text-action:hover {
   border-bottom-color: var(--yellow);
   color: var(--text);
-}
-
-/* Specimen column. Retains the `.language-orbit` class because the motion
-   contract test measures that element, but it no longer orbits: each sample
-   carries its own `lang` so the browser shapes the script correctly. */
-.language-orbit {
-  min-width: 0;
-  padding-left: 30px;
-  border-left: 1px solid var(--border);
-}
-
-.language-orbit h2 {
-  margin: 0 0 6px;
-  color: var(--muted);
-  font-size: 11px;
-  font-weight: 850;
-  letter-spacing: 0.19em;
-  text-transform: uppercase;
-}
-
-.language-orbit ul {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.language-orbit li {
-  padding: 15px 0;
-  border-top: 1px solid var(--border);
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 4px 12px;
-}
-
-.specimen-locale {
-  color: var(--muted);
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-}
-
-.specimen-script {
-  justify-self: end;
-  color: var(--lavender);
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-}
-
-.language-orbit strong {
-  grid-column: 1 / -1;
-  font-size: clamp(19px, 1.9vw, 25px);
-  font-weight: 620;
-  line-height: 1.4;
-  overflow-wrap: anywhere;
-}
-
-.language-orbit > p {
-  margin: 18px 0 0;
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.7;
 }
 
 /* The pipeline every surface of the product describes, in order. */
@@ -526,71 +357,6 @@ pre {
   font-size: 12.5px;
   line-height: 1.62;
 }
-
-.landing-registry {
-  width: min(1180px, calc(100% - 80px));
-  margin: 0 auto;
-  padding: 70px 0;
-  border-top: 1px solid var(--border);
-}
-
-.landing-registry h2 {
-  margin: 0 0 26px;
-  font-size: clamp(26px, 2.6vw, 36px);
-  letter-spacing: -0.035em;
-  font-weight: 820;
-}
-
-.landing-registry ul {
-  margin: 0 0 30px;
-  padding: 0;
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.landing-registry li {
-  padding: 6px 13px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-pill);
-  color: var(--muted);
-  font-size: 12px;
-  letter-spacing: 0.04em;
-}
-
-.replay-footnote {
-  width: min(1180px, calc(100% - 80px));
-  margin: 0 auto;
-  padding: 62px 0;
-  border-top: 1px solid var(--border);
-  display: grid;
-  justify-items: start;
-  gap: 15px;
-}
-
-.replay-footnote h2 {
-  max-width: 32ch;
-  margin: 0;
-  font-size: clamp(22px, 2.2vw, 31px);
-  line-height: 1.15;
-  letter-spacing: -0.032em;
-  font-weight: 820;
-}
-
-.replay-footnote p {
-  max-width: 78ch;
-  margin: 0;
-  color: var(--muted);
-  font-size: 14px;
-  line-height: 1.78;
-}
-
-.replay-footnote code {
-  color: var(--lavender);
-  font-size: 13px;
-}
-
 
 .scan-row-live {
   text-decoration: none;
@@ -669,15 +435,13 @@ pre {
 }
 
 .empty-state,
-.demo-index,
 .motion-lab {
   width: min(1180px, calc(100% - 80px));
   margin: 0 auto;
   padding: 100px 0 130px;
 }
 
-.empty-state > span,
-.demo-index > span {
+.empty-state > span {
   color: var(--yellow);
   font-size: 10px;
   font-weight: 850;
@@ -685,7 +449,6 @@ pre {
 }
 
 .empty-state h1,
-.demo-index h1,
 .motion-lab h1 {
   max-width: 940px;
   margin: 18px 0;
@@ -694,8 +457,7 @@ pre {
   letter-spacing: -0.055em;
 }
 
-.empty-state > p,
-.demo-index > p {
+.empty-state > p {
   max-width: 760px;
   color: var(--muted);
   font-size: 18px;
@@ -706,47 +468,6 @@ pre {
   margin-top: 28px;
   display: flex;
   gap: 10px;
-}
-
-.demo-proof-strip {
-  margin: 55px 0 30px;
-  display: grid;
-  grid-template-columns: 1fr auto 1fr 1fr;
-  align-items: stretch;
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-}
-
-.demo-proof-strip article {
-  padding: 28px;
-  display: flex;
-  flex-direction: column;
-  border-right: 1px solid var(--border);
-}
-
-.demo-proof-strip article small {
-  color: var(--lavender);
-  font-size: 9px;
-  letter-spacing: 0.15em;
-}
-
-.demo-proof-strip article strong {
-  margin: 10px 0;
-  color: var(--yellow);
-  font-size: 60px;
-}
-
-.demo-proof-strip article span {
-  color: var(--muted);
-  font-size: 11px;
-}
-
-.demo-proof-strip > i {
-  padding: 20px;
-  display: grid;
-  place-items: center;
-  color: var(--muted);
-  font-style: normal;
 }
 
 .integration-detail article > h1,

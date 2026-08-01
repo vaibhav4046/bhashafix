@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import baselineScan from "../public/replay/baseline-scan.json";
 import repairProof from "../public/replay/repair-proof.json";
 import replayReport from "../public/replay/report.json";
+import evidenceIndex from "../public/evidence/index.json";
 import { pseudoLocalise } from "@bhashafix/linguistic-engine";
 import { localeProfile } from "@bhashafix/locale-engine";
 
@@ -85,10 +86,27 @@ function escapeHtml(value: string) {
 export function Logo({ wordmark = true }: { wordmark?: boolean }) {
   return (
     <Link className="bf-logo" href="/" aria-label="BhashaFix home">
-      <span className="bf-mark" aria-hidden="true">
-        <i />
-        <b>✓</b>
-      </span>
+      {/* The mark from public/brand/bhashafix-mark.svg, inlined so it inherits
+          the theme colour instead of shipping two colour variants. */}
+      <svg
+        className="bf-mark"
+        viewBox="0 0 64 64"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+          <path
+            strokeWidth="4"
+            d="M11 31c0-12 8-21 21-21 12 0 21 8 21 20 0 12-9 21-22 21H20l-9 7 3-13c-2-4-3-8-3-14Z"
+          />
+          <path
+            strokeWidth="2.5"
+            opacity=".72"
+            d="M18 27c5-8 19-11 29-3M17 37c8 6 21 7 30 0M25 14c-4 10-3 23 2 34M40 13c4 9 3 18 0 26"
+          />
+          <path strokeWidth="5" d="m28 33 6 6 13-15" />
+        </g>
+      </svg>
       {wordmark && (
         <span className="bf-wordmark">
           Bhasha<span>Fix</span>
@@ -210,97 +228,235 @@ function PipelineBand() {
 }
 
 /**
- * Kept under the `.language-orbit` class because the motion contract test
- * measures that element. It is no longer an orbit: it is a static specimen
- * column that renders each sample in its own declared language so the browser
- * selects the right script shaping.
+ * The four language names the hero cycles through, each tagged with the
+ * language and direction the browser needs in order to shape the script
+ * correctly. They are stacked on one baseline, so the swap changes the glyphs
+ * without moving anything around them.
  */
-function LocaleSpecimens() {
+const scriptCycle = [
+  ["en", "ltr", "English"],
+  ["ar", "rtl", "العربية"],
+  ["hi", "ltr", "हिन्दी"],
+  ["ja", "ltr", "日本語"],
+] as const;
+
+const SCRIPT_CYCLE_MS = 2400;
+
+/**
+ * Retains the `.language-orbit` class the motion contract test measures. The
+ * swap is a state change with an opacity transition, so `prefers-reduced-motion`
+ * collapses it to an immediate cut rather than removing the information.
+ */
+function ScriptTransition() {
+  const [index, setIndex] = useState(0);
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      if (document.visibilityState !== "visible") return;
+      setIndex((current) => (current + 1) % scriptCycle.length);
+    }, SCRIPT_CYCLE_MS);
+    return () => window.clearInterval(timer);
+  }, []);
   return (
-    <aside className="language-orbit" aria-labelledby="specimen-title">
-      <h2 id="specimen-title">Rendered specimens</h2>
-      <ul>
-        {localeSpecimens.map(([locale, sample, script]) => (
-          <li key={locale}>
-            <span className="specimen-locale">{locale}</span>
-            <strong lang={locale} dir="auto">
-              {sample}
-            </strong>
-            <span className="specimen-script">{script}</span>
-          </li>
-        ))}
-      </ul>
-      <p>
-        Script shaping, direction and font coverage are properties of the
-        rendered page, so BhashaFix measures them in the page.
-      </p>
-    </aside>
+    <p
+      className="language-orbit"
+      role="img"
+      aria-label="Language names set in their own scripts: English, العربية, हिन्दी, 日本語"
+    >
+      {scriptCycle.map(([lang, dir, label], position) => (
+        <span
+          key={lang}
+          lang={lang}
+          dir={dir}
+          aria-hidden="true"
+          data-active={position === index ? "true" : "false"}
+        >
+          {label}
+        </span>
+      ))}
+    </p>
   );
 }
+
+/** Counts taken from the published evidence index, not from this file. */
+const publishedScans = evidenceIndex.realSiteScans.scans;
+const publishedScreenshots = publishedScans.reduce(
+  (total, scan) => total + scan.screenshots.length,
+  0,
+);
+const publishedIssues = publishedScans.reduce(
+  (total, scan) => total + scan.issues,
+  0,
+);
+
+const CLONE_AND_RUN = `git clone https://github.com/vaibhav4046/bhashafix
+cd bhashafix
+pnpm install
+pnpm bhashafix scan --url https://example.com`;
 
 export function LandingPage() {
   const [url, setUrl] = useState("");
   return (
-    <main className="landing-shell">
+    <main className="landing-shell ls-page">
       <Header />
-      <section className="landing-hero">
-        <div className="hero-copy">
-          <p className="hero-kicker">Open-source localisation release engineering</p>
-          <h1>
-            Every language.
-            <br />
-            Every viewport.
-            <br />
-            <em>Evidence before release.</em>
-          </h1>
-          <p className="hero-lede">
-            Paste a website or connect a project. BhashaFix renders every
-            selected locale in real browsers, measures what breaks and gives
-            humans or coding agents evidence they can verify.
-          </p>
-          <form
-            className="url-launcher"
-            onSubmit={(event) => {
-              event.preventDefault();
-              window.location.href = `/scan/new?url=${encodeURIComponent(url)}&autorun=1`;
-            }}
-          >
-            <input
-              type="url"
-              placeholder="https://www.example.com"
-              aria-label="Public website URL"
-              value={url}
-              onChange={(event) => setUrl(event.target.value)}
-              required
-            />
-            <button type="submit">Check this site →</button>
-          </form>
-          <p className="hero-truth">
-            Here, a public URL is checked over HTTP: real responses, language
-            metadata and visible text. Rendering every locale in a real browser
-            runs in the CLI or a browser worker, and source repair needs
-            repository access.
-          </p>
-          <ul className="hero-secondary">
-            <li>
-              <Link href="/scan/atlaspay-replay">Verified demo</Link>
-            </li>
-            <li>
-              <Link href="/integrations/cli">CLI</Link>
-            </li>
-            <li>
-              <Link href="/integrations/mcp">MCP</Link>
-            </li>
-          </ul>
+
+      <section className="ls-hero" aria-labelledby="hero-heading">
+        <p className="ls-eyebrow">
+          LOCAL-FIRST LOCALISATION RELEASE FIREWALL · OPEN SOURCE
+        </p>
+        <h1 id="hero-heading" className="ls-hero-heading">
+          <span className="ls-display-line">Your app speaks every language.</span>{" "}
+          <span className="ls-display-line">BhashaFix proves it still works.</span>{" "}
+          <span className="ls-hero-rule">
+            Every language. Every viewport. Evidence before release.
+          </span>
+        </h1>
+        <ScriptTransition />
+        <p className="ls-standfirst">
+          Run one command in your project. BhashaFix opens real browsers, tests
+          every selected locale and viewport, captures evidence, and blocks
+          releases when localisation breaks.
+        </p>
+        <pre className="ls-command ls-command-lead">
+          npx @bhashafix/cli scan --url http://localhost:3000 --locales
+          en-GB,de-DE,ar-SA,ja-JP
+        </pre>
+        <p className="ls-caveat">
+          <b>Not on npm yet.</b> Today that engine runs from a clone or from a
+          tarball you pack yourself. Both routes are two clicks away and both are
+          exercised by this repository&rsquo;s own checks.
+        </p>
+        <div className="ls-actions">
+          <Link className="button" href="/integrations/cli">
+            Run BhashaFix locally →
+          </Link>
+          <Link className="button button-secondary" href="/demo">
+            See the verified demo
+          </Link>
+          <Link className="button button-secondary" href="/integrations/mcp">
+            Connect through MCP
+          </Link>
         </div>
-        <LocaleSpecimens />
+      </section>
+
+      <section className="ls-section ls-choices" aria-labelledby="choices">
+        <h2 id="choices">Three ways to check this, with no setup.</h2>
+        <ol className="ls-choice-list">
+          <li>
+            <p className="ls-eyebrow">A · RECORDED VERIFIED RUN</p>
+            <h3>Watch verified proof.</h3>
+            <p>
+              AtlasPay is a bundled multilingual fixture. The recorded run found{" "}
+              {repairProof.baselineBlocking} blocking predicates, applied a real
+              patch confined to {replayConfig.allowlist.length} allowlisted
+              files, reran the identical checks and recorded{" "}
+              {repairProof.finalBlocking} blocking predicates with the{" "}
+              {replayConfig.sourceLocale} source locale at{" "}
+              {repairProof.sourceLocaleRegression}.
+            </p>
+            <ul className="ls-chain">
+              <li>{repairProof.baselineBlocking} blocking</li>
+              <li>real patch</li>
+              <li>identical rerun</li>
+              <li>{repairProof.finalBlocking} blocking</li>
+              <li>source locale {repairProof.sourceLocaleRegression}</li>
+            </ul>
+            <Link className="text-action" href="/demo">
+              Open the recorded proof →
+            </Link>
+          </li>
+          <li>
+            <p className="ls-eyebrow">
+              B · REAL CHROMIUM SCAN · Generated through the BhashaFix CLI
+            </p>
+            <h3>Inspect a real external scan.</h3>
+            <p>
+              {publishedScans.length} public sites —{" "}
+              {publishedScans.map((scan) => scan.name).join(", ")} — scanned
+              locally and published byte for byte: scan IDs, routes, locales,
+              timestamps, {publishedIssues} recorded issues and{" "}
+              {publishedScreenshots} screenshots with their SHA-256.
+            </p>
+            <ul className="ls-chain">
+              {publishedScans.map((scan) => (
+                <li key={scan.scanId}>
+                  {new URL(scan.target).hostname} · {scan.issues} issues
+                </li>
+              ))}
+            </ul>
+            <Link className="text-action" href="/evidence">
+              Read the published artifacts →
+            </Link>
+          </li>
+          <li>
+            <p className="ls-eyebrow">C · YOUR MACHINE</p>
+            <h3>Run it yourself.</h3>
+            <pre className="ls-command">{CLONE_AND_RUN}</pre>
+            <p>
+              The npm package is not published, so a clone is the shortest path.
+              If you want the installed binary instead, the CLI page has the{" "}
+              <code>pnpm pack</code> route that produces the same executable.
+            </p>
+            <Link className="text-action" href="/integrations/cli">
+              Both install routes →
+            </Link>
+          </li>
+        </ol>
       </section>
 
       <PipelineBand />
 
-      <section className="landing-registry">
-        <h2>Locale-agnostic by design.</h2>
-        <ul aria-label="Representative locales">
+      <section className="ls-section ls-boundary" aria-labelledby="boundary">
+        <h2 id="boundary">Where the engine runs</h2>
+        <div className="ls-boundary-grid">
+          <div>
+            <h3>Inside your environment</h3>
+            <ul>
+              <li>Chromium, and the pages it renders</li>
+              <li>Your repository source and credentials</li>
+              <li>Every repair operation and its rollback snapshot</li>
+              <li>The scan record, screenshots and diffs a run writes</li>
+            </ul>
+          </div>
+          <div>
+            <h3>On this site</h3>
+            <ul>
+              <li>The product explanation and the guided demo</li>
+              <li>Published artifacts from runs that already happened</li>
+              <li>
+                A report console that opens a bundle you produced, in your
+                browser
+              </li>
+              <li>A quick HTTP preflight, below</li>
+            </ul>
+          </div>
+        </div>
+        <p className="ls-caveat">
+          This deployment does not run a browser. That is the design: browsers,
+          source code and repair operations stay inside the developer&rsquo;s
+          environment by default, and a portable report can be shared without
+          uploading a repository.
+        </p>
+        <div className="ls-actions">
+          <Link className="button button-secondary" href="/import">
+            Open a report bundle →
+          </Link>
+        </div>
+      </section>
+
+      <section className="ls-section ls-specimens" aria-labelledby="specimens">
+        <h2 id="specimens">Script shaping is measured in the page.</h2>
+        <ul className="ls-specimen-row">
+          {localeSpecimens.map(([locale, sample, script]) => (
+            <li key={locale}>
+              <span>{locale}</span>
+              <strong lang={locale} dir="auto">
+                {sample}
+              </strong>
+              <em>{script}</em>
+            </li>
+          ))}
+        </ul>
+        <ul className="ls-locale-registry" aria-label="Representative locales">
           {[
             "en-GB",
             "hi-IN",
@@ -325,39 +481,41 @@ export function LandingPage() {
         <TrustClaim />
       </section>
 
-      <section className="replay-footnote">
-        <p className="origin-label">RECORDED_REPLAY</p>
-        <h2>A bundled reference run, not this product&rsquo;s headline.</h2>
-        <p>
-          The artifacts under <code>/replay</code> came from a genuine local
-          AtlasPay run: {repairProof.baselineBlocking} verified blocking
-          predicates before a bounded repair and {repairProof.finalBlocking}{" "}
-          after, with the {replayConfig.sourceLocale} source regression recorded
-          as {repairProof.sourceLocaleRegression}. It is kept for inspection, it
-          is not evidence about your site.
+      <section className="ls-section ls-preflight" aria-labelledby="preflight">
+        <h2 id="preflight">Quick HTTP preflight</h2>
+        <p className="ls-standfirst">
+          Checks reachability, metadata and static translation signals. No
+          browser rendering.
         </p>
-        <Link className="text-action" href="/scan/atlaspay-replay">
-          Open the recorded evidence →
-        </Link>
+        <form
+          className="url-launcher"
+          onSubmit={(event) => {
+            event.preventDefault();
+            window.location.href = `/scan/new?url=${encodeURIComponent(url)}&autorun=1`;
+          }}
+        >
+          <input
+            type="url"
+            placeholder="https://www.example.com"
+            aria-label="Public website URL"
+            value={url}
+            onChange={(event) => setUrl(event.target.value)}
+            required
+          />
+          <button type="submit">Check this site →</button>
+        </form>
+        <p className="ls-note">
+          A preflight reads real HTTP responses, declared language and direction,
+          and visible text. It never renders a locale in a browser, measures
+          layout, runs axe, or touches source — those need the local run above.
+        </p>
       </section>
 
-      <section className="landing-cta">
-        <h2>
-          Test. Repair. <em>Prove it.</em>
-        </h2>
-        <div>
-          <Link className="button" href="/scan/new">
-            Start a scan →
-          </Link>
-          <Link className="button button-secondary" href="/docs">
-            Read the documentation
-          </Link>
-        </div>
-      </section>
       <Footer />
     </main>
   );
 }
+
 
 function Footer() {
   return (
@@ -373,11 +531,18 @@ function Footer() {
   );
 }
 
-function AppShell({ children }: { children: React.ReactNode }) {
+export function AppShell({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
-    <main className="app-page">
+    <main className={className ? `app-page ${className}` : "app-page"}>
       <Header />
       {children}
+      <Footer />
     </main>
   );
 }
@@ -3305,31 +3470,13 @@ export function IntegrationsPage() {
   );
 }
 
+/** The CI surface. The CLI and MCP surfaces have their own pages. */
 export function IntegrationDetailPage({
   integration,
 }: {
-  integration: "cli" | "mcp" | "ci";
+  integration: "ci";
 }) {
-  const content = {
-    cli: {
-      eyebrow: "LOCAL AND CI EXECUTION",
-      title: "Run the full browser scanner locally.",
-      body: "The CLI keeps repository source and credentials on your machine, renders with Playwright and returns stable exit codes.",
-      command: `pnpm bhashafix scan --url http://localhost:3000 \\\n+  --source-locale en-GB --locales hi-IN,ar-SA,ja-JP,de-DE \\\n+  --viewports mobile,desktop --no-ai`,
-    },
-    mcp: {
-      eyebrow: "STRUCTURED AGENT INTEGRATION",
-      title: "Give coding agents evidence, not guesses.",
-      body: "The local STDIO server exposes strict scan, issue, report, dry-run repair and identical-verification tools.",
-      command: `{\n  "mcpServers": {\n    "bhashafix": {\n      "command": "node",\n      "args": ["packages/mcp/dist/server.js"]\n    }\n  }\n}`,
-    },
-    ci: {
-      eyebrow: "SEVERITY-AWARE RELEASE GATE",
-      title: "Run identical checks in GitHub Actions.",
-      body: "The workflow installs Chromium, runs the shared engine, uploads evidence and fails only at the configured threshold.",
-      command: `pnpm install --frozen-lockfile\npnpm exec playwright install chromium\npnpm bhashafix ci --config .bhashafix/config.yml --fail-on blocking`,
-    },
-  }[integration];
+  void integration;
   return (
     <AppShell>
       <section className="docs-layout integration-detail">
@@ -3339,39 +3486,246 @@ export function IntegrationDetailPage({
           <Link href="/integrations/ci">CI</Link>
         </aside>
         <article>
-          <span>{content.eyebrow}</span>
-          <h1>{content.title}</h1>
-          <p className="docs-lede">{content.body}</p>
-          <section><h2>Working setup</h2><pre>{content.command}</pre></section>
-          <section><h2>Truth boundary</h2><p>{integration === "cli" ? "Local browser support depends on installed Playwright runtimes. Provider-backed linguistic review remains optional." : integration === "mcp" ? "STDIO is the supported MVP transport. Repair tools require an explicit scan, issue IDs, allowlisted paths and dry-run review." : "The repository includes the workflow, but no remote status badge is shown until an authenticated GitHub run exists."}</p></section>
-          <Link className="button" href="/docs">Read full documentation →</Link>
+          <span>SEVERITY-AWARE RELEASE GATE</span>
+          <h1>Run identical checks in GitHub Actions.</h1>
+          <p className="docs-lede">
+            The workflow installs Chromium, runs the shared engine, uploads
+            evidence and fails only at the configured threshold.
+          </p>
+          <section>
+            <h2>Working setup</h2>
+            <pre>{`pnpm install --frozen-lockfile
+pnpm exec playwright install chromium
+pnpm bhashafix ci --config .bhashafix/config.yml --fail-on blocking`}</pre>
+          </section>
+          <section>
+            <h2>Truth boundary</h2>
+            <p>
+              The repository includes the workflow, but no remote status badge is
+              shown until an authenticated GitHub run exists.
+            </p>
+          </section>
+          <Link className="button" href="/docs">
+            Read full documentation →
+          </Link>
         </article>
       </section>
     </AppShell>
   );
 }
 
+/** Rule counts for the recorded replay, taken from the artifact itself. */
+const replayRuleCounts = baselineScan.issues.reduce<Record<string, number>>(
+  (counts, issue) => ({
+    ...counts,
+    [issue.ruleId]: (counts[issue.ruleId] ?? 0) + 1,
+  }),
+  {},
+);
+
 export function DemoPage() {
+  const verification = replayReport.verification;
   return (
-    <AppShell>
-      <section className="demo-index">
-        <span>GUIDED_DEMO</span>
-        <h1>See a real repair proof without pretending it is your website.</h1>
-        <p>
-          AtlasPay is a bundled multilingual fixture with ten deterministic
-          failures, a bounded source patch and an identical-test rerun.
+    <AppShell className="ls-page">
+      <header className="ls-masthead">
+        <p className="ls-eyebrow">RECORDED VERIFIED RUN · {repairProof.origin}</p>
+        <h1>
+          <span className="ls-display-line">Ten blocking predicates.</span>{" "}
+          <span className="ls-display-line">One bounded patch. Zero left.</span>
+        </h1>
+        <p className="ls-standfirst">
+          AtlasPay is a bundled multilingual fixture, not a customer. The run
+          below happened locally, wrote its artifacts into{" "}
+          <code>/replay</code>, and is replayed here exactly as recorded. Opening
+          this page does not rerun anything.
         </p>
-        <div className="demo-proof-strip">
-          <article><small>BASELINE</small><strong>{repairProof.baselineBlocking}</strong><span>verified blocking predicates</span></article>
-          <i>→</i>
-          <article><small>FINAL</small><strong>{repairProof.finalBlocking}</strong><span>blocking predicates</span></article>
-          <article><small>SOURCE LOCALE</small><strong>{repairProof.sourceLocaleRegression}</strong><span>regression result</span></article>
+        <ol className="ls-proof-chain">
+          <li>
+            <b>{repairProof.baselineBlocking}</b>
+            <span>blocking predicates</span>
+          </li>
+          <li>
+            <b>{replayConfig.allowlist.length}</b>
+            <span>files patched, allowlisted</span>
+          </li>
+          <li>
+            <b>identical</b>
+            <span>predicates rerun</span>
+          </li>
+          <li>
+            <b>{repairProof.finalBlocking}</b>
+            <span>blocking predicates</span>
+          </li>
+          <li>
+            <b>{repairProof.sourceLocaleRegression}</b>
+            <span>{replayConfig.sourceLocale} source locale</span>
+          </li>
+        </ol>
+      </header>
+
+      <section className="ls-section" aria-labelledby="demo-record">
+        <h2 id="demo-record">The run record</h2>
+        <div className="ls-scroll">
+          <table className="ls-table">
+            <tbody>
+              <tr>
+                <th scope="row">Baseline scan</th>
+                <td>
+                  <code>{repairProof.baselineScanId}</code>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">Verification scan</th>
+                <td>
+                  <code>{repairProof.verificationScanId}</code>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">Mode</th>
+                <td>
+                  {repairProof.mode} ·{" "}
+                  {replayConfig.noAi ? "no-AI deterministic" : "provider-assisted"}
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">Routes</th>
+                <td>{baselineScan.routesDiscovered.join(" · ")}</td>
+              </tr>
+              <tr>
+                <th scope="row">Locales</th>
+                <td>{baselineScan.localesTested.join(" · ")}</td>
+              </tr>
+              <tr>
+                <th scope="row">Viewports · browsers · themes</th>
+                <td>
+                  {replayConfig.viewports
+                    .map((viewport) => `${viewport.name} ${viewport.width}×${viewport.height}`)
+                    .join(", ")}{" "}
+                  · {replayConfig.browsers.join(", ")} ·{" "}
+                  {replayConfig.themes.join(", ")}
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">Recorded</th>
+                <td>
+                  {baselineScan.startedAt} → {baselineScan.completedAt}
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">Proof generated</th>
+                <td>{repairProof.generatedAt}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-        <div className="hero-actions">
-          <Link className="button" href="/scan/atlaspay-replay/overview">Open evidence workspace →</Link>
-          <Link className="button button-secondary" href="/demo/atlaspay/report">Open proof report</Link>
+      </section>
+
+      <section className="ls-section" aria-labelledby="demo-rules">
+        <h2 id="demo-rules">What failed, by rule</h2>
+        <ul className="ls-rule-tally">
+          {Object.entries(replayRuleCounts).map(([ruleId, count]) => (
+            <li key={ruleId}>
+              <b>{count}</b>
+              <span>{ruleLabel(ruleId)}</span>
+            </li>
+          ))}
+        </ul>
+        <p className="ls-note">
+          {baselineScan.issues.length} recorded issues across{" "}
+          {baselineScan.routesDiscovered.length} routes and{" "}
+          {baselineScan.localesTested.length} locales. Each one stores the
+          measurement taken and the predicate it failed; the workspace shows them
+          against the fixture itself.
+        </p>
+      </section>
+
+      <section className="ls-section" aria-labelledby="demo-patch">
+        <h2 id="demo-patch">The patch</h2>
+        <ul className="ls-manifest">
+          {replayConfig.allowlist.map((path) => (
+            <li key={path}>
+              <code>{path}</code>
+              <span>allowlisted for repair</span>
+            </li>
+          ))}
+        </ul>
+        <p className="ls-note">
+          The repair could touch nothing outside that list. The diff itself is
+          published at <a href="/replay/repair.patch">/replay/repair.patch</a>.
+        </p>
+      </section>
+
+      <section className="ls-section" aria-labelledby="demo-verification">
+        <h2 id="demo-verification">Verification</h2>
+        <div className="ls-verification" data-revealed="true">
+          <p className="ls-verdict">
+            {verification.baselineBlocking} → {verification.finalBlocking}
+            <b>{verification.status}</b>
+          </p>
+          <dl>
+            <dt>Verified at</dt>
+            <dd>{verification.verifiedAt}</dd>
+            <dt>Source-locale regression</dt>
+            <dd>{verification.sourceLocaleRegression}</dd>
+            <dt>New blocking issues</dt>
+            <dd>{verification.newBlockingIssues}</dd>
+            <dt>Console error delta</dt>
+            <dd>{recordedFlag(verification.consoleErrorDelta)}</dd>
+            <dt>Accessibility regression</dt>
+            <dd>{recordedFlag(verification.accessibilityRegression)}</dd>
+            <dt>Diff within policy</dt>
+            <dd>{recordedFlag(verification.diffWithinPolicy)}</dd>
+          </dl>
+          <p className="ls-note">
+            Recorded as not measured on this path, so not readable as a pass:{" "}
+            {verification.notMeasured.join(", ")}.
+          </p>
         </div>
-        <p className="trust-claim">Origin shown in exports: RECORDED_REPLAY. The fixture run is genuine; opening this page does not rerun it.</p>
+      </section>
+
+      <section className="ls-section" aria-labelledby="demo-exports">
+        <h2 id="demo-exports">Portable exports the run wrote</h2>
+        <ul className="ls-manifest">
+          {replayArtifacts.map(([label, href]) => (
+            <li key={href}>
+              <a href={href}>{href}</a>
+              <span>{label}</span>
+            </li>
+          ))}
+        </ul>
+        <p className="ls-note">
+          The post-repair exports are deliberately empty: after the patch there
+          was no issue left to list.
+        </p>
+      </section>
+
+      <section className="ls-section ls-limits" aria-labelledby="demo-limits">
+        <h2 id="demo-limits">What this proves and what it does not</h2>
+        <ul>
+          <li>
+            It proves the engine detects, repairs and reverifies a defined set of
+            localisation defects with the identical predicates.
+          </li>
+          <li>
+            It is a fixture, so it says nothing about your site. For third-party
+            targets, the published external scans are the honest comparison.
+          </li>
+          <li>
+            Fields the run did not measure are published as not measured. They
+            are never rolled into the verdict.
+          </li>
+        </ul>
+        <div className="ls-actions">
+          <Link className="button" href="/scan/atlaspay-replay/overview">
+            Open the evidence workspace →
+          </Link>
+          <Link className="button button-secondary" href="/scan/atlaspay-replay/report">
+            Open the proof report
+          </Link>
+          <Link className="button button-secondary" href="/evidence">
+            Inspect a real external scan
+          </Link>
+        </div>
       </section>
     </AppShell>
   );

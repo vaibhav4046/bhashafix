@@ -78,7 +78,7 @@ for (const entry of realSites.scans) {
   // Strip the absolute project root: it is a developer machine path and it is
   // not evidence about the target.
   const config = scan.config as Record<string, unknown>;
-  const publishedScan = {
+  const publishedScan: Record<string, unknown> = {
     ...scan,
     config: { ...config, projectRoot: "<local project root>" },
   };

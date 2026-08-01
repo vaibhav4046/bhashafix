@@ -32,7 +32,6 @@ const inspectPath = `${deckPath}.inspect.ndjson`;
 
 const INK = "12081C";
 const CREAM = "FFFAF0";
-const VIOLET = "9F67FF";
 const SAFFRON = "F4C430";
 const MUTED = "B8AFC4";
 

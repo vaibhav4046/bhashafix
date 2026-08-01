@@ -19,6 +19,9 @@ import {
 } from "@bhashafix/locale-engine";
 import { applyRepair, prepareRepair } from "@bhashafix/repair-engine";
 import { runBrowserProjectScan } from "./browser-scan";
+import { displayPath } from "./display-path";
+import { openInViewer, resolveReport, scansDirectory } from "./open-report";
+import { formatScanSummary } from "./scan-summary";
 import { writeReportBundle } from "@bhashafix/report";
 import { verifyRepair } from "@bhashafix/verifier";
 
@@ -76,6 +79,7 @@ Commands:
   translate-preview
               Generate a protected synthetic localisation preview
   scans       List persisted scans, or show one with --scan <id>
+  open        Open the most recent local HTML report in a browser
   issues      List evidence-backed issues
   translate   Generate missing translations through a configured provider
   diagnose    Compatibility alias for issues
@@ -94,8 +98,31 @@ Options:
   --text <value> --locale <bcp47> --mode <pseudo-mode> --scan <id>
   --config <path> --fail-on <blocking|warning|advisory>
 
+Examples:
+  bhashafix doctor
+  bhashafix locales
+  bhashafix scan --url https://example.com
+  bhashafix scan --url https://example.com --locales en-GB,de-DE --viewports mobile
+  bhashafix open
+  bhashafix scans
+  bhashafix crawl --url https://example.com
+  bhashafix extract --url https://example.com
+  bhashafix translate-preview --locale ar-SA --text "Pay {amount} with AtlasPay"
+
 Exit codes: 0 passed · 1 blocking issues · 2 invalid config ·
             3 target unavailable · 4 runtime failure · 5 provider failure`;
+
+/**
+ * Split a comma-separated list flag.
+ *
+ * PowerShell reads an unquoted `a,b` as an array and hands it to a native
+ * command as two space-separated words, so the identical command line that
+ * works in bash arrives here already split. Accepting either separator lets one
+ * documented example work in both shells.
+ */
+function splitList(value: string): string[] {
+  return value.split(/[\s,]+/).filter((entry) => entry.length > 0);
+}
 
 function parseArgs(args: string[]) {
   const command = args[0] ?? "help";
@@ -119,23 +146,25 @@ function parseArgs(args: string[]) {
       options.sourceLocale = localeProfile(value).canonical;
     }
     if (args[index] === "--locales" && value) {
-      options.locales = value.split(",").map((locale) => localeProfile(locale).canonical);
+      options.locales = splitList(value).map(
+        (locale) => localeProfile(locale).canonical,
+      );
     }
     if (args[index] === "--routes" && value) {
-      options.routes = value.split(",").map((route) => {
+      options.routes = splitList(value).map((route) => {
         if (!route.startsWith("/")) throw new Error(`Invalid route "${route}".`);
         return route;
       });
     }
     if (args[index] === "--viewports" && value) {
-      const viewports = value.split(",");
+      const viewports = splitList(value);
       if (viewports.some((viewport) => !["mobile", "tablet", "desktop"].includes(viewport))) {
         throw new Error(`Invalid viewport list "${value}".`);
       }
       options.viewports = viewports;
     }
     if (args[index] === "--themes" && value) {
-      const themes = value.split(",");
+      const themes = splitList(value);
       if (themes.some((theme) => !["light", "dark"].includes(theme))) {
         throw new Error(`Invalid theme list "${value}".`);
       }
@@ -231,21 +260,168 @@ async function readBaseline(projectRoot: string) {
   return JSON.parse(await readFile(file, "utf8"));
 }
 
+type Failure = {
+  /** One sentence naming what went wrong. */
+  message: string;
+  /** The command or change that fixes it, when there is a specific one. */
+  remedy: string | null;
+  exit: number;
+};
+
+/** The exit-code mapping this CLI has always used for unclassified errors. */
+function fallbackExit(message: string) {
+  return /config|locale|allowlist|issue ID|required/i.test(message)
+    ? EXIT.invalidConfig
+    : /fetch|target|URL|ENOTFOUND|ECONN/i.test(message)
+      ? EXIT.unavailable
+      : EXIT.runtime;
+}
+
+/**
+ * Describe a failure in terms a user can act on.
+ *
+ * Playwright and Chromium report expected conditions — a browser that was
+ * never downloaded, a host that does not resolve — as multi-line diagnostics
+ * with stack traces. Those are the common failures, so each one gets a
+ * sentence and, where one exists, the command that fixes it.
+ */
+function describeFailure(error: unknown): Failure {
+  const raw = redactSecrets(
+    error instanceof Error ? error.message : String(error),
+  );
+  const first =
+    raw
+      .split("\n")
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0 && !/^at\s/.test(line))[0] ?? raw;
+
+  if (/Executable doesn't exist|playwright install/i.test(raw)) {
+    return {
+      message: "The Chromium build Playwright needs is not installed here.",
+      remedy: 'Run "npx playwright install chromium", then try again.',
+      exit: EXIT.runtime,
+    };
+  }
+  if (/Playwright is not installed/i.test(raw)) {
+    return {
+      message: "Playwright is not installed alongside this CLI.",
+      remedy:
+        'Run "npm install playwright" and then "npx playwright install chromium".',
+      exit: EXIT.runtime,
+    };
+  }
+  if (/ERR_NAME_NOT_RESOLVED|ENOTFOUND|EAI_AGAIN|getaddrinfo/i.test(raw)) {
+    return {
+      message: "The target host could not be resolved.",
+      remedy: "Check the spelling of --url and this machine's network access.",
+      exit: EXIT.unavailable,
+    };
+  }
+  if (/ERR_CONNECTION_REFUSED|ECONNREFUSED/i.test(raw)) {
+    return {
+      message: "Nothing accepted a connection at the target address.",
+      remedy: "Start the site, or point --url at an origin that is already serving.",
+      exit: EXIT.unavailable,
+    };
+  }
+  if (/ERR_CERT|ERR_SSL|CERT_HAS_EXPIRED|self.signed certificate/i.test(raw)) {
+    return {
+      message: "The target rejected the TLS handshake.",
+      remedy: "Fix the certificate, or scan the http:// origin instead.",
+      exit: EXIT.unavailable,
+    };
+  }
+  if (/Timeout .*exceeded|ERR_TIMED_OUT|ETIMEDOUT/i.test(raw)) {
+    return {
+      message: "The target did not finish loading before the render timeout.",
+      remedy:
+        "Confirm the URL responds, then narrow --routes, --locales or --viewports.",
+      exit: EXIT.unavailable,
+    };
+  }
+  if (/ERR_ABORTED|ERR_EMPTY_RESPONSE|ERR_CONNECTION_RESET/i.test(raw)) {
+    return {
+      message: "The target closed the connection while the page was loading.",
+      remedy: "Confirm the URL serves HTML, then try again.",
+      exit: EXIT.unavailable,
+    };
+  }
+  if (/axe could not be run/i.test(raw)) {
+    return {
+      message: "The accessibility pass could not run on the rendered page.",
+      remedy: 'Install "@axe-core/playwright" alongside the CLI, then rescan.',
+      exit: EXIT.runtime,
+    };
+  }
+  return { message: first, remedy: null, exit: fallbackExit(raw) };
+}
+
+/**
+ * Run the browser work with Ctrl+C handled.
+ *
+ * Playwright installs its own SIGINT and process-exit handlers when it launches
+ * a browser, which close and then kill the browser it started. This handler
+ * runs first, so the interruption is reported as one line instead of a stack
+ * trace, and a grace window is left for that graceful close before leaving.
+ * A second Ctrl+C leaves immediately.
+ */
+async function withInterruptHandling<T>(
+  io: Io,
+  work: () => Promise<T>,
+): Promise<T> {
+  const graceMs = 3_000;
+  let interrupted = false;
+  const onInterrupt = () => {
+    if (interrupted) {
+      process.exit(130);
+    }
+    interrupted = true;
+    io.error("Interrupted. Closing the browser and exiting.");
+    setTimeout(() => process.exit(130), graceMs).unref();
+  };
+  process.on("SIGINT", onInterrupt);
+  try {
+    return await work();
+  } catch (error) {
+    // Closing the browser aborts the page that was loading. Report that as the
+    // interruption it is rather than blaming the target for the failure.
+    if (interrupted) {
+      throw new Error(
+        "The scan was interrupted before it finished, so no report was written.",
+      );
+    }
+    throw error;
+  } finally {
+    process.off("SIGINT", onInterrupt);
+  }
+}
+
 /** Launch and close a browser so `doctor` reports what actually works here. */
 async function probeBrowser() {
+  const started = Date.now();
   try {
     const { openBrowserSession } = await import("@bhashafix/browser");
     const session = await openBrowserSession();
     const engine = session.engine;
     const remote = session.remote;
     await session.close();
-    return { available: true, engine, remote, error: null as string | null };
+    return {
+      available: true,
+      engine,
+      remote,
+      error: null as string | null,
+      launchMs: Date.now() - started,
+      remedy: null as string | null,
+    };
   } catch (error) {
+    const failure = describeFailure(error);
     return {
       available: false,
       engine: null,
       remote: false,
-      error: error instanceof Error ? error.message.split("\n")[0] : String(error),
+      error: failure.message,
+      launchMs: Date.now() - started,
+      remedy: failure.remedy,
     };
   }
 }
@@ -358,18 +534,21 @@ export async function runCli(
     }
     if (command === "scan") {
       if (options.url) {
-        const outcome = await runBrowserProjectScan({
-          url: options.url,
-          projectRoot: options.project,
-          sourceLocale: options.sourceLocale,
-          locales: options.locales,
-          routes: options.routes,
-          viewports: options.viewports,
-          themes: options.themes,
-          onProgress: options.verbose
-            ? (message) => io.error(`· ${message}`)
-            : undefined,
-        });
+        const url = options.url;
+        const outcome = await withInterruptHandling(io, () =>
+          runBrowserProjectScan({
+            url,
+            projectRoot: options.project,
+            sourceLocale: options.sourceLocale,
+            locales: options.locales,
+            routes: options.routes,
+            viewports: options.viewports,
+            themes: options.themes,
+            onProgress: options.verbose
+              ? (message) => io.error(`· ${message}`)
+              : undefined,
+          }),
+        );
         await writeFile(
           path.join(options.project, ".bhashafix", "baseline-scan.json"),
           `${JSON.stringify(outcome.scan, null, 2)}\n`,
@@ -380,20 +559,35 @@ export async function runCli(
             `${JSON.stringify(outcome.scan, null, 2)}\n`,
           );
         }
+        const exitCode = outcome.scan.issues.some(
+          (issue) => issue.severity === "blocking",
+        )
+          ? EXIT.blocking
+          : EXIT.passed;
         emit(
           io,
           options,
-          { ...outcome.scan, artifacts: { directory: outcome.artifactDir, screenshots: outcome.screenshots } },
-          [
-            outcome.scan.scanId,
-            `${outcome.renderCount} browser render(s) on ${outcome.scan.config.browsers[0]}${outcome.remote ? " (remote)" : ""}.`,
-            `${outcome.scan.issues.length} measured issue(s) across ${outcome.scan.routesDiscovered.length} route(s) and ${outcome.scan.localesTested.length} locale(s).`,
-            `${outcome.screenshots.length} screenshot(s) in ${outcome.artifactDir}`,
-          ].join("\n"),
+          {
+            ...outcome.scan,
+            artifacts: {
+              directory: outcome.artifactDir,
+              screenshots: outcome.screenshots,
+              report: outcome.reportPath,
+            },
+            stages: outcome.stages,
+          },
+          formatScanSummary({
+            scan: outcome.scan,
+            stages: outcome.stages,
+            engine: outcome.engine,
+            remote: outcome.remote,
+            reportPath: outcome.reportPath,
+            artifactDir: outcome.artifactDir,
+            screenshots: outcome.screenshotsOnDisk,
+            exitCode,
+          }),
         );
-        return outcome.scan.issues.some((issue) => issue.severity === "blocking")
-          ? EXIT.blocking
-          : EXIT.passed;
+        return exitCode;
       }
       const scan = await scanLocalProject(options.project, options);
       await mkdir(path.join(options.project, ".bhashafix"), { recursive: true });
@@ -455,6 +649,38 @@ export async function runCli(
       } finally {
         await store.close();
       }
+    }
+    if (command === "open") {
+      const directory = displayPath(scansDirectory(options.project), {
+        directory: true,
+      });
+      const resolved = await resolveReport(options.project, options.scanId);
+      if (!resolved) {
+        io.error(
+          options.scanId
+            ? `No report.html for scan "${options.scanId}" in ${directory}. Run "bhashafix scan --url <url>" to produce one.`
+            : `No local report found in ${directory}. Run "bhashafix scan --url <url>" first, then "bhashafix open".`,
+        );
+        return EXIT.invalidConfig;
+      }
+      const shown = displayPath(resolved.reportPath);
+      try {
+        await openInViewer(resolved.reportPath);
+      } catch (error) {
+        io.error(
+          `${error instanceof Error ? error.message : String(error)} Open this file yourself: ${shown}`,
+        );
+        return EXIT.runtime;
+      }
+      emit(
+        io,
+        options,
+        { ...resolved, opened: true },
+        `Opened ${shown}\nScan ${resolved.scanId} (resolved from the ${
+          resolved.source === "requested" ? "--scan argument" : `${resolved.source}`
+        }).`,
+      );
+      return EXIT.passed;
     }
     if (command === "issues" || command === "diagnose") {
       const scan = await scanLocalProject(options.project, options);
@@ -587,9 +813,13 @@ export async function runCli(
         options,
         report,
         [
-          `Node ${report.node}: ${report.nodeSupported ? "PASS" : "FAIL"}`,
-          "No-AI deterministic mode: PASS",
-          `Browser rendering: ${browser.available ? `PASS (${browser.engine}${browser.remote ? ", remote" : ", local"})` : `UNAVAILABLE — ${browser.error}`}`,
+          report.nodeSupported
+            ? `Node ${report.node}: PASS`
+            : `Node ${report.node}: FAIL — BhashaFix needs Node 22 or newer. Upgrade Node, then re-run "bhashafix doctor".`,
+          "No-AI deterministic mode: PASS — every check runs locally and needs no model provider or API key.",
+          browser.available
+            ? `Browser rendering: PASS — ${browser.engine} launched from a ${browser.remote ? "remote endpoint" : "local install"} in ${browser.launchMs} ms, so "bhashafix scan --url" will render pages for real.`
+            : `Browser rendering: UNAVAILABLE — ${browser.error}${browser.remedy ? ` ${browser.remedy}` : ""} Until then "bhashafix scan --url" cannot run, but "bhashafix scan --project" still does its deterministic checks.`,
         ].join("\n"),
       );
       return report.nodeSupported ? EXIT.passed : EXIT.runtime;
@@ -597,15 +827,13 @@ export async function runCli(
     io.error(`Unknown command "${command}".\n\n${HELP}`);
     return EXIT.invalidConfig;
   } catch (error) {
-    const message = redactSecrets(
-      error instanceof Error ? error.message : String(error),
+    const failure = describeFailure(error);
+    io.error(
+      failure.remedy
+        ? `${failure.message}\n${failure.remedy}`
+        : failure.message,
     );
-    io.error(message);
-    return /config|locale|allowlist|issue ID|required/i.test(message)
-      ? EXIT.invalidConfig
-      : /fetch|target|URL|ENOTFOUND|ECONN/i.test(message)
-        ? EXIT.unavailable
-        : EXIT.runtime;
+    return failure.exit;
   }
 }
 
