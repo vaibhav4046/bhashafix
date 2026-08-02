@@ -34,6 +34,30 @@ const VIEWPORTS = {
   desktop: { name: "desktop", width: 1440, height: 900 },
 } as const;
 
+/**
+ * Turn a rejected target into something a person can act on.
+ *
+ * The safety messages from the URL policy are already written for humans and
+ * are passed through. A DNS failure arrives as a raw libuv string, which is
+ * not.
+ */
+function describeTargetRejection(error: unknown, url: string): string {
+  const message = error instanceof Error ? error.message : String(error);
+  if (/getaddrinfo|ENOTFOUND|EAI_AGAIN|EBUSY/i.test(message)) {
+    let host = url;
+    try {
+      host = new URL(url).hostname;
+    } catch {
+      /* keep the raw input */
+    }
+    return `${host} could not be resolved. Check the domain and try again.`;
+  }
+  if (/ECONNREFUSED/i.test(message)) {
+    return "The target refused the connection.";
+  }
+  return message;
+}
+
 /** One browser per instance: a second concurrent launch exhausts the memory. */
 let active = 0;
 
@@ -50,7 +74,22 @@ export async function POST(request: NextRequest) {
 
   let input: z.infer<typeof InputSchema>;
   try {
-    input = InputSchema.parse(await request.json());
+    const parsed = InputSchema.safeParse(await request.json());
+    if (!parsed.success) {
+      // A caller gets a sentence, not a serialised validation tree.
+      const first = parsed.error.issues[0];
+      const field = first?.path.join(".") || "request";
+      return NextResponse.json(
+        {
+          error:
+            field === "url"
+              ? "That is not a valid URL. Include the scheme, for example https://example.com."
+              : `${field}: ${first?.message ?? "is not valid"}.`,
+        },
+        { status: 400 },
+      );
+    }
+    input = parsed.data;
     localeProfile(input.sourceLocale);
     input.locales.forEach(localeProfile);
   } catch (error) {
@@ -65,7 +104,7 @@ export async function POST(request: NextRequest) {
     target = await validateTargetUrl(input.url, { hosted: true, allowLocalhost: false });
   } catch (error) {
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Target rejected." },
+      { error: describeTargetRejection(error, input.url) },
       { status: 400 },
     );
   }
