@@ -20,7 +20,9 @@ test("a visitor can scan a real site from the homepage", async ({ page }) => {
   await page.goto(productionUrl, { waitUntil: "domcontentloaded" });
 
   await page.getByLabel("Public URL").fill("https://example.com");
-  await page.getByLabel("Locale to test").selectOption("ar-SA");
+  await page.getByLabel("Page locale").fill("en-US");
+  await page.getByLabel("Target locale").fill("ar-SA");
+  await page.getByLabel("Viewport", { exact: true }).selectOption("mobile");
   await page.getByRole("button", { name: /Render and measure/ }).click();
 
   // Cold start plus two renders. Generous, but it must finish.
@@ -29,6 +31,9 @@ test("a visitor can scan a real site from the homepage", async ({ page }) => {
 
   await expect(result).toContainText("LIVE_PUBLIC_BROWSER_SCAN");
   await expect(result).toContainText("chromium");
+  await expect(
+    result.getByRole("button", { name: "Download JSON evidence ↓" }),
+  ).toBeVisible();
 
   // The screenshots must be real images the function returned, not placeholders.
   const shots = result.locator(".ls-render-strip img");

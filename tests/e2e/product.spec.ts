@@ -24,6 +24,11 @@ test("landing page is responsive, themeable and accessible", async ({ page }) =>
       name: "Every language. Every viewport. Evidence before release.",
     }),
   ).toBeVisible();
+  await expect(page.getByLabel("Page locale")).toHaveValue("en-GB");
+  await page.getByLabel("Target locale").fill("sw-KE");
+  await expect(page.getByLabel("Target locale")).toHaveValue("sw-KE");
+  await page.getByLabel("Viewport", { exact: true }).selectOption("desktop");
+  await expect(page.getByLabel("Viewport", { exact: true })).toHaveValue("desktop");
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth,

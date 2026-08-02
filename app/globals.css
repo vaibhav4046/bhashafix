@@ -19,6 +19,19 @@
   --border: rgba(216, 180, 254, 0.18);
   --border-strong: rgba(216, 180, 254, 0.34);
   --shadow: 0 30px 80px rgba(0, 0, 0, 0.32);
+  /* The scarce accent, resolved per theme so focus rings and hairline
+     accents keep contrast on both backgrounds. */
+  --saffron-500: #f4c430;
+  /* Layered depth for interactive surfaces: a soft ambient rest state, a
+     deepened lift for hover, and a compressed press state. No glow. */
+  --shadow-ambient: 0 1px 2px rgba(0, 0, 0, 0.24), 0 4px 14px rgba(0, 0, 0, 0.18);
+  --shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.28), 0 12px 28px rgba(0, 0, 0, 0.26);
+  --shadow-press: 0 1px 1px rgba(0, 0, 0, 0.28);
+  --row-hover: color-mix(in oklab, var(--lavender) 7%, transparent);
+  /* One easing and two durations for every micro-interaction. */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --t-fast: 140ms;
+  --t-med: 180ms;
   /* Exactly two corner radii exist in the system: a square-ish 3px for every
      panel and control, and a pill for tags. Nothing else. */
   --radius-sm: 3px;
@@ -45,6 +58,11 @@
   --border: rgba(109, 40, 217, 0.16);
   --border-strong: rgba(109, 40, 217, 0.32);
   --shadow: 0 30px 80px rgba(50, 20, 80, 0.12);
+  --saffron-500: #765600;
+  --shadow-ambient: 0 1px 2px rgba(50, 20, 80, 0.06), 0 4px 14px rgba(50, 20, 80, 0.07);
+  --shadow-lift: 0 2px 4px rgba(50, 20, 80, 0.09), 0 12px 28px rgba(50, 20, 80, 0.12);
+  --shadow-press: 0 1px 1px rgba(50, 20, 80, 0.1);
+  --row-hover: color-mix(in oklab, var(--purple) 6%, transparent);
   color-scheme: light;
 }
 
@@ -90,9 +108,10 @@ button:focus-visible,
 a:focus-visible,
 input:focus-visible,
 select:focus-visible,
-textarea:focus-visible {
-  outline: 3px solid var(--yellow);
-  outline-offset: 3px;
+textarea:focus-visible,
+summary:focus-visible {
+  outline: 2px solid var(--saffron-500);
+  outline-offset: 2px;
 }
 
 code,
@@ -4138,6 +4157,7 @@ pre:focus-visible,
   inset-block-start: 0;
   inset-inline-start: 0;
   opacity: 0;
+  visibility: hidden;
   color: var(--yellow);
   white-space: nowrap;
   transition: opacity var(--ls-swap) var(--ls-ease);
@@ -4145,6 +4165,7 @@ pre:focus-visible,
 
 .language-orbit span[data-active="true"] {
   opacity: 1;
+  visibility: visible;
 }
 
 .ls-standfirst {
@@ -5438,16 +5459,21 @@ pre:focus-visible,
   color: var(--muted);
   word-break: break-all;
 }
-.ls-render-strip {
+/* These rules are scoped to the quick-scan panel. Unscoped, they previously
+   clobbered the designed grid render-strip and issue-list on /evidence and
+   /import, because they sit later in the cascade at equal specificity. */
+.ls-browser-scan .ls-render-strip {
   display: flex;
   gap: 18px;
   flex-wrap: wrap;
 }
-.ls-render-strip figure { margin: 0; max-width: 100%; }
-.ls-render-strip img {
+.ls-browser-scan .ls-render-strip figure { margin: 0; max-width: 100%; }
+.ls-browser-scan .ls-render-strip img {
   display: block;
+  width: auto;
   max-width: 100%;
   height: auto;
+  object-fit: fill;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
 }
@@ -5457,7 +5483,7 @@ pre:focus-visible,
   color: var(--muted);
   font-size: 12px;
 }
-.ls-render-strip figcaption {
+.ls-browser-scan .ls-render-strip figcaption {
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -5465,9 +5491,9 @@ pre:focus-visible,
   font-size: 12px;
   color: var(--muted);
 }
-.ls-issue-list { list-style: none; margin: 0; padding: 0; }
-.ls-issue-list > li { border-top: 1px solid var(--border); }
-.ls-issue-list button {
+.ls-browser-scan .ls-issue-list { list-style: none; margin: 0; padding: 0; }
+.ls-browser-scan .ls-issue-list > li { border-top: 1px solid var(--border); }
+.ls-browser-scan .ls-issue-list button {
   display: flex;
   gap: 14px;
   align-items: baseline;
@@ -5495,4 +5521,416 @@ pre:focus-visible,
 }
 .ls-issue-body dd { margin: 0; font-size: 13px; word-break: break-word; }
 .ls-scan-bounds summary { cursor: pointer; color: var(--muted); font-size: 13px; }
+.ls-scan-bounds summary:hover { color: var(--text); }
+.ls-scan-bounds summary { transition: color var(--t-fast) var(--ease-out); }
 .ls-scan-bounds ul { margin: 10px 0 0; padding-left: 18px; color: var(--muted); font-size: 13px; }
+.ls-scan-bounds[open] ul { animation: lsRise 240ms var(--ease-out) both; }
+
+/* =====================================================================
+   Premium detailing layer
+   ---------------------------------------------------------------------
+   Micro-interactions, layered surface depth, tabular metrics and the
+   quick-scan waiting texture. Every transition here touches only
+   transform, opacity, border-color, color, background-color or
+   box-shadow — never a layout-bound property — and every animation is a
+   short, state-driven fade/rise, so the global reduced-motion reset
+   collapses all of it to an immediate cut. Both themes share these
+   rules through the theme-resolved tokens declared at :root.
+   ===================================================================== */
+
+/* ---- Type rhythm ---- */
+
+.ls-section > h2,
+.pipeline-band > h2,
+.ls-hero-heading,
+.ls-masthead h1 {
+  text-wrap: balance;
+}
+
+.ls-masthead-meta dd,
+.ls-proof-chain b,
+.ls-run-index em,
+.ls-evidence-line b,
+.ls-table td,
+.ls-hash-table td,
+.ls-render-strip span,
+.ls-verification dd,
+.scan-row b {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Buttons: rest shadow, hover lift, pressed state ---- */
+
+.button {
+  box-shadow: var(--shadow-ambient);
+  transition:
+    transform var(--t-fast) var(--ease-out),
+    box-shadow var(--t-fast) var(--ease-out),
+    border-color var(--t-fast) var(--ease-out),
+    background-color 160ms var(--ease-out),
+    color 160ms var(--ease-out);
+}
+
+.button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lift);
+}
+
+.button:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: var(--shadow-press);
+}
+
+.button-secondary {
+  box-shadow: none;
+}
+
+.button-secondary:hover:not(:disabled) {
+  box-shadow: var(--shadow-ambient);
+}
+
+/* ---- Links and quiet controls ---- */
+
+.global-header nav a,
+.text-action,
+.ls-manifest a,
+.scan-row-actions a,
+.scan-row-actions button,
+.empty-scan-row a {
+  transition:
+    color var(--t-fast) var(--ease-out),
+    border-color var(--t-fast) var(--ease-out);
+}
+
+.theme-toggle {
+  transition:
+    color var(--t-fast) var(--ease-out),
+    border-color var(--t-fast) var(--ease-out);
+}
+
+.theme-toggle:hover {
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+
+.theme-toggle:active span {
+  opacity: 0.6;
+}
+
+/* ---- Cards and rows: 1px border + soft ambient depth ---- */
+
+.scan-row,
+.choice-grid > button,
+.ls-run-index button,
+.download-centre a,
+.coverage-option {
+  box-shadow: var(--shadow-ambient);
+  transition:
+    transform var(--t-fast) var(--ease-out),
+    box-shadow var(--t-fast) var(--ease-out),
+    border-color var(--t-fast) var(--ease-out),
+    background-color var(--t-fast) var(--ease-out);
+}
+
+.scan-row:hover,
+.choice-grid > button:hover,
+.download-centre a:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lift);
+}
+
+.scan-row:active,
+.choice-grid > button:active,
+.download-centre a:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-press);
+}
+
+.ls-run-index button:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-lift);
+}
+
+.ls-run-index button:active {
+  box-shadow: var(--shadow-press);
+}
+
+.scan-mode-switcher button,
+.locale-options button,
+.segmented button,
+.issue-filters button,
+.wizard-steps button {
+  transition:
+    color var(--t-fast) var(--ease-out),
+    border-color var(--t-fast) var(--ease-out),
+    background-color var(--t-fast) var(--ease-out);
+}
+
+.scan-mode-switcher button:hover:not(.active) {
+  color: var(--text);
+}
+
+/* ---- Table rows: hairline rules + hover highlight ---- */
+
+.ls-table tbody tr > *,
+.ls-matrix tbody tr > * {
+  transition: background-color var(--t-fast) var(--ease-out);
+}
+
+.ls-table tbody tr:hover > *,
+.ls-matrix tbody tr:hover > * {
+  background-color: var(--row-hover);
+}
+
+/* ---- Evidence screenshots: contained zoom on hover ---- */
+
+.ls-shot-zoom {
+  display: block;
+  overflow: hidden;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--background-elevated);
+}
+
+.ls-shot-zoom img {
+  border: 0;
+  transition: transform var(--t-med) var(--ease-out);
+}
+
+.ls-render-strip > li:hover .ls-shot-zoom img {
+  transform: scale(1.02);
+}
+
+.ls-issue-list button:hover .ls-issue-rule {
+  color: var(--yellow);
+}
+
+.ls-issue-list button .ls-issue-rule,
+.ls-issue-list button .ls-rule {
+  transition: color var(--t-fast) var(--ease-out);
+}
+
+/* The technical panel rises in when an issue is opened. Opacity and a small
+   transform only, so the list never reflows around it. */
+.ls-issue-open,
+.ls-issue-body {
+  animation: lsRise 240ms var(--ease-out) both;
+}
+
+@keyframes lsRise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---- Hero script rotation: crossfade with a settling tracking ease.
+   The spans are absolutely positioned and nowrap, so the tracking ease
+   repaints only the span itself and cannot move surrounding layout.
+   Arabic is excluded because letter-spacing breaks cursive joining. ---- */
+
+.language-orbit span:not([lang="ar"]) {
+  letter-spacing: 0.05em;
+  transition:
+    opacity var(--ls-swap) var(--ls-ease),
+    letter-spacing var(--ls-swap) var(--ls-ease);
+}
+
+.language-orbit span[data-active="true"]:not([lang="ar"]) {
+  letter-spacing: 0.01em;
+}
+
+/* ---- URL launchers: one composed control ---- */
+
+.url-launcher {
+  box-shadow: var(--shadow-ambient);
+  transition:
+    border-color var(--t-fast) var(--ease-out),
+    box-shadow var(--t-fast) var(--ease-out);
+}
+
+.url-launcher:focus-within {
+  border-color: color-mix(in oklab, var(--saffron-500) 60%, var(--border-strong));
+  box-shadow: var(--shadow-lift);
+}
+
+.url-launcher button {
+  transition:
+    background-color var(--t-fast) var(--ease-out),
+    color var(--t-fast) var(--ease-out);
+}
+
+.url-launcher button:hover {
+  background: var(--text);
+  color: var(--background);
+}
+
+/* ---- Quick-scan panel: the hero moment ---- */
+
+.ls-browser-scan .url-launcher {
+  width: min(1180px, 100%);
+  padding: 16px 18px;
+  display: grid;
+  grid-template-columns: minmax(260px, 2fr) minmax(112px, 0.7fr) minmax(112px, 0.7fr) minmax(176px, 1fr) auto;
+  align-items: end;
+}
+
+.ls-scan-field {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.ls-browser-scan .url-launcher input,
+.ls-browser-scan .url-launcher select {
+  width: 100%;
+  min-width: 0;
+}
+
+.ls-browser-scan .url-launcher label {
+  align-self: center;
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.ls-browser-scan .url-launcher input {
+  min-height: 46px;
+  border-bottom: 1px solid var(--border);
+  transition: border-color var(--t-fast) var(--ease-out);
+}
+
+.ls-browser-scan .url-launcher input:focus {
+  border-bottom-color: var(--saffron-500);
+}
+
+.ls-browser-scan .url-launcher button {
+  min-height: 46px;
+  border: 1px solid var(--yellow);
+  border-radius: var(--radius-sm);
+  padding: 12px 20px;
+}
+
+.ls-browser-scan .url-launcher button:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+.ls-result-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.ls-result-actions span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+@media (max-width: 980px) {
+  .ls-browser-scan .url-launcher {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .ls-scan-url-field,
+  .ls-browser-scan .url-launcher > button {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 620px) {
+  .ls-browser-scan .url-launcher {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 14px;
+  }
+
+  .ls-browser-scan .url-launcher > * {
+    grid-column: 1;
+  }
+}
+
+/* The waiting texture. Two empty frames at the screenshot aspect carry a
+   slow shimmer while Chromium renders. It is a texture, not a progress
+   claim: the honest status line beside it states what is happening, and
+   nothing here counts up or fills in. content-visibility lets the
+   browser skip the animation entirely while the frames are offscreen,
+   and the global reduced-motion reset freezes it to a plain frame. */
+.ls-scan-pending {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ls-scan-wait {
+  display: flex;
+  gap: 18px;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 240px;
+}
+
+.ls-scan-wait i {
+  display: block;
+  width: 118px;
+  height: 240px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background:
+    linear-gradient(
+        100deg,
+        transparent 32%,
+        color-mix(in oklab, var(--lavender) 9%, transparent) 50%,
+        transparent 68%
+      )
+      var(--background-elevated);
+  background-size: 240% 100%;
+  animation: lsShimmer 1.7s ease-in-out infinite;
+}
+
+.ls-scan-wait i + i {
+  animation-delay: 120ms;
+}
+
+@keyframes lsShimmer {
+  from {
+    background-position: 140% 0;
+  }
+  to {
+    background-position: -60% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ls-scan-wait i {
+    animation: none;
+  }
+}
+
+/* Results land: the whole block fades in, then each render rises with a
+   60ms stagger. Screenshots are the payoff, so they lead. */
+.ls-browser-result {
+  animation: lsRise 300ms var(--ease-out) both;
+}
+
+.ls-browser-scan .ls-render-strip figure {
+  animation: lsRise 360ms var(--ease-out) both;
+}
+
+.ls-browser-scan .ls-render-strip figure:nth-child(2) {
+  animation-delay: 60ms;
+}
+
+.ls-browser-scan .ls-render-strip figure:nth-child(3) {
+  animation-delay: 120ms;
+}
+
+.ls-browser-scan .ls-issue-list button:hover .ls-rule {
+  color: var(--yellow);
+}

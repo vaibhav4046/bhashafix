@@ -1,6 +1,9 @@
 import { randomUUID } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
-import { runServerlessScan } from "@bhashafix/browser/serverless";
+import {
+  describeServerlessFailure,
+  runServerlessScan,
+} from "@bhashafix/browser/serverless";
 import { validateTargetUrl } from "@bhashafix/crawler";
 import { localeProfile } from "@bhashafix/locale-engine";
 import { z } from "zod";
@@ -113,6 +116,18 @@ export async function POST(request: NextRequest) {
   const startedAt = new Date().toISOString();
   const route = target.pathname || "/";
 
+  // Validation above is asynchronous. Recheck immediately before claiming the
+  // single browser slot so two requests that arrived together cannot both
+  // launch after observing the initial `active === 0` state.
+  if (active > 0) {
+    return NextResponse.json(
+      {
+        error:
+          "A browser scan is already running on this instance. Hosted scans are single-flight; use the CLI for concurrent work.",
+      },
+      { status: 429 },
+    );
+  }
   active += 1;
   try {
     const result = await runServerlessScan({
@@ -159,21 +174,17 @@ export async function POST(request: NextRequest) {
       ],
       limitations: [
         "The function has a 60 second ceiling, so this covers one route, up to three locales and one viewport.",
+        "Every redirect and subrequest is revalidated; private, loopback and cloud-metadata destinations are blocked.",
         "Run the CLI, or point BHASHAFIX_BROWSER_WS_ENDPOINT at a browser worker, for a full route x locale x viewport matrix with persisted artifacts.",
       ],
     });
   } catch (error) {
     return NextResponse.json(
       {
-        error: error instanceof Error ? error.message : "Hosted browser scan failed.",
-        // The first frames say which stage failed. A scan that cannot run is
-        // more useful with them than without.
-        detail:
-          error instanceof Error && error.stack
-            ? error.stack.split("\n").slice(0, 6).join("\n")
-            : null,
+        error: describeServerlessFailure(error),
         scanId,
         browserRendered: false,
+        retryable: true,
       },
       { status: 422 },
     );

@@ -167,9 +167,10 @@ that category. Firefox and WebKit are now verified rather than merely listed.
 
 ## Known limitations, stated plainly
 
-- The hosted Vercel scan remains HTTP-only. Browser rendering requires the local
-  CLI, or a remote endpoint supplied through `BHASHAFIX_BROWSER_WS_ENDPOINT`.
-  No browser is bundled into the serverless function.
+- The hosted Vercel product has two bounded paths: a five-route static HTTP
+  preflight and a real Chromium quick scan for one route, up to three locales
+  and one viewport. Full matrices require the local CLI or a remote endpoint
+  supplied through `BHASHAFIX_BROWSER_WS_ENDPOINT`.
 - Durable scan persistence covers the CLI and local runs. The hosted deployment
   has no configured database, so its scan history is still per browser and the
   store refuses to claim otherwise.
@@ -214,4 +215,10 @@ single-flight per instance, because the function has a 60 second ceiling.
 Nothing is persisted — this deployment has no database and the response says
 so. A full route x locale x viewport matrix with persisted artifacts and source
 repair remains the CLI's job.
+
+Every Chromium redirect, frame and subrequest is independently revalidated by
+the hosted URL policy. Private, loopback and cloud-metadata destinations are
+blocked, network origins and request counts are capped, query strings are
+redacted from failed-request evidence, and runtime stacks are never returned to
+the browser.
 

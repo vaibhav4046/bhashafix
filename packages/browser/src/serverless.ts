@@ -11,6 +11,7 @@
  * driver differs.
  */
 import type { Issue, ScanOrigin } from "@bhashafix/shared";
+import { validateTargetUrl } from "@bhashafix/crawler";
 import { localeProfile } from "@bhashafix/locale-engine";
 import {
   MAX_MEASURED_ELEMENTS,
@@ -36,6 +37,7 @@ export type ServerlessRender = {
   title: string;
   consoleErrors: number;
   failedRequests: number;
+  blockedRequests: number;
   axeViolations: number;
   /** Inline PNG data URI. Nothing is persisted: this deployment has no store. */
   screenshot: string | null;
@@ -52,11 +54,17 @@ export type ServerlessScan = {
 type PuppeteerPage = {
   setViewport: (v: { width: number; height: number }) => Promise<void>;
   setExtraHTTPHeaders: (h: Record<string, string>) => Promise<void>;
+  setRequestInterception: (enabled: boolean) => Promise<void>;
   goto: (url: string, o?: Record<string, unknown>) => Promise<{ status: () => number } | null>;
   evaluate: (fn: unknown, ...args: unknown[]) => Promise<unknown>;
   screenshot: (o: Record<string, unknown>) => Promise<Uint8Array | string>;
   on: (event: string, handler: (payload: never) => void) => void;
   close: () => Promise<void>;
+};
+type PuppeteerRequest = {
+  url: () => string;
+  continue: () => Promise<void>;
+  abort: (errorCode?: string) => Promise<void>;
 };
 type PuppeteerBrowser = {
   newPage: () => Promise<PuppeteerPage>;
@@ -87,6 +95,52 @@ const AXE_RUNNER_SCRIPT = `(async () => {
 /** Screenshots travel inline, so they are capped rather than unbounded. */
 const MAX_SCREENSHOT_BYTES = 900_000;
 const NAVIGATION_TIMEOUT_MS = 20_000;
+const MAX_NETWORK_REQUESTS = 500;
+const MAX_NETWORK_ORIGINS = 32;
+
+/**
+ * Revalidate every network hop Chromium attempts, not only the submitted URL.
+ * This covers redirects, frames, scripts, images and page-authored fetches.
+ * Local data/blob/about resources never leave the browser and are safe.
+ */
+export async function validateServerlessBrowserRequest(input: string) {
+  const protocol = new URL(input).protocol;
+  if (protocol === "data:" || protocol === "blob:" || protocol === "about:") {
+    return;
+  }
+  await validateTargetUrl(input, { hosted: true, allowLocalhost: false });
+}
+
+/** Return actionable text without exposing server paths, stacks or internals. */
+export function describeServerlessFailure(error: unknown): string {
+  const message = error instanceof Error ? error.message : String(error);
+  if (/ERR_BLOCKED_BY_CLIENT|private-network|metadata|loopback/i.test(message)) {
+    return "The page attempted to reach a destination blocked by the hosted network safety policy.";
+  }
+  if (/timeout|timed out/i.test(message)) {
+    return "The page took too long to render in the hosted browser. Try the local CLI for a longer scan.";
+  }
+  if (/ERR_NAME_NOT_RESOLVED|getaddrinfo|ENOTFOUND|EAI_AGAIN/i.test(message)) {
+    return "The hosted browser could not resolve the target domain.";
+  }
+  if (/ERR_CONNECTION_REFUSED|ECONNREFUSED/i.test(message)) {
+    return "The target refused the browser connection.";
+  }
+  return "The hosted browser could not complete this scan. Try again or run the local CLI for full diagnostics.";
+}
+
+function safeRequestReference(input: string): string {
+  try {
+    const url = new URL(input);
+    url.username = "";
+    url.password = "";
+    url.hash = "";
+    if (url.search) url.search = "?redacted";
+    return url.href.slice(0, 200);
+  } catch {
+    return "unparseable request";
+  }
+}
 
 async function launch(): Promise<PuppeteerBrowser> {
   const [pack, puppeteer] = await Promise.all([
@@ -141,6 +195,39 @@ export async function runServerlessScan(
       const page = await browser.newPage();
       const consoleErrors: string[] = [];
       const failedRequests: Array<{ url: string; failure: string }> = [];
+      const blockedRequests: string[] = [];
+      const validatedOrigins = new Map<string, Promise<void>>();
+      let networkRequests = 0;
+
+      await page.setRequestInterception(true);
+      page.on("request", (intercepted: never) => {
+        const request = intercepted as unknown as PuppeteerRequest;
+        void (async () => {
+          try {
+            const requestedUrl = new URL(request.url());
+            if (!["data:", "blob:", "about:"].includes(requestedUrl.protocol)) {
+              networkRequests += 1;
+              if (networkRequests > MAX_NETWORK_REQUESTS) {
+                throw new Error("Hosted browser request limit exceeded.");
+              }
+              const key = requestedUrl.origin;
+              let validation = validatedOrigins.get(key);
+              if (!validation) {
+                if (validatedOrigins.size >= MAX_NETWORK_ORIGINS) {
+                  throw new Error("Hosted browser origin limit exceeded.");
+                }
+                validation = validateServerlessBrowserRequest(requestedUrl.href);
+                validatedOrigins.set(key, validation);
+              }
+              await validation;
+            }
+            await request.continue();
+          } catch {
+            blockedRequests.push(safeRequestReference(request.url()));
+            await request.abort("blockedbyclient").catch(() => undefined);
+          }
+        })();
+      });
 
       page.on("console", (message: never) => {
         const entry = message as unknown as { type: () => string; text: () => string };
@@ -155,7 +242,7 @@ export async function runServerlessScan(
           failure: () => { errorText: string } | null;
         };
         failedRequests.push({
-          url: entry.url().slice(0, 200),
+          url: safeRequestReference(entry.url()),
           failure: entry.failure()?.errorText ?? "unknown",
         });
       });
@@ -232,6 +319,7 @@ export async function runServerlessScan(
           title: measurement.title,
           consoleErrors: consoleErrors.length,
           failedRequests: failedRequests.length,
+          blockedRequests: blockedRequests.length,
           axeViolations: axeViolations.length,
           screenshot:
             screenshotBytes <= MAX_SCREENSHOT_BYTES ? `data:image/png;base64,${shot}` : null,

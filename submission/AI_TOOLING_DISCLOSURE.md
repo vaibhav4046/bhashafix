@@ -76,8 +76,9 @@ load-bearing findings:
 The hardening pass did not make everything true. The following remain
 unimplemented and are stated as such throughout the product:
 
-- The hosted Vercel scan is still HTTP-only. Browser rendering requires the
-  local CLI or a remote endpoint via `BHASHAFIX_BROWSER_WS_ENDPOINT`.
+- The hosted Vercel product now includes a bounded real-Chromium quick scan for
+  one route and one viewport, alongside the five-route HTTP preflight. Full
+  matrices and source repair require the local CLI or a configured worker.
 - There is no server-side scan store; web scan history is per browser.
 - Repair still only rewrites allowlisted JSON. It cannot repair `.tsx` or CSS.
 - `bhashafix scan --project` on an arbitrary repository is still fixture-bound.

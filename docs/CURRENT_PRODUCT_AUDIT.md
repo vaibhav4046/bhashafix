@@ -181,6 +181,7 @@ Final release evidence now records:
   motion, keyboard access, downloads and zero console/hydration errors.
 - A visually inspected, template-faithful, screenshot-backed PowerPoint.
 
-The deliberate boundary remains unchanged: Vercel runs a bounded static HTTP
-scan. Full Playwright rendering, axe and source repair require the local CLI or
-a browser-capable worker.
+The deliberate boundary is now split clearly: Vercel runs both a bounded
+five-route static HTTP preflight and a real Chromium quick scan for one route,
+selected locales and one viewport. Full matrices, authenticated coverage and
+source repair require the local CLI or a browser-capable worker.

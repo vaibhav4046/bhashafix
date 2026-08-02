@@ -2,7 +2,7 @@
   "issues": [
     {
       "issueId": "BF-VIS-HI-001",
-      "scanId": "scan_00facc4b1f7b47d784b73dee1028fa17",
+      "scanId": "scan_cd30d810bec04195aaf50130f365d1b2",
       "origin": "GUIDED_DEMO",
       "category": "visual",
       "ruleId": "vertical-clipping",
@@ -37,7 +37,7 @@
     },
     {
       "issueId": "BF-VIS-DE-002",
-      "scanId": "scan_00facc4b1f7b47d784b73dee1028fa17",
+      "scanId": "scan_cd30d810bec04195aaf50130f365d1b2",
       "origin": "GUIDED_DEMO",
       "category": "visual",
       "ruleId": "cta-overflow",
@@ -72,7 +72,7 @@
     },
     {
       "issueId": "BF-LOC-AR-003",
-      "scanId": "scan_00facc4b1f7b47d784b73dee1028fa17",
+      "scanId": "scan_cd30d810bec04195aaf50130f365d1b2",
       "origin": "GUIDED_DEMO",
       "category": "locale",
       "ruleId": "wrong-direction",
@@ -105,7 +105,7 @@
     },
     {
       "issueId": "BF-RTL-HE-004",
-      "scanId": "scan_00facc4b1f7b47d784b73dee1028fa17",
+      "scanId": "scan_cd30d810bec04195aaf50130f365d1b2",
       "origin": "GUIDED_DEMO",
       "category": "visual",
       "ruleId": "rtl-icon-order",
@@ -138,7 +138,7 @@
     },
     {
       "issueId": "BF-I18N-JA-005",
-      "scanId": "scan_00facc4b1f7b47d784b73dee1028fa17",
+      "scanId": "scan_cd30d810bec04195aaf50130f365d1b2",
       "origin": "GUIDED_DEMO",
       "category": "linguistic",
       "ruleId": "raw-translation-key",
@@ -171,7 +171,7 @@
     },
     {
       "issueId": "BF-FONT-ZH-006",
-      "scanId": "scan_00facc4b1f7b47d784b73dee1028fa17",
+      "scanId": "scan_cd30d810bec04195aaf50130f365d1b2",
       "origin": "GUIDED_DEMO",
       "category": "visual",
       "ruleId": "font-coverage",
@@ -204,7 +204,7 @@
     },
     {
       "issueId": "BF-VIS-TH-007",
-      "scanId": "scan_00facc4b1f7b47d784b73dee1028fa17",
+      "scanId": "scan_cd30d810bec04195aaf50130f365d1b2",
       "origin": "GUIDED_DEMO",
       "category": "visual",
       "ruleId": "line-breaking",
@@ -237,7 +237,7 @@
     },
     {
       "issueId": "BF-I18N-FR-008",
-      "scanId": "scan_00facc4b1f7b47d784b73dee1028fa17",
+      "scanId": "scan_cd30d810bec04195aaf50130f365d1b2",
       "origin": "GUIDED_DEMO",
       "category": "linguistic",
       "ruleId": "placeholder-mismatch",
@@ -280,7 +280,7 @@
     },
     {
       "issueId": "BF-LING-ES-009",
-      "scanId": "scan_00facc4b1f7b47d784b73dee1028fa17",
+      "scanId": "scan_cd30d810bec04195aaf50130f365d1b2",
       "origin": "GUIDED_DEMO",
       "category": "linguistic",
       "ruleId": "glossary-violation",
@@ -313,7 +313,7 @@
     },
     {
       "issueId": "BF-META-EN-010",
-      "scanId": "scan_00facc4b1f7b47d784b73dee1028fa17",
+      "scanId": "scan_cd30d810bec04195aaf50130f365d1b2",
       "origin": "GUIDED_DEMO",
       "category": "locale",
       "ruleId": "wrong-page-lang",

@@ -9,7 +9,7 @@ visually usable, accessible, and safe to ship.
 
 > Test, repair and prove every language before it reaches production.
 
-[Live deterministic replay](https://bhashafix.vercel.app) ·
+[Live product and browser scan](https://bhashafix.vercel.app) ·
 [Architecture](ARCHITECTURE.md) · [Security](SECURITY.md) ·
 [Contributing](CONTRIBUTING.md)
 
@@ -99,8 +99,18 @@ produces any finding.
 
 ## Scan a website
 
-The hosted form accepts a public HTTP(S) URL and applies protocol, DNS,
-redirect, response-size, timeout, rate, and private-network controls.
+The hosted product offers two deliberately different checks:
+
+- **Render and measure** launches real Chromium inside the hosted function for
+  one route, user-entered source and target BCP 47 locales, and a mobile,
+  tablet or desktop viewport. It measures layout, runs axe, returns real
+  screenshots and lets the user download that exact JSON evidence.
+- **HTTP preflight** performs the bounded five-route crawl used for metadata,
+  visible static text and route discovery without claiming browser coverage.
+
+Both paths apply protocol, DNS, redirect, timeout and private-network controls.
+The browser path revalidates every redirect and subrequest, caps requests and
+origins, and blocks loopback and cloud-metadata destinations.
 
 ```bash
 pnpm bhashafix crawl --url https://example.com
@@ -122,12 +132,13 @@ pnpm bhashafix scan \
   --viewports mobile,desktop
 ```
 
-Next.js is the fully supported repository path. The hosted public-URL scan
+Next.js is the fully supported repository path. The hosted HTTP preflight
 performs a real SSRF-safe fetch, follows bounded same-origin links, respects an
 available robots policy, and reports per-route static-text, metadata, raw-key,
-title and image-alt evidence for up to five HTML routes. JavaScript browser
-rendering, viewport checks, axe, authenticated coverage and repair remain
-local/worker functionality. Vite React, Remix, Astro, Nuxt, Vue, SvelteKit,
+title and image-alt evidence for up to five HTML routes. The hosted Chromium
+quick scan renders one route and one selected viewport; full route × locale ×
+viewport coverage, authenticated coverage and repair remain local/worker
+functionality. Vite React, Remix, Astro, Nuxt, Vue, SvelteKit,
 and static HTML discovery return honest experimental-support results. Unknown
 project scripts are reported, never silently executed.
 

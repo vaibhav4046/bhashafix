@@ -84,11 +84,13 @@ Hosted public-URL scans validate URLs, block SSRF and metadata destinations,
 revalidate redirects, limit response size and time, extract visible strings,
 and report deterministic findings.
 
-The Vercel scan is deliberately limited to a bounded, same-origin static-HTML
-crawl of up to five public routes with robots-policy handling and per-route
-evidence. Full Playwright rendering, accessibility execution and authenticated
-scans run locally or in a dedicated containerised scanner worker. Public scans
-diagnose only; they never claim to modify a website without repository access.
+The Vercel product has two bounded public paths: a same-origin static-HTML crawl
+of up to five routes with robots-policy handling, and a real Chromium quick scan
+for one route, up to three locales and one viewport. The browser path revalidates
+every redirect and subrequest against the hosted network policy. Full matrices
+and authenticated scans run locally or in a dedicated containerised scanner
+worker. Public scans diagnose only; they never claim to modify a website without
+repository access.
 
 ## 6. Synthetic localisation preview
 
@@ -186,10 +188,11 @@ The design system is the Living Language System:
 
 ## 11. Hosted architecture truth
 
-The web experience is deployed to Vercel. Heavy browser work belongs in local
-mode or a future Dockerised Playwright worker connected through an explicitly
-configured job store. The current release must not imply that Vercel executes
-arbitrary full-browser jobs.
+The web experience is deployed to Vercel. A bounded quick scan may execute real
+Chromium within the serverless time and memory ceiling. Heavy browser matrices
+belong in local mode or a Dockerised Playwright worker connected through an
+explicitly configured job store. The current release must not imply that Vercel
+executes arbitrary full-browser jobs.
 
 ## 12. Security contract
 

@@ -395,12 +395,16 @@ export function EvidenceConsole({
         <ul className="ls-render-strip">
           {scan.renders.map((render) => (
             <li key={`${render.route}-${render.locale}-${render.screenshot}`}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={render.screenshotUrl}
-                alt={`Top of the recorded ${render.locale} render of ${render.route}`}
-                loading="lazy"
-              />
+              {/* The zoom-on-hover frame clips the 1.02 scale so the card
+                  outline never moves. */}
+              <span className="ls-shot-zoom">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={render.screenshotUrl}
+                  alt={`Top of the recorded ${render.locale} render of ${render.route}`}
+                  loading="lazy"
+                />
+              </span>
               <div>
                 <b>{render.route}</b>
                 <span>

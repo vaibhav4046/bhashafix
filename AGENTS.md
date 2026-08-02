@@ -8,8 +8,10 @@
   evidence, or hard-coded success.
 - Keep repair operations inside the allowlist under
   `apps/demo-target/data/`; require explicit scan and issue IDs.
-- The hosted experience is a clearly labelled replay generated from a genuine
-  local run and must work without secrets or a model provider.
+- The hosted experience includes a bounded live Chromium quick scan, a static
+  HTTP preflight and a clearly labelled replay generated from a genuine local
+  run. All three must work without secrets or a model provider and must never
+  be presented as interchangeable evidence.
 - Treat linguistic recommendations as confidence-scoped findings with
   human-review gates.
 - Preserve locale-agnostic BCP 47/Unicode handling. Do not add per-language

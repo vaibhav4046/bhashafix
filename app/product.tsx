@@ -492,10 +492,11 @@ export function LandingPage() {
       <section className="ls-section ls-quick-scan" aria-labelledby="quick-scan">
         <h2 id="quick-scan">Try it on a real site, right here.</h2>
         <p className="ls-standfirst">
-          Chromium starts inside this function, renders your URL in English and
-          one other locale at 390&times;844, measures the rendered DOM and runs
-          axe. One route, one viewport, nothing stored &mdash; the ceiling is 60
-          seconds. The CLI is what you run for a full matrix.
+          Chromium starts inside this function, renders your URL with the page
+          and target BCP 47 locales you choose, measures the rendered DOM and runs
+          axe at mobile, tablet or desktop size. One route, one viewport, nothing
+          stored &mdash; the ceiling is 60 seconds. The CLI is what you run for a
+          full matrix.
         </p>
         <BrowserScanPanel />
       </section>
@@ -3769,7 +3770,7 @@ export function TrustPage() {
           <section id="local-data"><h2>What remains local</h2><p>Repository files, Playwright storage state, provider secrets and repair rollback data remain in the local CLI environment unless the user explicitly chooses another boundary.</p></section>
           <section id="providers"><h2>What reaches model providers</h2><p>Nothing in no-AI mode. When configured, only minimised translatable content and context are sent; credentials, hidden form values and detected secrets are excluded.</p></section>
           <section id="evidence"><h2>How evidence is generated</h2><p>Deterministic rules store the measured value, expected value and predicate. Model suggestions remain advisory and carry confidence plus human-review requirements.</p></section>
-          <section id="limitations"><h2>Honest limitations</h2><p>The Vercel-hosted path performs bounded static HTTP checks. Full rendered screenshots, axe execution and source repair require the local CLI or a configured browser worker.</p></section>
+          <section id="limitations"><h2>Honest limitations</h2><p>The Vercel product offers a five-route HTTP preflight and a real Chromium quick scan for one route, selected locales and one viewport. Full route × locale × viewport matrices, authenticated coverage and source repair require the local CLI or a configured browser worker.</p></section>
           <TrustClaim />
         </article>
       </section>

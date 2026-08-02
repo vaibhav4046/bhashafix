@@ -164,6 +164,9 @@ importers:
 
   packages/browser:
     dependencies:
+      '@bhashafix/crawler':
+        specifier: workspace:*
+        version: link:../crawler
       '@bhashafix/locale-engine':
         specifier: workspace:*
         version: link:../locale-engine

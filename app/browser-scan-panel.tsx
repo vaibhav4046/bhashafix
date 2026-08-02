@@ -12,12 +12,14 @@ import { useState } from "react";
  */
 type Render = {
   locale: string;
+  viewport: { name: string; width: number; height: number };
   url: string;
   status: number;
   durationMs: number;
   measuredElements: number;
   declaredLang: string | null;
   declaredDir: string | null;
+  blockedRequests: number;
   axeViolations: number;
   screenshot: string | null;
   screenshotBytes: number;
@@ -50,11 +52,40 @@ type Result = {
   limitations: string[];
 };
 
-const LOCALE_CHOICES = ["ar-SA", "de-DE", "ja-JP", "hi-IN", "he-IL"];
+const LOCALE_CHOICES = [
+  "en-GB",
+  "en-US",
+  "hi-IN",
+  "ta-IN",
+  "ar-SA",
+  "he-IL",
+  "fa-IR",
+  "ja-JP",
+  "ko-KR",
+  "zh-Hans-CN",
+  "zh-Hant-TW",
+  "de-DE",
+  "fr-FR",
+  "es-MX",
+  "pt-BR",
+  "th-TH",
+  "uk-UA",
+  "am-ET",
+];
+
+const VIEWPORT_LABELS = {
+  mobile: "Mobile · 390 × 844",
+  tablet: "Tablet · 768 × 1024",
+  desktop: "Desktop · 1440 × 900",
+} as const;
+
+type ViewportName = keyof typeof VIEWPORT_LABELS;
 
 export function BrowserScanPanel() {
   const [url, setUrl] = useState("");
+  const [sourceLocale, setSourceLocale] = useState("en-GB");
   const [locale, setLocale] = useState("ar-SA");
+  const [viewport, setViewport] = useState<ViewportName>("mobile");
   const [running, setRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<Result | null>(null);
@@ -71,9 +102,9 @@ export function BrowserScanPanel() {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
           url,
-          sourceLocale: "en-GB",
-          locales: ["en-GB", locale],
-          viewport: "mobile",
+          sourceLocale,
+          locales: Array.from(new Set([sourceLocale, locale])),
+          viewport,
         }),
       });
       const payload = (await response.json()) as Result & { error?: string };
@@ -86,40 +117,98 @@ export function BrowserScanPanel() {
     }
   }
 
+  function downloadEvidence() {
+    if (!result) return;
+    const blob = new Blob([JSON.stringify(result, null, 2)], {
+      type: "application/json;charset=utf-8",
+    });
+    const href = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = href;
+    link.download = `${result.scanId}.json`;
+    document.body.append(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(href);
+  }
+
   return (
     <div className="ls-browser-scan">
       <form className="url-launcher" onSubmit={run}>
-        <label htmlFor="browser-scan-url">Public URL</label>
-        <input
-          id="browser-scan-url"
-          type="url"
-          required
-          placeholder="https://www.mozilla.org"
-          value={url}
-          onChange={(event) => setUrl(event.target.value)}
-        />
-        <label htmlFor="browser-scan-locale">Locale to test</label>
-        <select
-          id="browser-scan-locale"
-          value={locale}
-          onChange={(event) => setLocale(event.target.value)}
-        >
+        <div className="ls-scan-field ls-scan-url-field">
+          <label htmlFor="browser-scan-url">Public URL</label>
+          <input
+            id="browser-scan-url"
+            type="url"
+            required
+            placeholder="https://www.mozilla.org"
+            value={url}
+            onChange={(event) => setUrl(event.target.value)}
+          />
+        </div>
+        <div className="ls-scan-field">
+          <label htmlFor="browser-scan-source">Page locale</label>
+          <input
+            id="browser-scan-source"
+            list="browser-scan-locales"
+            required
+            maxLength={64}
+            spellCheck={false}
+            value={sourceLocale}
+            onChange={(event) => setSourceLocale(event.target.value)}
+          />
+        </div>
+        <div className="ls-scan-field">
+          <label htmlFor="browser-scan-locale">Target locale</label>
+          <input
+            id="browser-scan-locale"
+            list="browser-scan-locales"
+            required
+            maxLength={64}
+            spellCheck={false}
+            value={locale}
+            onChange={(event) => setLocale(event.target.value)}
+          />
+        </div>
+        <datalist id="browser-scan-locales">
           {LOCALE_CHOICES.map((choice) => (
             <option key={choice} value={choice}>
               {choice}
             </option>
           ))}
-        </select>
+        </datalist>
+        <div className="ls-scan-field">
+          <label htmlFor="browser-scan-viewport">Viewport</label>
+          <select
+            id="browser-scan-viewport"
+            value={viewport}
+            onChange={(event) => setViewport(event.target.value as ViewportName)}
+          >
+            {Object.entries(VIEWPORT_LABELS).map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </div>
         <button type="submit" disabled={running}>
           {running ? "Rendering in Chromium…" : "Render and measure →"}
         </button>
       </form>
 
       {running ? (
-        <p className="ls-caveat" role="status">
-          Chromium is starting in the function and rendering en-GB and {locale}.
-          A cold start takes a few seconds.
-        </p>
+        <div className="ls-scan-pending">
+          <p className="ls-caveat" role="status">
+            Chromium is starting in the function and rendering {sourceLocale} and {locale}
+            at {VIEWPORT_LABELS[viewport]}. A cold start takes a few seconds.
+          </p>
+          {/* A waiting texture at the screenshot aspect — not a progress
+              claim. The status line above is the only statement of state. */}
+          <div className="ls-scan-wait" aria-hidden="true">
+            <i />
+            <i />
+          </div>
+        </div>
       ) : null}
 
       {error ? (
@@ -135,6 +224,16 @@ export function BrowserScanPanel() {
             {result.summary.blocking} blocking
           </p>
           <p className="ls-scan-id">{result.scanId}</p>
+          <div className="ls-result-actions">
+            <button
+              className="button button-secondary"
+              type="button"
+              onClick={downloadEvidence}
+            >
+              Download JSON evidence ↓
+            </button>
+            <span>Generated from this response · not stored server-side</span>
+          </div>
 
           <div className="ls-render-strip">
             {result.renders.map((render) => (
@@ -143,7 +242,7 @@ export function BrowserScanPanel() {
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={render.screenshot}
-                    alt={`${result.target} rendered in ${render.locale} at 390 by 844`}
+                    alt={`${result.target} rendered in ${render.locale} at ${render.viewport.width} by ${render.viewport.height}`}
                     width={195}
                     height={422}
                   />
@@ -155,12 +254,14 @@ export function BrowserScanPanel() {
                 <figcaption>
                   <strong>{render.locale}</strong>
                   <span>
-                    HTTP {render.status} · {render.measuredElements} elements ·{" "}
+                    {render.viewport.width}×{render.viewport.height} · HTTP {render.status} ·{" "}
+                    {render.measuredElements} elements ·{" "}
                     {render.durationMs}ms
                   </span>
                   <span>
                     lang {render.declaredLang ?? "unset"} · dir{" "}
-                    {render.declaredDir ?? "unset"} · axe {render.axeViolations}
+                    {render.declaredDir ?? "unset"} · axe {render.axeViolations} · blocked{" "}
+                    {render.blockedRequests}
                   </span>
                 </figcaption>
               </figure>
