@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./serverless": "./src/serverless.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit --moduleResolution bundler --module esnext --target es2022 --lib es2022,dom,dom.iterable src/index.ts"

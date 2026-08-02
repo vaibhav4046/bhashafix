@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // The serverless browser stack must stay out of the bundle: @sparticuz/chromium
+  // ships a binary pack that has to remain on disk, and puppeteer-core resolves
+  // its transport at runtime.
+  serverExternalPackages: ["puppeteer-core", "@sparticuz/chromium"],
   transpilePackages: [
     "@bhashafix/crawler",
     "@bhashafix/extractor",
