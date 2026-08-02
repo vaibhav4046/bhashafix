@@ -256,6 +256,7 @@ mode. See [SECURITY.md](SECURITY.md).
 | Packed CLI/MCP clean-consumer install | Verified by `pnpm pack:verify` |
 | Official MCP Inspector + MCPC invocation | Verified |
 | Chromium browser rendering | Verified; full 288-render benchmark |
+| Hosted browser scan in the Vercel function | Verified; bounded to one route, two locales, one viewport |
 | Firefox and WebKit rendering | Verified via `--browsers`; deterministic rules agree with Chromium, axe findings differ |
 | Vite/Remix/Astro/Nuxt/Vue/SvelteKit/static discovery | Experimental |
 | Provider-independent AI adapters | Interface + no-model mode |

@@ -4,7 +4,15 @@ const nextConfig: NextConfig = {
   // The serverless browser stack must stay out of the bundle: @sparticuz/chromium
   // ships a binary pack that has to remain on disk, and puppeteer-core resolves
   // its transport at runtime.
-  serverExternalPackages: ["puppeteer-core", "@sparticuz/chromium"],
+  serverExternalPackages: ["puppeteer-core", "@sparticuz/chromium", "axe-core"],
+  // @sparticuz/chromium unpacks its browser from a bin/ directory at runtime.
+  // File tracing does not follow that, so the pack is named explicitly or the
+  // function launches against a path that was never uploaded.
+  outputFileTracingIncludes: {
+    "/api/scan/browser": [
+      "./node_modules/.pnpm/@sparticuz+chromium@*/node_modules/@sparticuz/chromium/bin/**",
+    ],
+  },
   transpilePackages: [
     "@bhashafix/crawler",
     "@bhashafix/extractor",

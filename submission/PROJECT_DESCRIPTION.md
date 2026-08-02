@@ -64,15 +64,16 @@ CLI  ·  MCP  ·  CI  ·  local or remote browser worker      the engine
 Web console                                                 evidence and review
 ```
 
-The hosted site does not run a browser. That is deliberate rather than a
-shortfall: **browsers, source code and repair operations stay inside the
-developer's environment by default.** A portable report can be shared with the
-team, or opened in the web console, without uploading a repository anywhere.
+The hosted site runs a **bounded** quick scan: Chromium starts inside the
+serverless function, renders the submitted URL in two locales at 390x844,
+measures the DOM and runs axe. The function has a 60 second ceiling, so it is
+one route, one viewport, and nothing is stored.
 
-The hosted site does offer a quick HTTP preflight — reachability, language
-metadata and static translation signals — and labels it as exactly that, with no
-browser rendering. Full rendering runs through the CLI, or through a browser
-worker when `BHASHAFIX_BROWSER_WS_ENDPOINT` is configured.
+Everything that needs scale or trust stays local by design: **the full route ×
+locale × viewport matrix, persisted artifacts, your source code and every repair
+operation run inside your environment.** A portable report can be shared with
+the team, or opened in the web console, without uploading a repository
+anywhere.
 
 ## Measured accuracy
 
@@ -95,7 +96,8 @@ control's descendant `img[alt]`.
 
 ## What it does not claim
 
-- The hosted deployment does not render in a browser.
+- The hosted quick scan renders one route in two locales at one viewport and
+  persists nothing. It is not a substitute for a CLI run.
 - Verified repair covers locale JSON, `lang`/`dir` metadata, and bounded layout
   fixes in the supported Next.js fixture. Arbitrary TSX and CSS repair, and
   other frameworks, are experimental.

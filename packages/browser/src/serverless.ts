@@ -15,9 +15,12 @@ import { localeProfile } from "@bhashafix/locale-engine";
 import {
   MAX_MEASURED_ELEMENTS,
   MAX_TEXT_LENGTH,
-  collectPageMeasurement,
   type PageMeasurement,
 } from "./measure";
+import {
+  MEASUREMENT_GLOBAL,
+  MEASUREMENT_SCRIPT,
+} from "./measure-script.generated";
 import { evaluateRules, type RuleContext, type RuntimeSignals } from "./rules";
 
 export type ServerlessRender = {
@@ -59,6 +62,27 @@ type PuppeteerBrowser = {
   newPage: () => Promise<PuppeteerPage>;
   close: () => Promise<void>;
 };
+
+/**
+ * Collect axe violations from inside the page.
+ *
+ * Written as source for the same reason the measurement is: a bundler minifies
+ * an inline closure and rewrites it to reference module scope, which the
+ * browser realm does not have.
+ */
+const AXE_RUNNER_SCRIPT = `(async () => {
+  var runner = window.axe;
+  if (!runner) return [];
+  var result = await runner.run({ resultTypes: ["violations"] });
+  return result.violations.map(function (violation) {
+    return {
+      id: violation.id,
+      impact: violation.impact,
+      help: violation.help,
+      nodes: violation.nodes.map(function (node) { return node.target.join(" "); }).slice(0, 5),
+    };
+  });
+})()`;
 
 /** Screenshots travel inline, so they are capped rather than unbounded. */
 const MAX_SCREENSHOT_BYTES = 900_000;
@@ -155,35 +179,23 @@ export async function runServerlessScan(
         });
         status = response?.status() ?? 0;
 
-        const measurement = (await page.evaluate(collectPageMeasurement, {
-          maxElements: MAX_MEASURED_ELEMENTS,
-          maxTextLength: MAX_TEXT_LENGTH,
-        })) as PageMeasurement;
+        // Evaluated as source, never as a bundled closure: a minifier would
+        // rewrite the function to reference module scope that the page has not
+        // got. See scripts/build-measurement-script.ts.
+        const measurement = (await page.evaluate(
+          `${MEASUREMENT_SCRIPT};${MEASUREMENT_GLOBAL}.collectPageMeasurement(${JSON.stringify(
+            { maxElements: MAX_MEASURED_ELEMENTS, maxTextLength: MAX_TEXT_LENGTH },
+          )})`,
+        )) as PageMeasurement;
 
         let axeViolations: RuntimeSignals["axeViolations"] = [];
         if (axeSource) {
           await page.evaluate(axeSource);
-          axeViolations = (await page.evaluate(async () => {
-            const runner = (window as unknown as { axe?: { run: (o: unknown) => Promise<unknown> } })
-              .axe;
-            if (!runner) return [];
-            const result = (await runner.run({
-              resultTypes: ["violations"],
-            })) as {
-              violations: Array<{
-                id: string;
-                impact: string | null;
-                help: string;
-                nodes: Array<{ target: string[] }>;
-              }>;
-            };
-            return result.violations.map((violation) => ({
-              id: violation.id,
-              impact: violation.impact,
-              help: violation.help,
-              nodes: violation.nodes.map((node) => node.target.join(" ")).slice(0, 5),
-            }));
-          })) as RuntimeSignals["axeViolations"];
+          // Source, not a closure, for the same reason as the measurement: a
+          // bundled arrow function is minified and then references module scope
+          // the page has not got.
+          axeViolations = (await page.evaluate(AXE_RUNNER_SCRIPT)) as
+            RuntimeSignals["axeViolations"];
         }
 
         const shot = (await page.screenshot({ type: "png", encoding: "base64" })) as string;

@@ -6,9 +6,12 @@ import { DEFAULT_VIEWPORTS, type Issue, type ScanOrigin } from "@bhashafix/share
 import {
   MAX_MEASURED_ELEMENTS,
   MAX_TEXT_LENGTH,
-  collectPageMeasurement,
   type PageMeasurement,
 } from "./measure.js";
+import {
+  MEASUREMENT_GLOBAL,
+  MEASUREMENT_SCRIPT,
+} from "./measure-script.generated.js";
 import { evaluateRules, type RuleContext, type RuntimeSignals } from "./rules.js";
 
 export * from "./measure.js";
@@ -52,7 +55,7 @@ export type RenderedRoute = {
 /** Minimal structural types so this package compiles without Playwright's types. */
 type PlaywrightPage = {
   goto: (url: string, options?: Record<string, unknown>) => Promise<{ status: () => number } | null>;
-  evaluate: <T, A>(fn: (arg: A) => T, arg: A) => Promise<T>;
+  evaluate: (script: string) => Promise<unknown>;
   screenshot: (options: Record<string, unknown>) => Promise<Buffer>;
   content: () => Promise<string>;
   waitForSelector: (selector: string, options?: Record<string, unknown>) => Promise<unknown>;
@@ -170,10 +173,13 @@ async function renderWithBrowser(
     // Give web fonts and locale bundles a bounded moment to settle.
     await page.waitForTimeout(600);
 
-    const measurement = await page.evaluate(collectPageMeasurement, {
-      maxElements: MAX_MEASURED_ELEMENTS,
-      maxTextLength: MAX_TEXT_LENGTH,
-    });
+    // Source, not a closure: both drivers share one browser-ready build so a
+    // bundler cannot rewrite the measurement out from under either of them.
+    const measurement = (await page.evaluate(
+      `${MEASUREMENT_SCRIPT};${MEASUREMENT_GLOBAL}.collectPageMeasurement(${JSON.stringify(
+        { maxElements: MAX_MEASURED_ELEMENTS, maxTextLength: MAX_TEXT_LENGTH },
+      )})`,
+    )) as PageMeasurement;
 
     let screenshotPath: string | null = null;
     let domPath: string | null = null;

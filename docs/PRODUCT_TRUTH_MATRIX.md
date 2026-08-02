@@ -176,24 +176,42 @@ that category. Firefox and WebKit are now verified rather than merely listed.
 - Repair still only rewrites allowlisted JSON. It cannot repair `.tsx` or CSS.
 
 
-## Hosted browser rendering — attempted, blocked, 2026-08-02
+## Hosted browser rendering — VERIFIED, 2026-08-02
 
-`packages/browser/src/serverless.ts` drives the AWS-Lambda Chromium build
-through `puppeteer-core`, reusing the same measurement and rules as the CLI.
-**Verified locally** against an installed Chromium: 2 renders, 121 elements
-measured per render, axe-core executed, 61 KB screenshots, and the two expected
-`ar-SA` findings.
+`POST /api/scan/browser` renders in real Chromium **inside the Vercel
+function**, via `@sparticuz/chromium` driven by `puppeteer-core`. The
+measurement and the rules are the CLI's; only the driver differs.
 
-**It does not work on Vercel yet.** The function launches Chromium correctly
-once `outputFileTracingIncludes` names the `@sparticuz/chromium` `bin/`
-directory, but the in-page measurement then fails with `t is not defined`: Next
-minifies `collectPageMeasurement` before it is serialised into the page, and the
-minified body references a module-scope binding that does not exist in the
-browser realm.
+Live against the deployed product, `en-GB` and `ar-SA` at 390x844:
 
-The fix is to stop shipping a bundled function into the page — the measurement
-needs to reach `page.evaluate` as verbatim source rather than as a minified
-closure. That is a contained change and the module is otherwise proven.
+```
+scanId  hosted-44c8db95-6699-4265-9c22-461f0abd09e6
+origin  LIVE_PUBLIC_BROWSER_SCAN   browserRendered true   axeExecuted true
+renders 2    issues 2    blocking 2
+  en-GB  HTTP 200  121 elements  axe 0  70122-byte screenshot  1551ms
+  ar-SA  HTTP 200  121 elements  axe 0  70122-byte screenshot   660ms
+  BF-LOC-LANG-MISMATCH ar-SA  declaredLang "en", expected "ar"
+  BF-LOC-DIR-MISSING   ar-SA  declaredDir "ltr", expected "rtl", script Arab
+```
 
-Until then the hosted path stays `HTTP_PREFLIGHT` and says so, and browser
-rendering runs in the CLI or through `BHASHAFIX_BROWSER_WS_ENDPOINT`.
+Two bundler problems had to be solved, and both were the same mistake in
+different clothes: **code that runs inside the page must arrive as source, not
+as a bundled closure.**
+
+1. `collectPageMeasurement` was serialised by the driver. Next minified it and
+   the body then referenced module scope the browser realm has not got —
+   `t is not defined`. It is now compiled once to a standalone string by
+   `scripts/build-measurement-script.ts`, from `measure.ts` as the single
+   source of truth, with `tests/unit/measurement-script.test.ts` failing if the
+   two drift. The axe runner was converted the same way.
+2. `axe-core` was being bundled, which mangled its `.source` string. It is now
+   listed in `serverExternalPackages` alongside `puppeteer-core` and
+   `@sparticuz/chromium`, and `outputFileTracingIncludes` names the Chromium
+   `bin/` directory so the pack the function launches actually ships.
+
+Scope is bounded on purpose: one route, up to three locales, one viewport,
+single-flight per instance, because the function has a 60 second ceiling.
+Nothing is persisted — this deployment has no database and the response says
+so. A full route x locale x viewport matrix with persisted artifacts and source
+repair remains the CLI's job.
+

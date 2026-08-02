@@ -7,6 +7,7 @@ import baselineScan from "../public/replay/baseline-scan.json";
 import repairProof from "../public/replay/repair-proof.json";
 import replayReport from "../public/replay/report.json";
 import evidenceIndex from "../public/evidence/index.json";
+import { BrowserScanPanel } from "./browser-scan-panel";
 import { pseudoLocalise } from "@bhashafix/linguistic-engine";
 import { localeProfile } from "@bhashafix/locale-engine";
 
@@ -427,14 +428,20 @@ export function LandingPage() {
                 A report console that opens a bundle you produced, in your
                 browser
               </li>
-              <li>A quick HTTP preflight, below</li>
+              <li>
+                A quick browser scan, below: one route, up to three locales,
+                rendered in Chromium inside the function
+              </li>
             </ul>
           </div>
         </div>
         <p className="ls-caveat">
-          This deployment does not run a browser. That is the design: browsers,
-          source code and repair operations stay inside the developer&rsquo;s
-          environment by default, and a portable report can be shared without
+          The quick scan on this site renders in a real Chromium, but the
+          function has a 60 second ceiling, so it covers one route at one
+          viewport and stores nothing. Everything that needs scale or trust
+          &mdash; the full route &times; locale &times; viewport matrix,
+          persisted artifacts, your source and every repair &mdash; stays
+          inside your environment, and a portable report can be shared without
           uploading a repository.
         </p>
         <div className="ls-actions">
@@ -480,6 +487,17 @@ export function LandingPage() {
           ))}
         </ul>
         <TrustClaim />
+      </section>
+
+      <section className="ls-section ls-quick-scan" aria-labelledby="quick-scan">
+        <h2 id="quick-scan">Try it on a real site, right here.</h2>
+        <p className="ls-standfirst">
+          Chromium starts inside this function, renders your URL in English and
+          one other locale at 390&times;844, measures the rendered DOM and runs
+          axe. One route, one viewport, nothing stored &mdash; the ceiling is 60
+          seconds. The CLI is what you run for a full matrix.
+        </p>
+        <BrowserScanPanel />
       </section>
 
       <section className="ls-section ls-preflight" aria-labelledby="preflight">
