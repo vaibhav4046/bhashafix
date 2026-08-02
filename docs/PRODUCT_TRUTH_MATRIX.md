@@ -175,3 +175,25 @@ that category. Firefox and WebKit are now verified rather than merely listed.
   store refuses to claim otherwise.
 - Repair still only rewrites allowlisted JSON. It cannot repair `.tsx` or CSS.
 
+
+## Hosted browser rendering — attempted, blocked, 2026-08-02
+
+`packages/browser/src/serverless.ts` drives the AWS-Lambda Chromium build
+through `puppeteer-core`, reusing the same measurement and rules as the CLI.
+**Verified locally** against an installed Chromium: 2 renders, 121 elements
+measured per render, axe-core executed, 61 KB screenshots, and the two expected
+`ar-SA` findings.
+
+**It does not work on Vercel yet.** The function launches Chromium correctly
+once `outputFileTracingIncludes` names the `@sparticuz/chromium` `bin/`
+directory, but the in-page measurement then fails with `t is not defined`: Next
+minifies `collectPageMeasurement` before it is serialised into the page, and the
+minified body references a module-scope binding that does not exist in the
+browser realm.
+
+The fix is to stop shipping a bundled function into the page — the measurement
+needs to reach `page.evaluate` as verbatim source rather than as a minified
+closure. That is a contained change and the module is otherwise proven.
+
+Until then the hosted path stays `HTTP_PREFLIGHT` and says so, and browser
+rendering runs in the CLI or through `BHASHAFIX_BROWSER_WS_ENDPOINT`.
