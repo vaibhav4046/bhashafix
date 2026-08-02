@@ -24,7 +24,7 @@ one viewport, nothing stored, a 60 second ceiling.
 
 ---
 
-## 0:10 – 0:25 · A genuine Chromium scan
+## 0:15 – 0:30 · Evidence from full CLI runs
 
 Open **Inspect a real external scan**. Three scans, all produced by the CLI:
 
@@ -39,7 +39,7 @@ SHA-256, so the picture on screen is provably the picture the scan captured.
 
 ---
 
-## 0:25 – 0:40 · One measured finding
+## 0:30 – 0:45 · One measured finding
 
 Open a visual failure and a locale-integrity failure side by side.
 
@@ -62,7 +62,7 @@ a model's opinion.
 
 ---
 
-## 0:40 – 1:00 · A verified repair
+## 0:45 – 1:05 · A verified repair
 
 Open the AtlasPay proof, labelled `RECORDED VERIFIED RUN`.
 
@@ -95,7 +95,7 @@ A model cannot mark its own answer correct. BhashaFix reruns the predicates.
 
 ---
 
-## 1:00 – 1:15 · Run it yourself
+## 1:05 – 1:15 · Run it yourself
 
 ```
 npx @bhashafix/cli scan --url http://localhost:3000 --locales en-GB,de-DE,ar-SA,ja-JP

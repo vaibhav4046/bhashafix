@@ -1,6 +1,6 @@
 # Live public scan evidence
 
-Generated: 2026-08-02T10:39:21.448Z
+Generated: 2026-08-02T17:56:12.683Z
 
 ## Browser-backed scans of real public sites
 
