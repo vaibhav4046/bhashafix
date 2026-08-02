@@ -7,15 +7,20 @@ are `public/evidence/index.json`, `artifacts/nextjs-repair-proof.json`,
 
 ---
 
-## 0:00 – 0:10 · The problem
+## 0:00 – 0:15 · Scan something live, on the site
 
 Open `https://bhashafix.vercel.app`.
 
 > "AI can translate every string. It cannot prove the product still works."
 
-The homepage leads with the command you run in your own project, not with a
-hosted scan. Browsers, source and repair stay on your machine; the site is the
-console you review the evidence in.
+Scroll to **Try it on a real site**. Paste any public URL, pick a locale, press
+**Render and measure**. Chromium starts inside the function, renders the page in
+English and that locale at 390x844, measures the DOM and runs axe. Two real
+screenshots come back with the findings underneath.
+
+Measured on the deployment: MDN 9.6s from cold with 205 elements per render,
+Wikipedia 4.0s, vercel.com 4.8s. The panel states its own bounds — one route,
+one viewport, nothing stored, a 60 second ceiling.
 
 ---
 
@@ -126,9 +131,9 @@ agent cannot finish until verification passes.
 
 ## Stated plainly during the demo
 
-- The hosted site does not run a browser. That is the architecture: the engine
-  runs locally, the console reviews portable evidence, and no repository is
-  uploaded.
+- The hosted scan is bounded: one route, two locales, one viewport, nothing
+  persisted. The full matrix, persisted artifacts and source repair are the
+  CLI's job, and your repository is never uploaded.
 - AtlasPay is a recorded fixture run, labelled `RECORDED_REPLAY`. It is genuine,
   and it is not a live scan.
 - The real-site scans prove operability, not precision — those targets carry no
