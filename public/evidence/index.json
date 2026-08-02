@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-01T21:34:53.587Z",
+  "generatedAt": "2026-08-02T10:39:20.440Z",
   "note": "Every entry here was produced by an actual run and copied verbatim. Regenerate with `pnpm evidence:publish`.",
   "realSiteScans": {
     "generatedAt": "2026-08-01T21:23:53.438Z",
@@ -231,29 +231,29 @@
         "tool": "bhashafix_inspect_project",
         "label": "Inspect the project",
         "file": "/evidence/mcp/01-inspect-project.json",
-        "bytes": 3268,
-        "sha256": "859d445e88b5497822472ac959cfcf3743888c7a5fe556929f4a161a6c17215c"
+        "bytes": 3354,
+        "sha256": "724063f17adf5362e7b08489a1f57345dfdc56b7fae012fee61552d348263ed1"
       },
       {
         "tool": "bhashafix_create_scan",
         "label": "Create a scan",
         "file": "/evidence/mcp/02-create-scan.json",
         "bytes": 484,
-        "sha256": "afc5593c57cca240d748e87f05a560a92d2050013ae469f358497333dadbece6"
+        "sha256": "57b85a755811c6d322e448d817c7b4c957d468e2601380e38af25a0d734ef9dc"
       },
       {
         "tool": "bhashafix_run_scan",
         "label": "Run it",
         "file": "/evidence/mcp/03-run-scan.json",
         "bytes": 13987,
-        "sha256": "2ea9fcc4b67a1f13a2b8c7fbeafd12e52c9295df67c3178f74eb58e65b63c405"
+        "sha256": "830fb463aaba2143f5c605166c1699b816374a111230140c22d474d8cf67c01b"
       },
       {
         "tool": "bhashafix_list_issues",
         "label": "Read the verified issues",
         "file": "/evidence/mcp/04-list-issues.json",
         "bytes": 12415,
-        "sha256": "d05267437ccbdb605be25594b67cc998d8e7a1d399b79c0908af13e1156a7e19"
+        "sha256": "06a69a11c978798510d8a0425abc688738a37388ce8c4e97f549629a21ed4dbc"
       },
       {
         "tool": "bhashafix_prepare_repair",
@@ -267,14 +267,14 @@
         "label": "Apply the approved issue IDs",
         "file": "/evidence/mcp/07-apply-repair.json",
         "bytes": 2073,
-        "sha256": "89b99fb48da49d6550be873d026042d0639737ac197260a159d516ed873ffd29"
+        "sha256": "1b781e2b49f47be1693c285d89c21a06450bc68c88671afebace96461be1d1fe"
       },
       {
         "tool": "bhashafix_verify_repair",
         "label": "Rerun the identical predicates",
         "file": "/evidence/mcp/08-verify-repair.json",
         "bytes": 429,
-        "sha256": "c0112631d4f74bc45b4d220d45ad86e5ff5856d4b970169b7cebd75d29f3d21e"
+        "sha256": "399855bfd91c2194d6b91bdc7dc73bc6589866b4e7fe0c922ab3ebeec262c128"
       }
     ]
   },
@@ -330,7 +330,7 @@
   },
   "atlaspayRepair": {
     "schemaVersion": "1.0",
-    "generatedAt": "2026-08-01T21:31:28.651Z",
+    "generatedAt": "2026-08-02T10:35:25.196Z",
     "origin": "RECORDED_REPLAY",
     "mode": "genuine deterministic replay artifact",
     "baselineScanId": "atlaspay-83210b0daea2",
@@ -345,11 +345,11 @@
   },
   "nextjsRepair": {
     "scanIds": {
-      "before": "browser-51bbe879-2e6c-4903-9da8-0bef35197577",
-      "after": "browser-87003258-93f9-42b7-8288-6f80b687d362"
+      "before": "browser-524e1600-261e-4371-8d5e-b1b4e49b5fe7",
+      "after": "browser-732d6ebd-58bd-4840-aa31-bdd582db4436"
     },
     "before": {
-      "scanId": "browser-51bbe879-2e6c-4903-9da8-0bef35197577",
+      "scanId": "browser-524e1600-261e-4371-8d5e-b1b4e49b5fe7",
       "total": 6,
       "blocking": 6,
       "byRule": {
@@ -371,7 +371,7 @@
       }
     },
     "after": {
-      "scanId": "browser-87003258-93f9-42b7-8288-6f80b687d362",
+      "scanId": "browser-732d6ebd-58bd-4840-aa31-bdd582db4436",
       "total": 0,
       "blocking": 0,
       "byRule": {},
@@ -414,10 +414,10 @@
           "file": "fixtures/nextjs-app/app/[locale]/layout.tsx",
           "kind": "jsx-open-tag",
           "issueIds": [
-            "d3984f2aed422f19",
-            "613b3cf5bff29334",
-            "29c4f8deefd16be0",
-            "d958b37e99b1870e"
+            "2d88d1c44be06035",
+            "e19cd8a8571cedc7",
+            "3dc54cf1803a1af0",
+            "cecd6434dea1f9dc"
           ],
           "beforeSha256": "8abafa3e27ff8cddb858fd562d278cb7e387b2a19e1e574830c2a1865c8aa248",
           "afterSha256": "a9a602d98b206779a995646c69d9e5b6dbf1b861563a1fd04a2b0956bc86a12b"
@@ -427,7 +427,7 @@
           "file": "fixtures/nextjs-app/app/globals.css",
           "kind": "css-relax-text-clamp",
           "issueIds": [
-            "cc8521986d362d73"
+            "3d7335932f115566"
           ],
           "beforeSha256": "4c45620a250dc5ad12f08149f51c4d9d96e1bcb596c12f0a6705c026d004b674",
           "afterSha256": "fa014b19a92c21e946ce3b999d27ec46998615bf1feb698f951f856b17095faa"
@@ -437,7 +437,7 @@
           "file": "fixtures/nextjs-app/messages/ja-JP.json",
           "kind": "translation-key",
           "issueIds": [
-            "1cca807b2d7a2d30"
+            "94117fcf655471f5"
           ],
           "beforeSha256": "32cac748ea5ec74ae5cdf381f91691e441c206fe191b4f6a4b6180f4d1f92dca",
           "afterSha256": "fc51fc6cec4b5c888c0ba6abdad75cb3db914fe5f05c933c635ed63338b37b73"
