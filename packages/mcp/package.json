@@ -18,7 +18,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "esbuild src/server.ts src/bin.ts --bundle --platform=node --format=esm --target=node22 --outdir=dist --legal-comments=none",
+    "build": "esbuild ./src/server.ts ./src/bin.ts --bundle --platform=node --format=esm --target=node22 --outdir=dist --legal-comments=none",
     "typecheck": "tsc --noEmit --moduleResolution bundler --module esnext --target es2022 src/server.ts"
   },
   "devDependencies": {

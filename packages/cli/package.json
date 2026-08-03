@@ -18,7 +18,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "esbuild src/cli.ts --bundle --platform=node --format=esm --target=node22 --outfile=dist/cli.js --legal-comments=none --external:yaml",
+    "build": "esbuild ./src/cli.ts --bundle --platform=node --format=esm --target=node22 --outfile=dist/cli.js --legal-comments=none --external:yaml",
     "typecheck": "tsc --noEmit --moduleResolution bundler --module esnext --target es2022 src/cli.ts"
   },
   "devDependencies": {

@@ -1,13 +1,13 @@
 {
   "schemaVersion": "1.0",
-  "generatedAt": "2026-08-03T06:29:54.238Z",
+  "generatedAt": "2026-08-03T08:11:19.792Z",
   "claim": "Deterministic engineering checks are authoritative. Linguistic judgements include confidence levels and human-review gates.",
   "scan": {
-    "scanId": "scan_46f45198df45435db066171e5a1b3d19",
+    "scanId": "scan_b063870e08b1485088553caa5429a7e9",
     "origin": "GUIDED_DEMO",
     "status": "completed_with_warnings",
-    "startedAt": "2026-08-03T06:29:54.194Z",
-    "completedAt": "2026-08-03T06:29:54.331Z",
+    "startedAt": "2026-08-03T08:11:19.759Z",
+    "completedAt": "2026-08-03T08:11:19.896Z",
     "config": {
       "projectRoot": ".",
       "sourceLocale": "en-GB",
@@ -69,7 +69,7 @@
     "issues": [
       {
         "issueId": "BF-VIS-HI-001",
-        "scanId": "scan_46f45198df45435db066171e5a1b3d19",
+        "scanId": "scan_b063870e08b1485088553caa5429a7e9",
         "origin": "GUIDED_DEMO",
         "category": "visual",
         "ruleId": "vertical-clipping",
@@ -104,7 +104,7 @@
       },
       {
         "issueId": "BF-VIS-DE-002",
-        "scanId": "scan_46f45198df45435db066171e5a1b3d19",
+        "scanId": "scan_b063870e08b1485088553caa5429a7e9",
         "origin": "GUIDED_DEMO",
         "category": "visual",
         "ruleId": "cta-overflow",
@@ -139,7 +139,7 @@
       },
       {
         "issueId": "BF-LOC-AR-003",
-        "scanId": "scan_46f45198df45435db066171e5a1b3d19",
+        "scanId": "scan_b063870e08b1485088553caa5429a7e9",
         "origin": "GUIDED_DEMO",
         "category": "locale",
         "ruleId": "wrong-direction",
@@ -172,7 +172,7 @@
       },
       {
         "issueId": "BF-RTL-HE-004",
-        "scanId": "scan_46f45198df45435db066171e5a1b3d19",
+        "scanId": "scan_b063870e08b1485088553caa5429a7e9",
         "origin": "GUIDED_DEMO",
         "category": "visual",
         "ruleId": "rtl-icon-order",
@@ -205,7 +205,7 @@
       },
       {
         "issueId": "BF-I18N-JA-005",
-        "scanId": "scan_46f45198df45435db066171e5a1b3d19",
+        "scanId": "scan_b063870e08b1485088553caa5429a7e9",
         "origin": "GUIDED_DEMO",
         "category": "linguistic",
         "ruleId": "raw-translation-key",
@@ -238,7 +238,7 @@
       },
       {
         "issueId": "BF-FONT-ZH-006",
-        "scanId": "scan_46f45198df45435db066171e5a1b3d19",
+        "scanId": "scan_b063870e08b1485088553caa5429a7e9",
         "origin": "GUIDED_DEMO",
         "category": "visual",
         "ruleId": "font-coverage",
@@ -271,7 +271,7 @@
       },
       {
         "issueId": "BF-VIS-TH-007",
-        "scanId": "scan_46f45198df45435db066171e5a1b3d19",
+        "scanId": "scan_b063870e08b1485088553caa5429a7e9",
         "origin": "GUIDED_DEMO",
         "category": "visual",
         "ruleId": "line-breaking",
@@ -304,7 +304,7 @@
       },
       {
         "issueId": "BF-I18N-FR-008",
-        "scanId": "scan_46f45198df45435db066171e5a1b3d19",
+        "scanId": "scan_b063870e08b1485088553caa5429a7e9",
         "origin": "GUIDED_DEMO",
         "category": "linguistic",
         "ruleId": "placeholder-mismatch",
@@ -347,7 +347,7 @@
       },
       {
         "issueId": "BF-LING-ES-009",
-        "scanId": "scan_46f45198df45435db066171e5a1b3d19",
+        "scanId": "scan_b063870e08b1485088553caa5429a7e9",
         "origin": "GUIDED_DEMO",
         "category": "linguistic",
         "ruleId": "glossary-violation",
@@ -380,7 +380,7 @@
       },
       {
         "issueId": "BF-META-EN-010",
-        "scanId": "scan_46f45198df45435db066171e5a1b3d19",
+        "scanId": "scan_b063870e08b1485088553caa5429a7e9",
         "origin": "GUIDED_DEMO",
         "category": "locale",
         "ruleId": "wrong-page-lang",
