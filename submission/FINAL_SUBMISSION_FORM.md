@@ -37,19 +37,21 @@ talk its way past: after a repair, the same deterministic browser predicates
 rerun on the rebuilt project. Measured on the bundled Next.js fixture: 6
 blocking issues before, 0 after, source locale unchanged, 0 new blockers, and
 a patch `git apply --check` accepts. Accuracy is scored against ground truth,
-not asserted: 70 labelled defects across 12 rule families and 12 scripts,
+not asserted: 70 labelled defects across 12 rule families and 12 locales,
 288 real browser renders — recall 100%, precision 100%, zero false positives
 on the clean variant.
 
 ## How Codex was used
 
 Codex built the product baseline: the pnpm workspace, web UI, CLI, MCP server,
-deterministic engines, repair boundary, reports, tests and the first Vercel
-release, with its commit history preserved verbatim in the repository. A
-subsequent independent audit-and-hardening pass (disclosed in
-`submission/AI_TOOLING_DISCLOSURE.md`) added the real browser engine,
-ground-truth benchmark, source repair and hosted rendering. Both phases are
-attributed honestly; no history was rewritten.
+deterministic engines, repair boundary, reports, tests and first Vercel release.
+Claude Code then performed a substantial independent adversarial audit and
+browser-engine hardening pass. Codex resumed as final integration and release
+owner: it reviewed and preserved that work, hardened hosted Chromium and its
+network boundary, reconciled the product and submission claims, ran the full
+quality contract, and completed production deployment and smoke testing. The
+full attribution is in `submission/AI_TOOLING_DISCLOSURE.md`; no history was
+rewritten or re-attributed.
 
 ## Live demo
 
@@ -61,10 +63,11 @@ English plus a locale you pick at 390×844, measures the DOM, runs axe, and
 returns two real screenshots with the findings underneath — each finding
 carrying its measurement and the predicate it failed. Measured cold-start on
 real sites: MDN 9.6s, Wikipedia 4.0s, vercel.com 4.8s. The panel states its
-bounds: one route, one viewport, nothing persisted; the full route × locale ×
-viewport matrix is the CLI's job. The site also hosts published evidence from
+bounds: one route, up to three locales, one viewport, nothing persisted; the
+full route × locale × viewport matrix, authenticated coverage, durable
+artifacts and repair are the local CLI's job. The site also hosts evidence from
 three CLI scans (16 screenshots, each with its SHA-256), the recorded AtlasPay
-10→0 repair proof, a report-import console, and the MCP call log.
+10→0 repair proof, a report-import console, and the fixture-scoped MCP call log.
 
 ## Public repository
 
@@ -103,3 +106,7 @@ carry no ground-truth labels. Linguistic model review is deterministic-only in
 this build (no provider configured). All three engines are verified on
 identical config; only Chromium has run the full 288-render benchmark. Teams,
 billing, remote MCP transport and enterprise isolation are roadmap.
+
+The MCP 10→0 repair receipt is also AtlasPay-fixture evidence. MCP transport,
+schemas, inspection and guarded mutation are verified independently, but this
+release does not claim arbitrary-project MCP source repair.

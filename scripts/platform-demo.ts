@@ -2,11 +2,10 @@ import {
   copyFile,
   mkdir,
   readFile,
-  readdir,
   writeFile,
 } from "node:fs/promises";
 import path from "node:path";
-import { scanDemoProject, loadDemoPredicates } from "@bhashafix/core";
+import { scanDemoProject, loadDemoPredicates, type Scan } from "@bhashafix/core";
 import { applyRepair, prepareRepair } from "@bhashafix/repair-engine";
 import { writeReportBundle } from "@bhashafix/report";
 import { verifyRepair } from "@bhashafix/verifier";
@@ -98,7 +97,7 @@ async function repair() {
 
 async function prove() {
   const baselineFile = path.join(evidenceRoot, "baseline-scan.json");
-  const baseline = JSON.parse(await readFile(baselineFile, "utf8"));
+  const baseline = JSON.parse(await readFile(baselineFile, "utf8")) as Scan;
   const { scan: finalScan, result } = await verifyRepair(projectRoot, baseline);
   if (
     result.status !== "verified" ||
@@ -131,18 +130,20 @@ async function prove() {
     `${JSON.stringify(proof, null, 2)}\n`,
   );
   await writeReportBundle(path.join(evidenceRoot, "report"), finalScan, result);
-  const screenshotDirectory = path.join(submissionRoot, "screenshots");
-  const screenshotFiles = (await readdir(screenshotDirectory))
-    .filter((file) => file.endsWith(".png"))
-    .sort()
-    .slice(0, 12);
-  if (screenshotFiles.length === 0) {
-    throw new Error("Replay proof requires at least one actual browser screenshot.");
-  }
+  const screenshotDirectory = path.join(
+    projectRoot,
+    "submission",
+    "screenshots",
+    "atlaspay",
+  );
+  const screenshotFiles = baseline.issues.flatMap((issue) => {
+    const before = path.basename(String(issue.screenshotBefore));
+    return [before, before.replace(/\.png$/i, "-after.png")];
+  });
   const screenshotZip = buildStoredZip(
     await Promise.all(
       screenshotFiles.map(async (file) => ({
-        name: file,
+        name: `${file.endsWith("-after.png") ? "after" : "before"}/${file}`,
         data: await readFile(path.join(screenshotDirectory, file)),
       })),
     ),

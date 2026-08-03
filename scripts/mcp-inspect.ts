@@ -194,6 +194,11 @@ Generated: ${new Date().toISOString()}
 This evidence was produced by an independent MCP TypeScript client connected to
 the built \`@bhashafix/mcp\` server over a spawned STDIO process.
 
+The 10-to-0 scan, repair and verification counts below are explicitly scoped
+to the bundled AtlasPay fixture. They prove the built STDIO transport, schemas,
+explicit-ID repair guardrails and fixture workflow; they do not claim
+arbitrary-project source repair.
+
 | Operation | Result |
 | --- | --- |
 | Tools/list | PASS · ${tools.tools.length} tools |

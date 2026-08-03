@@ -284,251 +284,217 @@ const publishedScreenshots = publishedScans.reduce(
   (total, scan) => total + scan.screenshots.length,
   0,
 );
-const publishedIssues = publishedScans.reduce(
-  (total, scan) => total + scan.issues,
-  0,
-);
-
 const CLONE_AND_RUN = `git clone https://github.com/vaibhav4046/bhashafix
 cd bhashafix
 pnpm install
 pnpm bhashafix scan --url https://example.com`;
 
 export function LandingPage() {
-  const [url, setUrl] = useState("");
   return (
     <main className="landing-shell ls-page">
       <Header />
 
-      <section className="ls-hero" aria-labelledby="hero-heading">
-        <p className="ls-eyebrow">
-          LOCAL-FIRST LOCALISATION RELEASE FIREWALL · OPEN SOURCE
-        </p>
-        <h1 id="hero-heading" className="ls-hero-heading">
-          <span className="ls-display-line">Your app speaks every language.</span>{" "}
-          <span className="ls-display-line">BhashaFix proves it still works.</span>{" "}
-          <span className="ls-hero-rule">
-            Every language. Every viewport. Evidence before release.
-          </span>
-        </h1>
-        <ScriptTransition />
-        <p className="ls-standfirst">
-          Run one command in your project. BhashaFix opens real browsers, tests
-          every selected locale and viewport, captures evidence, and blocks
-          releases when localisation breaks.
-        </p>
-        <pre tabIndex={0} className="ls-command ls-command-lead">
-          npx @bhashafix/cli scan --url http://localhost:3000 --locales
-          en-GB,de-DE,ar-SA,ja-JP
-        </pre>
-        <p className="ls-caveat">
-          <b>Not on npm yet.</b>{" "}
-          Today that engine runs from a clone or from a
-          tarball you pack yourself. Both routes are two clicks away and both are
-          exercised by this repository&rsquo;s own checks.
-        </p>
-        <div className="ls-actions">
-          <Link className="button" href="/integrations/cli">
-            Run BhashaFix locally →
-          </Link>
-          <Link className="button button-secondary" href="/demo">
-            See the verified demo
-          </Link>
-          <Link className="button button-secondary" href="/integrations/mcp">
-            Connect through MCP
-          </Link>
+      <section className="winner-hero" aria-labelledby="hero-heading">
+        <div className="winner-hero-grid">
+          <div className="winner-hero-copy">
+            <p className="ls-eyebrow">OPEN-SOURCE LOCALISATION RELEASE ENGINE</p>
+            <h1 id="hero-heading">
+              <span>Every language.</span>
+              <span>Every viewport.</span>
+              <span className="winner-hero-accent">Evidence before release.</span>
+            </h1>
+            <p className="winner-hero-lede">
+              Translation models write strings. BhashaFix opens the product,
+              finds what broke, prepares a bounded repair, and reruns the same
+              checks before you ship.
+            </p>
+            <ScriptTransition />
+            <div className="ls-actions winner-hero-actions">
+              <Link className="button" href="/demo">
+                Watch the 10 → 0 proof
+              </Link>
+              <Link className="button button-secondary" href="/evidence">
+                Inspect real scans
+              </Link>
+            </div>
+            <ul className="winner-trust-row" aria-label="Product guarantees">
+              <li><i aria-hidden="true" />Real Chromium</li>
+              <li><i aria-hidden="true" />No model key required</li>
+              <li><i aria-hidden="true" />Source stays local</li>
+            </ul>
+          </div>
+
+          <aside className="winner-proof-console" aria-label="Verified AtlasPay repair proof">
+            <div className="winner-console-bar">
+              <span><i aria-hidden="true" /> VERIFIED REPLAY</span>
+              <code>ATLASPAY</code>
+            </div>
+            <div className="winner-delta">
+              <div>
+                <b>{repairProof.baselineBlocking}</b>
+                <span>blocking</span>
+              </div>
+              <em aria-hidden="true">→</em>
+              <div data-pass="true">
+                <b>{repairProof.finalBlocking}</b>
+                <span>blocking</span>
+              </div>
+            </div>
+            <ol className="winner-console-stages">
+              {["Discover", "Render", "Diagnose", "Repair", "Verify"].map(
+                (stage, index) => (
+                  <li key={stage}>
+                    <span>{String(index + 1).padStart(2, "0")}</span>
+                    <b>{stage}</b>
+                    <i aria-label="passed">PASS</i>
+                  </li>
+                ),
+              )}
+            </ol>
+            <div className="winner-console-foot">
+              <span>source locale</span>
+              <b>{replayConfig.sourceLocale} · {repairProof.sourceLocaleRegression}</b>
+            </div>
+          </aside>
+        </div>
+
+        <div className="winner-live-scan" data-testid="homepage-live-scan">
+          <div className="winner-live-head">
+            <div>
+              <p className="ls-eyebrow"><i aria-hidden="true" /> LIVE · REAL CHROMIUM</p>
+              <h2>Scan a public page now.</h2>
+            </div>
+            <p>
+              One route. Two locales. Real screenshots, DOM measurements and axe
+              evidence. Nothing is stored.
+            </p>
+          </div>
+          <BrowserScanPanel />
         </div>
       </section>
 
-      <section className="ls-section ls-choices" aria-labelledby="choices">
-        <h2 id="choices">Three ways to check this, with no setup.</h2>
-        <ol className="ls-choice-list">
-          <li>
-            <p className="ls-eyebrow">A · RECORDED VERIFIED RUN</p>
-            <h3>Watch verified proof.</h3>
-            <p>
-              AtlasPay is a bundled multilingual fixture. The recorded run found{" "}
-              {repairProof.baselineBlocking} blocking predicates, applied a real
-              patch confined to {replayConfig.allowlist.length} allowlisted
-              files, reran the identical checks and recorded{" "}
-              {repairProof.finalBlocking} blocking predicates with the{" "}
-              {replayConfig.sourceLocale} source locale at{" "}
-              {repairProof.sourceLocaleRegression}.
-            </p>
-            <ul className="ls-chain">
-              <li>{repairProof.baselineBlocking} blocking</li>
-              <li>real patch</li>
-              <li>identical rerun</li>
-              <li>{repairProof.finalBlocking} blocking</li>
-              <li>source locale {repairProof.sourceLocaleRegression}</li>
-            </ul>
-            <Link className="text-action" href="/demo">
-              Open the recorded proof →
+      <section className="winner-proof-strip" aria-label="Verified product evidence">
+        <div><b>{repairProof.baselineBlocking} → {repairProof.finalBlocking}</b><span>verified fixture repair</span></div>
+        <div><b>{publishedScans.length}</b><span>real public sites scanned</span></div>
+        <div><b>{publishedScreenshots}</b><span>published screenshots</span></div>
+        <div><b>4</b><span>web · CLI · MCP · CI</span></div>
+        <div><b>{repairProof.sourceLocaleRegression}</b><span>source-locale regression</span></div>
+      </section>
+
+      <section className="ls-section winner-problem" aria-labelledby="problem-heading">
+        <div className="winner-section-intro">
+          <p className="ls-eyebrow">WHAT TRANSLATION MODELS CANNOT SEE</p>
+          <h2 id="problem-heading">A correct sentence can still ship a broken product.</h2>
+          <p>
+            BhashaFix joins linguistic context to browser evidence, so teams can
+            distinguish a preference from a reproducible release failure.
+          </p>
+        </div>
+        <div className="winner-failure-grid">
+          <article>
+            <span className="winner-failure-code">BF-VIS-CTA-OVERFLOW</span>
+            <div className="winner-mini-measure"><i style={{ width: "100%" }} /><b>256px</b><em>224px max</em></div>
+            <h3>The words fit. The button does not.</h3>
+            <p>Rendered width, clipping and the failing selector are recorded—not guessed.</p>
+          </article>
+          <article>
+            <span className="winner-failure-code">BF-LOC-DIR-MISMATCH</span>
+            <div className="winner-direction-sample" dir="rtl"><b>→</b><span lang="ar">إتمام الدفع</span></div>
+            <h3>The translation is Arabic. The interface is still LTR.</h3>
+            <p>Page direction, logical spacing and icon order are verified in the browser.</p>
+          </article>
+          <article>
+            <span className="winner-failure-code">HUMAN REVIEW GATE</span>
+            <div className="winner-confidence"><i /><i /><i /><i data-off="true" /><span>high confidence</span></div>
+            <h3>The wording is possible. The meaning may be wrong.</h3>
+            <p>Model-assisted findings show confidence, back translation and review status.</p>
+          </article>
+        </div>
+      </section>
+
+      <section className="ls-section winner-demo-proof" aria-labelledby="demo-proof-heading">
+        <div className="winner-demo-visual" aria-hidden="true">
+          <div className="winner-demo-top"><span>REPAIR-PROOF.JSON</span><b>VERIFIED</b></div>
+          <div className="winner-demo-number"><span>{repairProof.baselineBlocking}</span><i>→</i><strong>{repairProof.finalBlocking}</strong></div>
+          <ul>
+            <li><span>original predicate</span><b>PASS</b></li>
+            <li><span>target route renders</span><b>PASS</b></li>
+            <li><span>source-locale regression</span><b>PASS</b></li>
+            <li><span>new blocking issues</span><b>0</b></li>
+          </ul>
+        </div>
+        <div className="winner-demo-copy">
+          <p className="ls-eyebrow">THE DEMO IS THE PROOF</p>
+          <h2 id="demo-proof-heading">Ten seeded failures. One reviewable patch. Zero left.</h2>
+          <p>
+            AtlasPay contains ten real localisation defects across Hindi, German,
+            Arabic, Hebrew, Japanese, Chinese, Thai, French, Spanish and English.
+            The engine discovers each failure, confines the patch to{" "}
+            {replayConfig.allowlist.length} allowlisted files, then reruns the
+            identical predicates.
+          </p>
+          <div className="ls-actions">
+            <Link className="button" href="/scan/atlaspay-replay/overview">Open the evidence workspace</Link>
+            <Link className="button button-secondary" href="/demo">Read the run record</Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="ls-section winner-surfaces" aria-labelledby="surfaces-heading">
+        <div className="winner-section-intro">
+          <p className="ls-eyebrow">ONE ENGINE · FOUR SURFACES</p>
+          <h2 id="surfaces-heading">Use it where releases already happen.</h2>
+        </div>
+        <div className="winner-surface-grid">
+          {[
+            ["WEB", "Explore screenshots, issues, diffs and proof reports.", "/scan"],
+            ["CLI", "Scan locally with stable exit codes and JSON output.", "/integrations/cli"],
+            ["MCP", "Give Codex a deterministic localisation harness.", "/integrations/mcp"],
+            ["CI", "Block only on the severity your release policy defines.", "/integrations/ci"],
+          ].map(([name, detail, href]) => (
+            <Link key={name} href={href}>
+              <span>{name}</span>
+              <p>{detail}</p>
+              <b aria-hidden="true">↗</b>
             </Link>
-          </li>
-          <li>
-            <p className="ls-eyebrow">
-              B · REAL CHROMIUM SCAN · Generated through the BhashaFix CLI
-            </p>
-            <h3>Inspect a real external scan.</h3>
-            <p>
-              {publishedScans.length} public sites —{" "}
-              {publishedScans.map((scan) => scan.name).join(", ")} — scanned
-              locally and published byte for byte: scan IDs, routes, locales,
-              timestamps, {publishedIssues} recorded issues and{" "}
-              {publishedScreenshots} screenshots with their SHA-256.
-            </p>
-            <ul className="ls-chain">
-              {publishedScans.map((scan) => (
-                <li key={scan.scanId}>
-                  {new URL(scan.target).hostname} · {scan.issues} issues
-                </li>
-              ))}
-            </ul>
-            <Link className="text-action" href="/evidence">
-              Read the published artifacts →
-            </Link>
-          </li>
-          <li>
-            <p className="ls-eyebrow">C · YOUR MACHINE</p>
-            <h3>Run it yourself.</h3>
-            <pre tabIndex={0} className="ls-command">{CLONE_AND_RUN}</pre>
-            <p>
-              The npm package is not published, so a clone is the shortest path.
-              If you want the installed binary instead, the CLI page has the{" "}
-              <code>pnpm pack</code> route that produces the same executable.
-            </p>
-            <Link className="text-action" href="/integrations/cli">
-              Both install routes →
-            </Link>
-          </li>
-        </ol>
+          ))}
+        </div>
       </section>
 
       <PipelineBand />
 
-      <section className="ls-section ls-boundary" aria-labelledby="boundary">
-        <h2 id="boundary">Where the engine runs</h2>
-        <div className="ls-boundary-grid">
-          <div>
-            <h3>Inside your environment</h3>
-            <ul>
-              <li>Chromium, and the pages it renders</li>
-              <li>Your repository source and credentials</li>
-              <li>Every repair operation and its rollback snapshot</li>
-              <li>The scan record, screenshots and diffs a run writes</li>
-            </ul>
-          </div>
-          <div>
-            <h3>On this site</h3>
-            <ul>
-              <li>The product explanation and the guided demo</li>
-              <li>Published artifacts from runs that already happened</li>
-              <li>
-                A report console that opens a bundle you produced, in your
-                browser
-              </li>
-              <li>
-                A quick browser scan, below: one route, up to three locales,
-                rendered in Chromium inside the function
-              </li>
-            </ul>
-          </div>
+      <section className="ls-section ls-specimens winner-specimens" aria-labelledby="specimens">
+        <div className="winner-section-intro">
+          <p className="ls-eyebrow">UNICODE · BCP 47 · SCRIPT-AWARE</p>
+          <h2 id="specimens">Built for the scripts products actually ship.</h2>
         </div>
-        <p className="ls-caveat">
-          The quick scan on this site renders in a real Chromium, but the
-          function has a 60 second ceiling, so it covers one route at one
-          viewport and stores nothing. Everything that needs scale or trust
-          &mdash; the full route &times; locale &times; viewport matrix,
-          persisted artifacts, your source and every repair &mdash; stays
-          inside your environment, and a portable report can be shared without
-          uploading a repository.
-        </p>
-        <div className="ls-actions">
-          <Link className="button button-secondary" href="/import">
-            Open a report bundle →
-          </Link>
-        </div>
-      </section>
-
-      <section className="ls-section ls-specimens" aria-labelledby="specimens">
-        <h2 id="specimens">Script shaping is measured in the page.</h2>
         <ul className="ls-specimen-row">
           {localeSpecimens.map(([locale, sample, script]) => (
             <li key={locale}>
               <span>{locale}</span>
-              <strong lang={locale} dir="auto">
-                {sample}
-              </strong>
+              <strong lang={locale} dir="auto">{sample}</strong>
               <em>{script}</em>
             </li>
-          ))}
-        </ul>
-        <ul className="ls-locale-registry" aria-label="Representative locales">
-          {[
-            "en-GB",
-            "hi-IN",
-            "ta-IN",
-            "ar-SA",
-            "he-IL",
-            "fa-IR",
-            "bn-BD",
-            "zh-Hans-CN",
-            "zh-Hant-TW",
-            "ja-JP",
-            "ko-KR",
-            "th-TH",
-            "uk-UA",
-            "am-ET",
-            "vi-VN",
-            "id-ID",
-          ].map((locale) => (
-            <li key={locale}>{locale}</li>
           ))}
         </ul>
         <TrustClaim />
       </section>
 
-      <section className="ls-section ls-quick-scan" aria-labelledby="quick-scan">
-        <h2 id="quick-scan">Try it on a real site, right here.</h2>
-        <p className="ls-standfirst">
-          Chromium starts inside this function, renders your URL with the page
-          and target BCP 47 locales you choose, measures the rendered DOM and runs
-          axe at mobile, tablet or desktop size. One route, one viewport, nothing
-          stored &mdash; the ceiling is 60 seconds. The CLI is what you run for a
-          full matrix.
-        </p>
-        <BrowserScanPanel />
-      </section>
-
-      <section className="ls-section ls-preflight" aria-labelledby="preflight">
-        <h2 id="preflight">Quick HTTP preflight</h2>
-        <p className="ls-standfirst">
-          Checks reachability, metadata and static translation signals. No
-          browser rendering.
-        </p>
-        <form
-          className="url-launcher"
-          onSubmit={(event) => {
-            event.preventDefault();
-            window.location.href = `/scan/new?url=${encodeURIComponent(url)}&autorun=1`;
-          }}
-        >
-          <input
-            type="url"
-            placeholder="https://www.example.com"
-            aria-label="Public website URL"
-            value={url}
-            onChange={(event) => setUrl(event.target.value)}
-            required
-          />
-          <button type="submit">Check this site →</button>
-        </form>
-        <p className="ls-note">
-          A preflight reads real HTTP responses, declared language and direction,
-          and visible text. It never renders a locale in a browser, measures
-          layout, runs axe, or touches source — those need the local run above.
-        </p>
+      <section className="ls-section winner-local" aria-labelledby="local-heading">
+        <div>
+          <p className="ls-eyebrow">LOCAL-FIRST BY DESIGN</p>
+          <h2 id="local-heading">Your source, credentials and repairs stay in your environment.</h2>
+          <p>
+            The hosted scan is a bounded one-page proof. Full route × locale ×
+            viewport matrices, authenticated sessions, repair rollback and source
+            patches run locally through the same core APIs.
+          </p>
+          <div className="ls-actions">
+            <Link className="button" href="/integrations/cli">Run from source</Link>
+            <Link className="button button-secondary" href="/trust">Read the trust centre</Link>
+          </div>
+        </div>
+        <pre tabIndex={0} className="winner-command">{CLONE_AND_RUN}</pre>
       </section>
 
       <Footer />
@@ -842,7 +808,7 @@ export function NewScanPage() {
   const [crawlDepth, setCrawlDepth] = useState(2);
   const [rateLimitPerSecond, setRateLimitPerSecond] = useState(2);
   const [repairMode, setRepairMode] = useState<"prepare" | "apply">("prepare");
-  const [allowlist, setAllowlist] = useState(replayConfig.allowlist.join("\n"));
+  const [allowlist, setAllowlist] = useState("");
   const steps = ["Target", "Locales", "Coverage", "Guardrails", "Summary"];
   const toggleIn = (
     setter: (update: (current: string[]) => string[]) => void,
@@ -990,16 +956,32 @@ export function NewScanPage() {
       <AppShell>
         <section className="simple-scan">
           <div className="simple-scan-heading">
-            <span>START WITH THE TRUTH</span>
-            <h1>Check a real public website.</h1>
+            <span>REAL BROWSER · REAL EVIDENCE</span>
+            <h1>Scan a public page in Chromium.</h1>
             <p>
-              This scan runs here now. Browser screenshots, accessibility and
-              source repairs run locally where Playwright and your repository
-              are available.
+              Render a real page in two locales, capture both screenshots and
+              inspect deterministic layout, locale and accessibility findings.
             </p>
           </div>
 
           <ScanModeSwitcher target={target} setTarget={setTarget} />
+
+          <div className="canonical-browser-scan">
+            <div className="canonical-browser-heading">
+              <span><i aria-hidden="true" /> LIVE HOSTED CHROMIUM</span>
+              <p>One route and one viewport. Nothing is stored.</p>
+            </div>
+            <BrowserScanPanel />
+          </div>
+
+          <div className="preflight-divider">
+            <span>SECONDARY · FAST METADATA CRAWL</span>
+            <h2>Check up to five linked routes without rendering them.</h2>
+            <p>
+              Useful for language metadata, raw keys and missing alt text. This
+              does not replace the browser evidence above.
+            </p>
+          </div>
 
           <form
             className="real-scan-form"
@@ -1177,7 +1159,6 @@ export function NewScanPage() {
           {step === 0 && (
             <div className="choice-grid">
               {[
-                ["public", "Public URL", "Hosted crawl with SSRF, redirect and response limits.", "◎"],
                 ["local", "Local project", "Repository discovery and localhost rendering through the CLI.", "⌘"],
                 ["demo", "AtlasPay demo", "A genuine ten-failure replay with bounded repair proof.", "◇"],
               ].map(([value, title, body, icon]) => (
@@ -1452,13 +1433,19 @@ export function NewScanPage() {
                 Continue →
               </button>
             ) : (
-              <button
-                className="button"
-                onClick={() => void run()}
-                disabled={running}
-              >
-                {running ? "Inspecting target…" : "Run scan →"}
-              </button>
+              target === "local" ? (
+                <Link className="button" href="/integrations/cli">
+                  Open local CLI setup →
+                </Link>
+              ) : (
+                <button
+                  className="button"
+                  onClick={() => void run()}
+                  disabled={running}
+                >
+                  Open verified demo →
+                </button>
+              )
             )}
           </div>
         </section>
@@ -1477,7 +1464,7 @@ function ScanModeSwitcher({
   return (
     <nav className="scan-mode-switcher" aria-label="Scan type">
       {[
-        ["public", "Public website", "Real hosted HTTP scan"],
+        ["public", "Public website", "Real hosted Chromium"],
         ["local", "Local product", "Full browser + repair"],
         ["demo", "Verified demo", `Recorded ${proofDelta} proof`],
       ].map(([value, label, detail]) => (
@@ -2299,7 +2286,7 @@ function PipelineRail() {
       `${replayConfig.browsers.join(", ")} · ${replayConfig.viewports.length} viewports`,
     ],
     ["Routes", `${baselineScan.routesDiscovered.length} discovered`],
-    ["Screenshots", `${recordedScreenshots} recorded references`],
+    ["Screenshots", `${recordedScreenshots} before/after pairs bundled`],
     ["Verified issues", `${baselineScan.issues.length} recorded`],
     ["Repair", `${replayConfig.allowlist.length} allowlisted files`],
     [
@@ -2327,9 +2314,9 @@ function PipelineRail() {
           {replayConfig.noAi ? "No-AI deterministic" : "Provider-assisted"}
         </strong>
         <p>
-          The replay records one screenshot reference per issue. Those image
-          files are not bundled here, so the stage renders the fixture itself
-          rather than showing a picture that does not exist.
+          Each issue has a genuine broken and repaired Chromium capture in the
+          screenshot bundle. The stage below renders the same fixture live so
+          selectors can be resolved and annotated interactively.
         </p>
       </section>
     </aside>
@@ -3155,12 +3142,13 @@ function RepairsView() {
       <div className="repair-verdict">
         <span>✓</span>
         <div>
-          <strong>Verification accepted the repair</strong>
+          <strong>Recorded predicates passed; the release gate remains incomplete</strong>
           <p>
             Original predicates pass · source locale{" "}
             {repairProof.sourceLocaleRegression} ·{" "}
             {replayReport.verification.newBlockingIssues} new blocking issues ·
-            diff within policy {recordedFlag(repairProof.diffWithinPolicy)}
+            diff policy, accessibility regression and console delta were not
+            measured by this replay
           </p>
         </div>
         <b>{repairProof.baselineBlocking} → {repairProof.finalBlocking}</b>
@@ -3184,6 +3172,10 @@ function ReportView() {
     ["Unified patch", "/replay/repair.patch"],
     ["Proof JSON", "/replay/repair-proof.json"],
   ];
+  const releaseGateComplete =
+    repairProof.consoleErrorDelta !== null &&
+    repairProof.accessibilityRegression !== null &&
+    repairProof.diffWithinPolicy !== null;
   return (
     <section className="report-page">
       <div className="report-score">
@@ -3195,10 +3187,16 @@ function ReportView() {
       </div>
       <div className="report-summary">
         <span>FINAL VERDICT</span>
-        <h2>Ready for engineering release.</h2>
+        <h2>
+          {releaseGateComplete
+            ? "Ready for engineering release."
+            : "Repair verified. Release gate incomplete."}
+        </h2>
         <p>
-          The replay proves all original blocking predicates pass after a bounded
-          repair. Linguistic preference still requires human review when present.
+          The replay proves all original blocking predicates pass after the
+          bounded repair. It does not record console-error delta, accessibility
+          regression or diff-policy verification, so this artifact alone is not
+          a release-readiness approval.
         </p>
         <div>
           {[
@@ -3375,7 +3373,7 @@ export function MemoryPage() {
   const defaults: MemoryEntry[] = [
     { id: "seed-memory-es", source: "Checkout", target: "Pagar", locale: "es-MX", context: "checkout-title", provider: "human", approved: true, match: "exact" },
     { id: "seed-memory-fr", source: "Send money", target: "Envoyer de l’argent", locale: "fr-FR", context: "primary-cta", provider: "human", approved: true, match: "context" },
-    { id: "seed-memory-ar", source: "Available balance", target: "الرصيد المتاح", locale: "ar-SA", context: "dashboard-card", provider: "provider:openai", approved: false, match: "context" },
+    { id: "seed-memory-ar", source: "Available balance", target: "الرصيد المتاح", locale: "ar-SA", context: "dashboard-card", provider: "sample/demo import · provider:openai · unverified", approved: false, match: "context" },
     { id: "seed-memory-ja", source: "Global payments", target: "グローバル決済", locale: "ja-JP", context: "hero-title", provider: "human", approved: true, match: "exact" },
   ];
   const [entries, setEntries] = useState<MemoryEntry[]>(defaults);
@@ -3442,6 +3440,12 @@ export function MemoryPage() {
         <select aria-label="Filter memory by match type" value={matchFilter} onChange={(event) => setMatchFilter(event.target.value)}><option value="*">All matches</option><option value="exact">Exact</option><option value="context">Context</option></select>
         <span role="status">{message || `${filtered.length} of ${entries.length} persisted entries`}</span>
       </section>
+      <p className="trust-claim">
+        Seeded rows are illustrative local samples. The OpenAI-labelled seed is
+        marked as an unverified sample import; it is not a receipt from a real
+        provider call. Imported project entries retain the provenance supplied
+        in their file.
+      </p>
       <section className="memory-grid">
         {filtered.map((entry) => (
           <article key={entry.id}>

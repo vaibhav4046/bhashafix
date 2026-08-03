@@ -23,13 +23,18 @@ locale and route context, a deterministic predicate, measured evidence, and the
 owning source file. It then prepares a real patch restricted to three
 allowlisted fixture files.
 
-The model never gets to say “fixed.” The same predicates rerun. The final result
-is ten blocking failures to zero, with the en-GB source locale passing,
-accessibility not regressing, and no additional console errors.
+The model never gets to say “fixed.” The same recorded fixture predicates
+rerun. The final result is ten blocking failures to zero, with the en-GB source
+locale passing. Console-error delta and accessibility regression were not
+measured by that deterministic AtlasPay replay, so the report labels them
+`not measured` rather than turning them into release claims.
 
-The hosted experience is a clearly labelled replay generated from that real
-run. It works with no API key or browser launch at request time. Locally, the
-CLI and MCP tests execute the real scan, repair, and verification flow. The
+The hosted experience includes two distinct public paths: a bounded real-
+Chromium quick scan for one route, selected locales and one viewport, and a
+five-route static HTTP preflight. The AtlasPay proof remains a clearly labelled
+recorded fixture replay. Full matrices, durable artifacts and repository repair
+run locally. The MCP 10-to-0 sequence is also fixture-scoped; it proves guarded
+STDIO invocation and repair orchestration, not arbitrary-project mutation. The
 report exports JSON, HTML, SARIF, JUnit, CSV, the unified patch, and proof JSON.
 
 The architecture is provider-independent. OpenAI, Anthropic, Groq, or a local

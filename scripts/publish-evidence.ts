@@ -65,6 +65,29 @@ await rm(outputRoot, { recursive: true, force: true });
 await mkdir(path.join(outputRoot, "scans"), { recursive: true });
 await mkdir(path.join(outputRoot, "mcp"), { recursive: true });
 
+// The AtlasPay before/after frames are canonical submission captures, not
+// transient public output. Republish all 20 so evidence:publish can rebuild
+// public/evidence without breaking demo:prove on the next verification run.
+const atlasPayEvidenceRoot = path.join(
+  root,
+  "submission",
+  "screenshots",
+  "atlaspay",
+);
+const atlasPayEvidenceFiles = (await readdir(atlasPayEvidenceRoot)).filter((file) =>
+  /^BF-[A-Z0-9-]+(?:-after)?\.png$/.test(file),
+);
+if (atlasPayEvidenceFiles.length !== 20) {
+  throw new Error(
+    `Expected 20 AtlasPay before/after evidence frames; found ${atlasPayEvidenceFiles.length}.`,
+  );
+}
+await Promise.all(
+  atlasPayEvidenceFiles.map((file) =>
+    copyFile(path.join(atlasPayEvidenceRoot, file), path.join(outputRoot, file)),
+  ),
+);
+
 const published: Array<Record<string, unknown>> = [];
 
 for (const entry of realSites.scans) {
@@ -214,7 +237,12 @@ await writeFile(
       benchmark: benchmark
         ? { fixture: benchmark.fixture, metrics: benchmark.metrics }
         : null,
-      atlaspayRepair: repairProof ?? null,
+      atlaspayRepair: repairProof
+        ? {
+            ...repairProof,
+            browserEvidence: atlasPayEvidenceFiles.map((file) => `/evidence/${file}`),
+          }
+        : null,
       nextjsRepair: nextjsProof
         ? {
             scanIds: nextjsProof.scanIds,

@@ -1,86 +1,89 @@
-# Tooling disclosure: independent audit and hardening pass
+# AI tooling and release-ownership disclosure
 
 This project was built with more than one AI coding agent. Both are disclosed
-here so judges can attribute the work accurately. Nothing in this file is
-inferred; every claim maps to a commit in `git log`.
+so judges can attribute the work accurately. Claims below map to repository
+history, executable evidence, or the final release audit.
 
 ## Timeline
 
-| Phase | Agent | Commits |
+| Phase | Agent | Evidence |
 | --- | --- | --- |
-| Planning, initial build, deployment, first submission package | Codex | `e531633` … `a75aa1f` (20 commits) |
-| Independent audit and hardening | Claude Opus 5 (Claude Code) | `850ce1b` onwards |
+| Planning, initial build, first deployment and first submission package | Codex | `e531633` through `a75aa1f` |
+| Independent adversarial audit and browser-engine hardening | Claude Opus 5 (Claude Code) | the post-`a75aa1f` hardening sequence before final integration |
+| Final integration, hosted security hardening, product refinement, release verification and deployment | Codex | `d682470` and the final release increment |
 
-The Codex history has been preserved exactly as written. It has not been
-squashed, rewritten or rebased, and no Codex commit has been re-attributed.
-`submission/CODEX_USAGE_EVIDENCE.md` remains the record of that phase.
+The history was preserved rather than rewritten to make the project look
+single-agent. `submission/CODEX_USAGE_EVIDENCE.md` records Codex's baseline and
+final release work; this document also credits the independent Claude Code
+audit and implementation pass that Codex reviewed and integrated.
 
-## Why a second pass happened
+## Why the independent pass happened
 
-Codex reached its usage limit with the product in a state the author judged
-unfinished: visually complete, but with a large gap between what the interface
-claimed and what the code did. A second agent was used specifically to audit
-that gap adversarially and close it.
+The initial product needed an adversarial review of the gap between interface
+claims and executable evidence. Claude Code was used for that second
+perspective and implemented substantial browser-engine, benchmark and protocol
+work. Codex then resumed as release owner: it reviewed the inherited changes,
+closed the hosted security and product gaps, reran the complete contract,
+reconciled the submission narrative and deployed the integrated result.
 
-## What the audit found
+## What the independent audit found
 
-The audit was run as independent read-only passes over the repository at commit
-`a75aa1f`, with a separate adversarial pass tasked with refuting each
-conclusion. The full result is in `docs/PRODUCT_TRUTH_MATRIX.md`. The
-load-bearing findings:
+The audit examined the repository as it existed after the initial build. The
+full historical record remains in `docs/PRODUCT_TRUTH_MATRIX.md`. Its
+load-bearing findings included:
 
-- **No browser was launched anywhere in the product.** The central claim — that
-  BhashaFix renders every locale in a real browser — was not implemented.
-  Playwright appeared only in the end-to-end suite and two standalone scripts.
-  The "local Playwright tier" that the interface and CLI directed users to did
-  not exist.
-- `packages/core` evaluated four checked-in JSON files and emitted
-  `screenshotBefore` paths into `public/evidence/`, a directory that was never
-  created.
-- `bhashafix scan --project` failed with `ENOENT` on any project other than the
-  bundled fixture.
-- The repair engine's "unified diff" used `@@ pointer @@` headers, which
-  `git apply` and `patch` both reject.
-- The verifier reported three results — console-error delta, accessibility
-  regression, diff policy — that were hardcoded literals.
-- `bhashafix mcp` started two MCP servers on one stdio pipe, so every tool call,
-  including the destructive `apply_repair`, executed twice.
-- Several build receipts emitted `"PASS"` values that no check computed.
-- The workspace UI displayed an invented console timeline, axe tables where axe
-  never ran, and overflow metrics beside iframes that were never measured.
-- Eight release screenshots named `.png` contained JPEG data.
+- The original production packages did not launch a browser even though the UI
+  described a browser-backed local tier.
+- AtlasPay scan results were fixture predicates with dangling screenshot paths,
+  not browser measurements.
+- `bhashafix scan --project` was fixture-bound.
+- The original repair diff was not accepted by `git apply`.
+- Three verifier fields were hard-coded rather than measured.
+- The CLI MCP entrypoint started two servers on one STDIO pipe.
+- Several receipts and UI metrics asserted checks that had not run.
+- Eight files named `.png` actually contained JPEG bytes.
 
-## What the hardening pass changed
+## What the independent hardening pass contributed
 
-- Added `packages/browser`: a real Playwright adapter, an in-page measurement
-  pass, and 15 deterministic rules driven by those measurements. This wired up
-  `detectElementOverflow` and `detectViewportOverflow`, which already existed
-  but had no production callers.
-- `bhashafix scan --url` now discovers routes from the rendered DOM, renders
-  route × locale × viewport, runs axe, and writes real PNG screenshots and DOM
-  snapshots. `bhashafix doctor` probes a real browser launch.
-- Added a ground-truth benchmark over a generated six-locale fixture site with
-  33 labelled defects across 12 rule families. See `submission/EVAL_RESULTS.md`
-  for the measured numbers.
-- Fixed the MCP double-start and added a subprocess test that would have caught
-  it. The pre-existing MCP tests could not, because they drive the server
-  in-process.
-- Replaced the fabricated receipts, diffs, verifier fields and UI metrics with
-  computed values, or with an explicit "not measured" where no measurement
-  exists.
-- Re-encoded the mislabelled screenshots and added a byte-level check so the
-  problem cannot recur silently.
+- Added the Playwright browser adapter, rendered-DOM measurement, axe execution,
+  route discovery, real PNG screenshots and DOM snapshots.
+- Wired `bhashafix scan --url`, browser-aware doctor output and cross-engine
+  selection.
+- Added a ground-truth benchmark over a generated 12-locale fixture site with
+  70 labelled defects across 12 rule families.
+- Fixed the MCP double-start and added a real subprocess regression test.
+- Replaced unsupported receipts, diffs, verifier fields and UI metrics with
+  computed values or explicit `not measured` states.
+- Added cross-engine checks and real-site scans that exposed and corrected rule
+  false positives.
+
+## What Codex final integration contributed
+
+- Reviewed and preserved valid independent-agent work instead of replacing it,
+  then reconciled it with the shared web, CLI, MCP and CI contracts.
+- Hardened hosted Chromium so every redirect, frame and subrequest is checked
+  against the SSRF policy; capped requests and origins; redacted failed-request
+  query strings; removed stack leakage; and closed a concurrency race.
+- Refined the live quick-scan experience, BCP 47 inputs, viewport selection,
+  evidence download, accessibility and truthful scope labels.
+- Fixed a real light-theme accessibility regression and reduced generated-file
+  lint noise without weakening any rule or assertion.
+- Ran the full release contract, production build, packed CLI/MCP clients, MCP
+  Inspector, MCPC, browser E2E, the AtlasPay 10-to-0 proof, the Next.js 6-to-0
+  proof, the 70-defect benchmark, hostile audit and production smoke.
+- Reconciled the final submission artifacts and public deployment with the
+  behavior that was actually verified.
 
 ## What is still not claimed
 
-The hardening pass did not make everything true. The following remain
-unimplemented and are stated as such throughout the product:
-
-- The hosted Vercel product now includes a bounded real-Chromium quick scan for
-  one route and one viewport, alongside the five-route HTTP preflight. Full
-  matrices and source repair require the local CLI or a configured worker.
-- There is no server-side scan store; web scan history is per browser.
-- Repair still only rewrites allowlisted JSON. It cannot repair `.tsx` or CSS.
-- `bhashafix scan --project` on an arbitrary repository is still fixture-bound.
-- No model provider is configured, so linguistic review is deterministic only.
-- Only Chromium has been exercised in this environment.
+- The hosted Vercel product includes a bounded real-Chromium quick scan for one
+  route, up to three locales and one viewport, alongside a separate five-route
+  static HTTP preflight. Full matrices, persisted artifacts and source repair
+  remain local CLI responsibilities.
+- There is no server-side scan store; hosted results are not durable.
+- The canonical AtlasPay and MCP 10-to-0 repair proof is fixture-scoped.
+- General `scan --project` and arbitrary TSX/CSS repair remain limited or
+  experimental beyond the verified Next.js fixture path.
+- No model provider is configured, so linguistic review is deterministic-only.
+- Chromium, Firefox and WebKit were exercised on the same bounded configuration;
+  only Chromium ran the complete 288-render benchmark.

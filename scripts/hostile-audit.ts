@@ -26,6 +26,7 @@ const excludedSegments = new Set([
   ".bhashafix",
   ".git",
   ".next",
+  ".tmp",
   ".vinext",
   "artifacts",
   "dist",

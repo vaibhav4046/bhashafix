@@ -9,7 +9,7 @@ form, which needs an authenticated human session.
 | --- | --- | --- |
 | Public GitHub repository | **done** | <https://github.com/vaibhav4046/bhashafix> |
 | GitHub Actions release gate | **passing** | run `30693952225`, `verify-localisation` green in 6m28s on a clean `ubuntu-latest` runner |
-| Vercel production deploy | **done** | <https://bhashafix.vercel.app> returns 200 and `POST /api/scan` returns a fresh scan ID |
+| Vercel production deploy | **done** | <https://bhashafix.vercel.app> returns 200; `POST /api/scan/browser` runs bounded real Chromium and `POST /api/scan` runs the separate static preflight |
 | Local release chain | **passing** | `pnpm verify` exits 0 across all 24 steps |
 
 ## 1. Submit to the organiser
@@ -25,19 +25,18 @@ Sign in to the hackathon dashboard, then:
 Record confirmation only after the organiser accepts it. Nothing in this
 repository claims the submission has happened.
 
-## 2. Optional — enable browser-backed scanning in production
+## 2. No manual action — hosted browser scope
 
-The hosted scan is HTTP-only by design: no browser is bundled into the
-serverless function. To render in a real browser from production, set a
-Playwright-compatible websocket endpoint in the Vercel project:
+The deployed quick scan already launches real Chromium inside the Vercel
+function. It is deliberately bounded to one public route, up to three locales
+and one viewport, returns screenshots and measured evidence in the response,
+and stores nothing server-side. No websocket endpoint or model key is required
+for that path.
 
-```powershell
-pnpm dlx vercel@latest env add BHASHAFIX_BROWSER_WS_ENDPOINT production
-pnpm dlx vercel@latest --prod
-```
-
-Until that variable exists, the hosted path reports `browserRendered: false` and
-lists exactly which checks did not run. It does not pretend otherwise.
+Full route x locale x viewport matrices, authenticated coverage, persisted
+artifacts and source repair remain local CLI responsibilities. A dedicated
+worker is an optional future scaling path, not a prerequisite for the shipped
+hosted quick scan.
 
 ## 3. Optional — durable hosted scan history
 

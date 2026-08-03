@@ -5,7 +5,7 @@ import { chromium } from "@playwright/test";
 const root = process.cwd();
 const baseUrl = process.env.BHASHAFIX_BASE_URL ?? "http://127.0.0.1:3000";
 const targetUrl =
-  process.env.BHASHAFIX_PUBLIC_TARGET ?? "https://www.mozilla.org/";
+  process.env.BHASHAFIX_PUBLIC_TARGET ?? "https://example.com/";
 const screenshotPath = path.join(
   root,
   "submission",
@@ -37,34 +37,38 @@ page.on("pageerror", (error) => consoleErrors.push(error.message));
 
 try {
   await page.goto(`${baseUrl}/scan/new`, { waitUntil: "networkidle" });
-  await page.getByPlaceholder("https://www.mozilla.org").fill(targetUrl);
+  const browserScan = page.locator(".canonical-browser-scan");
+  await browserScan.getByLabel("Public URL").fill(targetUrl);
   const scanResponsePromise = page.waitForResponse(
     (response) =>
-      response.url().endsWith("/api/scan") &&
+      response.url().endsWith("/api/scan/browser") &&
       response.request().method() === "POST",
+    { timeout: 90_000 },
   );
-  await page.getByRole("button", { name: "Run real scan →" }).click();
+  await browserScan.getByRole("button", { name: "Render and measure →" }).click();
   const scanResponse = await scanResponsePromise;
-  await page
-    .getByRole("heading", {
-      name: "Here is exactly what BhashaFix found.",
-    })
-    .waitFor({ state: "visible", timeout: 60_000 });
-
   const payload = await scanResponse.json();
   if (!scanResponse.ok()) {
     throw new Error(payload.error ?? `Live scan returned HTTP ${scanResponse.status()}.`);
   }
-  if (payload.mode !== "live hosted HTTP scan" || payload.summary.routesChecked < 1) {
-    throw new Error("Live scan response did not contain real route evidence.");
+  await browserScan.locator(".ls-browser-result").waitFor({
+    state: "visible",
+    timeout: 10_000,
+  });
+  if (
+    payload.origin !== "LIVE_PUBLIC_BROWSER_SCAN" ||
+    payload.scope?.browserRendered !== true ||
+    payload.summary?.renders < 1
+  ) {
+    throw new Error("Live scan response did not contain real Chromium evidence.");
   }
-  const dottedBrandFalsePositive = payload.issues.some(
-    (issue: { ruleId: string; measuredEvidence: string }) =>
-      issue.ruleId === "raw-translation-key" &&
-      issue.measuredEvidence.includes("Mozilla.ai"),
-  );
-  if (dottedBrandFalsePositive) {
-    throw new Error("Live scan regressed: Mozilla.ai was classified as a raw key.");
+  if (
+    payload.renders.some(
+      (render: { screenshot?: string | null; measuredElements?: number }) =>
+        !render.screenshot || !render.measuredElements,
+    )
+  ) {
+    throw new Error("Live scan returned a render without screenshot measurements.");
   }
 
   const overflow = await page.evaluate(
@@ -76,7 +80,7 @@ try {
   }
 
   await page.screenshot({ path: screenshotPath, fullPage: true });
-  await page.locator(".live-scan-result").scrollIntoViewIfNeeded();
+  await browserScan.locator(".ls-browser-result").scrollIntoViewIfNeeded();
   await page.screenshot({ path: proofScreenshotPath, fullPage: false });
   const receipt = {
     generatedAt: new Date().toISOString(),
@@ -84,20 +88,20 @@ try {
     origin: payload.origin,
     baseUrl,
     target: payload.target,
-    mode: payload.mode,
-    routes: payload.routes.map(
-      (route: { route: string; status: number; strings: number }) => ({
-        route: route.route,
-        status: route.status,
-        strings: route.strings,
-      }),
+    mode: "bounded hosted Chromium scan",
+    engine: payload.engine,
+    routesChecked: payload.scope.routes,
+    localesRendered: payload.scope.locales,
+    renders: payload.summary.renders,
+    measuredElements: payload.renders.reduce(
+      (total: number, render: { measuredElements: number }) =>
+        total + render.measuredElements,
+      0,
     ),
-    routesChecked: payload.summary.routesChecked,
-    stringsExtracted: payload.summary.stringsExtracted,
-    verifiedBlocking: payload.summary.verifiedBlocking,
-    warnings: payload.summary.warnings,
-    robotsPolicy: payload.robots.checked ? "READ" : "UNAVAILABLE",
-    staticHttpOnly: payload.scope.browserRendered === false,
+    verifiedBlocking: payload.summary.blocking,
+    warnings: payload.summary.issues - payload.summary.blocking,
+    browserRendered: payload.scope.browserRendered,
+    axeExecuted: payload.scope.axeExecuted,
     viewportOverflow: overflow,
     consoleErrors,
     screenshots: [screenshotPath, proofScreenshotPath].map((file) =>
@@ -107,7 +111,7 @@ try {
   };
   await writeFile(receiptPath, `${JSON.stringify(receipt, null, 2)}\n`);
   console.log(
-    `LIVE PUBLIC SCAN PASS (${receipt.routesChecked} real routes; ${receipt.stringsExtracted} strings; ${receipt.verifiedBlocking} blocking in checks run; screenshots ${receipt.screenshots.join(", ")})`,
+    `LIVE PUBLIC BROWSER SCAN PASS (${receipt.renders} real Chromium renders; ${receipt.measuredElements} measured elements; ${receipt.verifiedBlocking} blocking in checks run; screenshots ${receipt.screenshots.join(", ")})`,
   );
 } finally {
   await browser.close();

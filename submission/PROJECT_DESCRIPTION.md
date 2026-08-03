@@ -98,6 +98,9 @@ control's descendant `img[alt]`.
 
 - The hosted quick scan renders one route in two locales at one viewport and
   persists nothing. It is not a substitute for a CLI run.
+- The MCP 10-to-0 repair receipt is AtlasPay-fixture evidence. MCP transport,
+  schemas, inspection and guarded mutation are verified, but arbitrary-project
+  MCP repair is not claimed.
 - Verified repair covers locale JSON, `lang`/`dir` metadata, and bounded layout
   fixes in the supported Next.js fixture. Arbitrary TSX and CSS repair, and
   other frameworks, are experimental.

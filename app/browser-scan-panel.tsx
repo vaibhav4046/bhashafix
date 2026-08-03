@@ -82,7 +82,7 @@ const VIEWPORT_LABELS = {
 type ViewportName = keyof typeof VIEWPORT_LABELS;
 
 export function BrowserScanPanel() {
-  const [url, setUrl] = useState("");
+  const [url, setUrl] = useState("https://example.com");
   const [sourceLocale, setSourceLocale] = useState("en-GB");
   const [locale, setLocale] = useState("ar-SA");
   const [viewport, setViewport] = useState<ViewportName>("mobile");

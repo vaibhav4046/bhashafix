@@ -8,9 +8,14 @@
 import { mkdir, readdir, stat, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { chromium, type Page } from "@playwright/test";
+import baselineScan from "../public/replay/baseline-scan.json";
 
 const root = process.cwd();
 const outputDirectory = path.join(root, "submission", "screenshots");
+// Keep the canonical captures outside public/evidence. The publish step
+// rebuilds that directory from receipts, so public/ is a destination rather
+// than the only copy of proof needed by demo:prove.
+const issueEvidenceDirectory = path.join(outputDirectory, "atlaspay");
 const baseUrl = process.env.BHASHAFIX_CAPTURE_BASE_URL ?? "http://127.0.0.1:3000";
 
 const DESKTOP = { width: 1440, height: 900 };
@@ -68,9 +73,11 @@ const SHOTS: Shot[] = [
 ];
 
 await mkdir(outputDirectory, { recursive: true });
+await mkdir(issueEvidenceDirectory, { recursive: true });
 
 const browser = await chromium.launch();
 const captured: Array<{ file: string; bytes: number }> = [];
+const issueEvidenceCaptured: Array<{ file: string; state: "before" | "after"; bytes: number }> = [];
 const consoleErrors: Array<{ route: string; message: string }> = [];
 
 try {
@@ -115,6 +122,43 @@ try {
     captured.push({ file: shot.file, bytes: size });
     await context.close();
   }
+
+  for (const issue of baselineScan.issues) {
+    for (const state of ["before", "after"] as const) {
+      const context = await browser.newContext({
+        viewport: { width: issue.viewport.width, height: issue.viewport.height },
+        colorScheme: "dark",
+        locale: issue.locale,
+      });
+      const page = await context.newPage();
+      page.on("console", (message) => {
+        if (message.type() === "error") {
+          consoleErrors.push({ route: issue.route, message: message.text().slice(0, 300) });
+        }
+      });
+      page.on("pageerror", (error) => {
+        consoleErrors.push({ route: issue.route, message: error.message.slice(0, 300) });
+      });
+      const route = issue.route === "/" ? "" : issue.route;
+      await page.goto(
+        new URL(
+          `/atlaspay/${issue.locale}${route}?state=${state === "before" ? "broken" : "fixed"}`,
+          baseUrl,
+        ).href,
+        { waitUntil: "domcontentloaded" },
+      );
+      await page.waitForSelector("main", { timeout: 20_000 });
+      const fileName = `${issue.issueId}${state === "after" ? "-after" : ""}.png`;
+      const file = path.join(issueEvidenceDirectory, fileName);
+      await page.screenshot({ path: file, fullPage: false });
+      const { size } = await stat(file);
+      if (size < 10_000) {
+        throw new Error(`${fileName} is only ${size} bytes; issue evidence did not render.`);
+      }
+      issueEvidenceCaptured.push({ file: fileName, state, bytes: size });
+      await context.close();
+    }
+  }
 } finally {
   await browser.close();
 }
@@ -143,6 +187,7 @@ await writeFile(
       generatedAt: new Date().toISOString(),
       baseUrl,
       captured,
+      issueEvidenceCaptured,
       removedStale: removed,
       consoleErrors,
     },
@@ -161,5 +206,5 @@ if (consoleErrors.length > 0) {
 }
 
 console.log(
-  `SCREENSHOTS captured ${captured.length} real frames from ${baseUrl}; removed ${removed.length} stale file(s); console errors 0`,
+  `SCREENSHOTS captured ${captured.length} product frames and ${issueEvidenceCaptured.length} issue-evidence frames from ${baseUrl}; removed ${removed.length} stale file(s); console errors 0`,
 );

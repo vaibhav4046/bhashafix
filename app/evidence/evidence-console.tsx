@@ -217,7 +217,7 @@ export function EvidenceConsole({
             </dd>
           </div>
           <div>
-            <dt>Issues recorded</dt>
+            <dt>Gating issues recorded</dt>
             <dd>{scans.reduce((total, entry) => total + entry.issues.length, 0)}</dd>
           </div>
         </dl>
@@ -239,7 +239,7 @@ export function EvidenceConsole({
             <span>{entry.target}</span>
             <em>
               {entry.routes.length} routes · {entry.locales.length} locales ·{" "}
-              {entry.renders.length} renders · {entry.issues.length} issues
+              {entry.renders.length} renders · {entry.issues.length} gating issues
             </em>
           </button>
         ))}
@@ -417,7 +417,7 @@ export function EvidenceConsole({
                 </span>
                 <span>
                   console errors {render.consoleErrors} · failed requests{" "}
-                  {render.failedRequests} · axe violations {render.axeViolations}
+                  {render.failedRequests} · axe observations {render.axeViolations}
                 </span>
                 <span>{clock(render.renderedAt)}</span>
                 {render.sha256 && <code>{render.sha256}</code>}
@@ -430,8 +430,10 @@ export function EvidenceConsole({
       <section className="ls-section" aria-labelledby="issues">
         <h2 id="issues">Issues recorded</h2>
         <p className="ls-note">
-          {scan.issues.length} issues, each holding the measurement taken and the
-          predicate that failed. Open one to see the render it was measured in.
+          {scan.issues.length} gating issues, each holding the measurement taken
+          and the predicate that failed. Axe observations below serious impact
+          remain visible on the render rows but do not enter this blocking list.
+          Open an issue to see the render it was measured in.
         </p>
         <ol className="ls-issue-list">
           {scan.issues.map((issue, index) => {

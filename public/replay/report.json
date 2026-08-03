@@ -1,13 +1,13 @@
 {
   "schemaVersion": "1.0",
-  "generatedAt": "2026-08-02T21:48:19.166Z",
+  "generatedAt": "2026-08-03T00:05:56.149Z",
   "claim": "Deterministic engineering checks are authoritative. Linguistic judgements include confidence levels and human-review gates.",
   "scan": {
     "scanId": "atlaspay-75123a28884f",
     "origin": "RECORDED_REPLAY",
     "status": "completed",
-    "startedAt": "2026-08-02T21:48:19.159Z",
-    "completedAt": "2026-08-02T21:48:19.296Z",
+    "startedAt": "2026-08-03T00:05:56.138Z",
+    "completedAt": "2026-08-03T00:05:56.275Z",
     "config": {
       "projectRoot": ".",
       "sourceLocale": "en-GB",
@@ -91,7 +91,7 @@
   },
   "verification": {
     "scanId": "atlaspay-83210b0daea2",
-    "verifiedAt": "2026-08-02T21:48:19.163Z",
+    "verifiedAt": "2026-08-03T00:05:56.144Z",
     "status": "verified",
     "baselineBlocking": 10,
     "finalBlocking": 0,

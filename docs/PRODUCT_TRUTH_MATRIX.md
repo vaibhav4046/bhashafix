@@ -1,22 +1,39 @@
 # BhashaFix product truth matrix
 
-Re-audited 2026-07-31 from commit `a75aa1f` by independent read-only passes plus
-live execution. Every row cites the code or the command output that proves it.
-Where a previous entry in this file was contradicted by the code, the correction
-is stated explicitly.
+The historical audit began at commit `a75aa1f`; the release state was
+reconciled through the final Codex integration and hosted production smoke on
+2026-08-02. Historical “Was” findings remain below because they explain why the
+hardening work happened. The current authoritative state is:
+
+- Vercel exposes a bounded real-Chromium quick scan at
+  `POST /api/scan/browser`: one route, up to three locales, one viewport, real
+  screenshots, rendered-DOM measurement and axe, with no server-side storage.
+- `POST /api/scan` remains a separate five-route static HTTP preflight.
+- Full route x locale x viewport matrices, authenticated coverage, persisted
+  artifacts and repository repair run through the local CLI.
+- The MCP 10-to-0 repair receipt is explicitly AtlasPay-fixture evidence. MCP
+  transport, schemas, project inspection and guarded mutation are verified,
+  but arbitrary-project MCP source repair is not claimed.
+- Codex owns final integration, hosted security hardening, complete release
+  verification and deployment. Claude Code's substantial independent audit and
+  browser-engine hardening contribution remains credited in
+  `submission/AI_TOOLING_DISCLOSURE.md`.
+
+Every current claim cites code or executed evidence. Where a previous entry was
+contradicted by the code, the correction remains stated explicitly.
 
 Vocabulary: **VERIFIED** (real work, real IO) · **PARTIAL** · **FIXTURE_ONLY**
 (returns pre-baked data) · **REPLAY_ONLY** (renders a recorded run) ·
 **DOCUMENTED_ONLY** · **BROKEN** · **NOT_IMPLEMENTED**.
 
-## Headline
+## Historical audit headline
 
-The hosted HTTP scan, the SSRF policy, the locale engine, the pseudo-localiser,
-the repair write/rollback mechanism and the report writers were real and
-honestly labelled. The central product promise — *renders every locale in a real
-browser* — was **not implemented anywhere**: no package launched a browser, and
-the "local Playwright tier" the UI and CLI pointed users to did not exist. That
-is the gap this release closes.
+At `a75aa1f`, the hosted HTTP scan, SSRF policy, locale engine,
+pseudo-localiser, repair write/rollback mechanism and report writers were real,
+but production packages did not launch a browser. The independent hardening
+pass implemented the browser engine; Codex then integrated it, hardened the
+hosted network boundary, verified the release contract and deployed the bounded
+serverless Chromium path described above.
 
 ## Scan engine
 
@@ -27,9 +44,9 @@ is the gap this release closes.
 | robots.txt handling | VERIFIED | VERIFIED | `hosted-scan.ts:179-224` |
 | Locale intelligence (BCP 47, script, direction, plurals) | VERIFIED | VERIFIED | `packages/locale-engine/src/index.ts:46-98`, real `Intl` |
 | Pseudo-localisation with token protection | VERIFIED | VERIFIED | `packages/linguistic-engine/src/index.ts:22-37,142-186` |
-| **Browser rendering** | **NOT_IMPLEMENTED** — *this file previously said "shared browser engines exist"; they did not* | **VERIFIED** | zero `chromium.launch` existed in `packages/**`. Now `packages/browser/src/index.ts` |
+| **Browser rendering** | **NOT_IMPLEMENTED** — *this file previously said "shared browser engines exist"; they did not* | **VERIFIED** | local Playwright engine: `packages/browser/src/index.ts`; bounded Vercel Chromium: `packages/browser/src/serverless.ts` and `app/api/scan/browser/route.ts` |
 | **Rendered DOM measurement** | **NOT_IMPLEMENTED** (dead code) | **VERIFIED** | `detectElementOverflow` (`packages/visual-engine/src/index.ts:113`) had only test callers; now fed by `packages/browser/src/measure.ts` |
-| **Per-issue screenshots** | **NOT_IMPLEMENTED** | **VERIFIED** | was `packages/core/src/index.ts:102` emitting `/evidence/<id>.png` for a directory that does not exist. Now real PNGs per render |
+| **Per-issue screenshots** | **IMPLEMENTED** | **VERIFIED for browser scans and the regenerated AtlasPay proof bundle** | local and hosted browser scans return real PNGs per render. The AtlasPay fixture now ships ten genuine before/after browser pairs under `public/evidence/`; its predicates remain fixture-scoped |
 | **axe accessibility in the engine** | NOT_IMPLEMENTED | VERIFIED | `packages/browser/src/index.ts` `runAxe()`; previously axe ran only in the product's own E2E suite |
 | Route discovery | FIXTURE_ONLY | VERIFIED | was 5 hardcoded strings at `packages/core/src/index.ts:140`; now `discoverRoutes()` reads same-origin links from the rendered DOM |
 | CLI scan of an arbitrary project (`--project`) | FIXTURE_ONLY | FIXTURE_ONLY | `packages/core/src/index.ts:23-28` reads 4 fixture JSON files; verified ENOENT on any other project |
@@ -60,20 +77,24 @@ is the gap this release closes.
 | CLI — `--no-ai`, `--changed-only` | dead flags | still dead | parsed at `cli.ts:103-104`, never read. The CI workflow passes `--no-ai`, which no-ops |
 | CLI standalone install outside the monorepo | VERIFIED | VERIFIED | `scripts/pack-verify.ts` genuinely packs, installs to a temp dir and executes the resolved entry |
 | **CLI `mcp` subcommand** | **BROKEN** | **VERIFIED** | bundling inlined the MCP module's import-time `argv[1]` guard, so a second server started on the same pipe: every JSON-RPC id was answered twice and `apply_repair` executed twice, producing two scan-request files from one call. Fixed by moving the executable entrypoint to `packages/mcp/src/bin.ts`. Regression test: `tests/mcp/stdio-subprocess.test.ts` |
-| MCP server — 18 tools over STDIO | VERIFIED | VERIFIED | `packages/mcp/src/server.ts` |
+| MCP server — 18 tools over STDIO | VERIFIED | VERIFIED | `packages/mcp/src/server.ts`; the published 10-to-0 mutation receipt is explicitly AtlasPay-fixture scoped |
 | MCP — remote HTTP transport | NOT_IMPLEMENTED | NOT_IMPLEMENTED | STDIO only |
 | MCP — `suggest/generate_translation` | NOT_IMPLEMENTED (honest stub) | unchanged | `server.ts:325-354` |
 | MCP test coverage | PARTIAL — in-process only | VERIFIED | `tests/mcp/mcp.test.ts:48` uses `InMemoryTransport`, which is why the double-start defect survived. A real subprocess test now exists |
-| Web — hosted scan flow | VERIFIED | VERIFIED | `app/api/scan/route.ts:68` |
+| Web — hosted scan flow | static HTTP only | **VERIFIED as two bounded paths** | static preflight: `app/api/scan/route.ts`; real Chromium quick scan: `app/api/scan/browser/route.ts` |
 | Web — scan persistence | browser `localStorage` only | unchanged | `app/product.tsx:597,625`. Nothing is persisted server-side; the HTTP response is the only copy, so a `/scan/<id>` link is not shareable across browsers or devices |
 | Web — hosted rate limit and concurrency cap | PARTIAL | PARTIAL | `app/api/scan/route.ts:18-19` is per-lambda module state; it resets on cold start and is not shared across instances |
 | Web — AtlasPay 10 → 0 | REPLAY_ONLY | REPLAY_ONLY | a genuine evaluation of a seeded JSON fixture, correctly labelled `RECORDED_REPLAY`. `browser: "deterministic"`, not chromium |
 | GitHub Actions release gate | **BROKEN** — *previously listed PARTIAL* | see release notes | fails deterministically on a clean runner: `scripts/prepare-submission.ts:48` reads a gitignored artifact that `verify` never produces, and `scripts/platform-demo.ts:169` leaves the fixture in its broken state so `bhashafix ci --fail-on blocking` exits 1 |
-| GitHub repository publication | DOCUMENTED_ONLY | DOCUMENTED_ONLY | no GitHub remote is configured; the only remote is the Codex sandbox git |
+| GitHub repository publication | DOCUMENTED_ONLY | **VERIFIED** | public Apache-2.0 repository: `https://github.com/vaibhav4046/bhashafix`; Actions release gate is published separately |
 
-## Fabricated evidence found
+## Historical unsupported evidence found at `a75aa1f`
 
-Each item asserted a measurement that never happened.
+Each item below asserted a measurement that had not happened in the audited
+snapshot. The hardening and final-integration phases either replaced it with
+executed evidence, labelled it as deterministic fixture data, or exposed it as
+`not measured`. The table remains as an audit trail, not as a description of the
+current hosted Chromium path.
 
 | Location | Claim | Reality |
 | --- | --- | --- |
@@ -169,8 +190,8 @@ that category. Firefox and WebKit are now verified rather than merely listed.
 
 - The hosted Vercel product has two bounded paths: a five-route static HTTP
   preflight and a real Chromium quick scan for one route, up to three locales
-  and one viewport. Full matrices require the local CLI or a remote endpoint
-  supplied through `BHASHAFIX_BROWSER_WS_ENDPOINT`.
+  and one viewport. Full matrices, authenticated coverage, persisted artifacts
+  and repository repair run through the local CLI.
 - Durable scan persistence covers the CLI and local runs. The hosted deployment
   has no configured database, so its scan history is still per browser and the
   store refuses to claim otherwise.

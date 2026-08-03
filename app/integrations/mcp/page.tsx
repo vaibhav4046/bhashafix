@@ -18,6 +18,62 @@ const CONFIG = `{
   }
 }`;
 
+const TOOL_PRESENTATION: Record<
+  string,
+  { scope: "project utility" | "AtlasPay fixture" | "persisted demo evidence"; description: string }
+> = {
+  bhashafix_create_scan: {
+    scope: "AtlasPay fixture",
+    description:
+      "Create a validated request for the bundled atlaspay-demo target. Arbitrary project targets are not accepted by this MVP tool.",
+  },
+  bhashafix_run_scan: {
+    scope: "AtlasPay fixture",
+    description:
+      "Execute a previously created AtlasPay fixture request and persist its deterministic evidence.",
+  },
+  bhashafix_scan_project: {
+    scope: "AtlasPay fixture",
+    description:
+      "Run the canonical AtlasPay fixture matrix. This is not a generic repository scan implementation.",
+  },
+  bhashafix_get_scan: {
+    scope: "persisted demo evidence",
+    description:
+      "Read a locally persisted scan by explicit ID. The current end-to-end producer is the AtlasPay fixture workflow.",
+  },
+  bhashafix_list_issues: {
+    scope: "persisted demo evidence",
+    description:
+      "List evidence-backed issues from an explicit persisted scan produced by the fixture workflow.",
+  },
+  bhashafix_get_issue: {
+    scope: "persisted demo evidence",
+    description:
+      "Read one issue from an explicit persisted fixture scan and scan ID.",
+  },
+  bhashafix_prepare_repair: {
+    scope: "AtlasPay fixture",
+    description:
+      "Prepare a diff for selected AtlasPay fixture issue IDs. The repair planner is confined to the demo data allowlist.",
+  },
+  bhashafix_apply_repair: {
+    scope: "AtlasPay fixture",
+    description:
+      "Apply a reviewed AtlasPay fixture diff. Dry run is the default; mutation requires the exact prepared diff hash.",
+  },
+  bhashafix_verify_repair: {
+    scope: "AtlasPay fixture",
+    description:
+      "Rerun the canonical AtlasPay predicates after a fixture repair and return the recorded verification status.",
+  },
+  bhashafix_generate_report: {
+    scope: "persisted demo evidence",
+    description:
+      "Generate portable reports for an explicit persisted scan. Current recorded end-to-end evidence is fixture-scoped.",
+  },
+};
+
 export default function McpSetupPage() {
   const mcp = mcpEvidence();
   return (
@@ -25,16 +81,17 @@ export default function McpSetupPage() {
       <header className="ls-masthead">
         <p className="ls-eyebrow">MODEL CONTEXT PROTOCOL · STDIO · LOCAL PROCESS</p>
         <h1>
-          <span className="ls-display-line">Coding agents can generate translations.</span>{" "}
+          <span className="ls-display-line">Eighteen strict tools.</span>{" "}
           <span className="ls-display-line">
-            BhashaFix gives them a release gate they cannot talk their way around.
+            One local localisation harness for coding agents.
           </span>
         </h1>
         <p className="ls-standfirst">
-          The server runs as a local process beside your repository. An agent can
-          create a scan, run it, read the verified issues, propose a bounded
-          repair and rerun the identical predicates — and every one of those
-          steps returns a measurement, not an opinion.
+          The STDIO server runs beside your repository and exposes project
+          inspection, locale validation, crawling, extraction, translation
+          checks, persisted evidence and reports. The complete scan-to-repair
+          loop shipped in this MVP is the canonical AtlasPay fixture workflow;
+          arbitrary repository repair is not implemented or implied here.
         </p>
       </header>
 
@@ -56,18 +113,30 @@ pnpm build:packages`}</pre>
           {mcp.prompts.length} prompts, listed from the recorded{" "}
           <code>tools/list</code> response.
         </p>
+        <p className="ls-caveat">
+          <b>Scope is explicit.</b> Project utilities operate on validated input;
+          scan creation, deterministic repair and identical-predicate
+          verification are fixture-scoped in this release. The labels below
+          separate those capabilities.
+        </p>
         <div className="ls-scroll" tabIndex={0} role="region">
           <table className="ls-table">
             <caption>Tools</caption>
             <tbody>
-              {mcp.tools.map((tool) => (
-                <tr key={tool.name}>
-                  <th scope="row">
-                    <code>{tool.name}</code>
-                  </th>
-                  <td>{tool.description}</td>
-                </tr>
-              ))}
+              {mcp.tools.map((tool) => {
+                const presentation = TOOL_PRESENTATION[tool.name];
+                return (
+                  <tr key={tool.name}>
+                    <th scope="row">
+                      <code>{tool.name}</code>
+                    </th>
+                    <td>
+                      <b>{presentation?.scope ?? "project utility"}</b> ·{" "}
+                      {presentation?.description ?? tool.description}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -108,11 +177,12 @@ pnpm build:packages`}</pre>
       <section className="ls-section" aria-labelledby="session">
         <h2 id="session">A recorded session</h2>
         <p className="ls-note">
-          {mcp.calls.length} calls against a spawned server, published under{" "}
-          <code>/evidence/mcp/</code>. Each published file holds the result
-          payload that call returned; the session did not record the request
-          arguments separately, so nothing below is presented as a request that
-          was not written down.
+          {mcp.calls.length} calls against a spawned server and the bundled
+          <code>atlaspay-demo</code> target, published under{" "}
+          <code>/evidence/mcp/</code>. This is fixture evidence, not evidence that
+          the repair tools can patch an arbitrary repository. Each file holds
+          the result payload that call returned; request arguments that were not
+          recorded are not reconstructed below.
         </p>
         <ol className="ls-call-log">
           {mcp.calls.map((call, index) => (
@@ -194,9 +264,14 @@ pnpm build:packages`}</pre>
             STDIO is the supported transport. There is no remote MCP endpoint.
           </li>
           <li>
-            A repair needs an explicit scan ID, explicit issue IDs and an exact
-            path allowlist. Dry run is the default, and the applied call records
-            a rollback root.
+            Scan creation, scan execution, prepare, apply and verify currently
+            operate on the bundled AtlasPay fixture and its demo-data allowlist.
+            Generic source repair is not supported by this MCP release.
+          </li>
+          <li>
+            Fixture repair still requires an explicit scan ID and issue IDs.
+            Dry run is the default, mutation requires the reviewed diff hash,
+            and an applied call records a rollback root.
           </li>
           <li>
             Project scripts are never executed without approval — the inspect

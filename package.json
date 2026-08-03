@@ -23,7 +23,7 @@
     "test:e2e": "playwright test",
     "test:mcp": "vitest run tests/mcp --config vitest.config.mjs",
     "test:cli": "vitest run tests/cli --config vitest.config.mjs",
-    "verify": "pnpm measure:build && pnpm lint && pnpm typecheck && pnpm test && pnpm test:cli && pnpm test:mcp && pnpm build && pnpm repair:nextjs && pnpm test:integration && pnpm fixtures:clean && pnpm fixtures:broken && pnpm fixtures:failed && pnpm pack:verify && pnpm mcp:inspect && pnpm mcpc:smoke && pnpm test:e2e && pnpm demo:reset && pnpm demo:scan && pnpm demo:repair && pnpm demo:verify && pnpm benchmark && tsx scripts/release-receipt.ts && pnpm evidence:publish && pnpm submission:prepare && pnpm deck:build && pnpm pptx:verify && pnpm audit:hostile",
+    "verify": "pnpm measure:build && pnpm lint && pnpm typecheck && pnpm test && pnpm test:cli && pnpm test:mcp && pnpm build && pnpm repair:nextjs && pnpm test:integration && pnpm fixtures:clean && pnpm fixtures:broken && pnpm fixtures:failed && pnpm pack:verify && pnpm mcp:inspect && pnpm mcpc:smoke && pnpm test:e2e && pnpm demo:reset && pnpm demo:scan && pnpm demo:repair && pnpm demo:verify && pnpm benchmark && tsx scripts/release-receipt.ts && pnpm evidence:publish && pnpm submission:prepare && pnpm pptx:verify && pnpm audit:hostile",
     "demo:reset": "tsx scripts/platform-demo.ts reset",
     "demo:scan": "tsx scripts/platform-demo.ts scan",
     "demo:repair": "tsx scripts/platform-demo.ts repair",

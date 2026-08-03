@@ -29,6 +29,9 @@ test("landing page is responsive, themeable and accessible", async ({ page }) =>
   await expect(page.getByLabel("Target locale")).toHaveValue("sw-KE");
   await page.getByLabel("Viewport", { exact: true }).selectOption("desktop");
   await expect(page.getByLabel("Viewport", { exact: true })).toHaveValue("desktop");
+  const liveScanBox = await page.getByTestId("homepage-live-scan").boundingBox();
+  expect(liveScanBox, "the real scan should be in the desktop opening experience").not.toBeNull();
+  expect(liveScanBox!.y).toBeLessThan(900);
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
@@ -81,6 +84,17 @@ test("mobile and reduced-motion layouts remain usable", async ({ page }) => {
     fullPage: false,
   });
   expect(consoleErrors).toEqual([]);
+});
+
+test("recorded evidence workspace does not overflow a phone viewport", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/scan/atlaspay-replay/overview");
+  await expect(page.locator(".render-stage")).toBeVisible();
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    ),
+  ).toBe(0);
 });
 
 test("real public scan UI shows exact routes, evidence and honest coverage", async ({
@@ -206,14 +220,14 @@ test("real public scan UI shows exact routes, evidence and honest coverage", asy
 
   await page.goto("/scan/new");
   await expect(
-    page.getByRole("heading", { name: "Check a real public website." }),
+    page.getByRole("heading", { name: "Scan a public page in Chromium." }),
   ).toBeVisible();
   await page.locator(".locale-followup summary").click();
   await page.getByLabel("Custom BCP 47 target locale").fill("pt-br");
   await page.getByRole("button", { name: "Add locale" }).click();
   await expect(page.locator(".locale-followup summary")).toContainText("pt-BR");
 
-  await page.getByPlaceholder("https://www.mozilla.org").fill(
+  await page.getByRole("textbox", { name: "Website URL" }).fill(
     "https://product.example",
   );
   await page.getByRole("button", { name: "Check this site →" }).click();
@@ -351,8 +365,9 @@ test("proof report exposes verified release evidence and portable exports", asyn
   await page.goto("/scan/atlaspay-replay/report");
 
   await expect(
-    page.getByRole("heading", { name: "Ready for engineering release." }),
+    page.getByRole("heading", { name: "Repair verified. Release gate incomplete." }),
   ).toBeVisible();
+  await expect(page.getByText("this artifact alone is not a release-readiness approval")).toBeVisible();
   const sourceRegression = page.locator("article").filter({ hasText: "Source regression" });
   await expect(sourceRegression).toContainText("PASS");
   const downloads = page.locator("a[download]");

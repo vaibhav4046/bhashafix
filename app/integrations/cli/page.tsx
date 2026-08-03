@@ -52,11 +52,12 @@ const WRITES = [
 
 const COMPARISON = [
   ["Real HTTP responses, metadata, static translation signals", "yes", "yes"],
-  ["Chromium rendering per locale and viewport", "no", "yes"],
-  ["Full-page screenshots", "no", "yes"],
-  ["Layout overflow and clipping measurement", "no", "yes"],
-  ["axe accessibility execution", "no", "yes"],
-  ["Console errors and failed requests", "no", "yes"],
+  ["Chromium rendering per locale and viewport", "yes", "yes"],
+  ["Full-page screenshots", "yes", "yes"],
+  ["Layout overflow and clipping measurement", "yes", "yes"],
+  ["axe accessibility execution", "yes", "yes"],
+  ["Console errors and failed requests", "yes", "yes"],
+  ["Full route × locale × viewport matrix", "no", "yes"],
   ["Authenticated routes", "no", "yes"],
   ["Bounded source repair and rerun", "no", "yes"],
 ] as const;
@@ -81,17 +82,13 @@ export default function CliSetupPage() {
       <section className="ls-section" aria-labelledby="one-command">
         <h2 id="one-command">One command, in your project</h2>
         <pre tabIndex={0} className="ls-command ls-command-lead">
-          npx @bhashafix/cli scan --url http://localhost:3000 --locales
+          pnpm bhashafix scan --url http://localhost:3000 --locales
           en-GB,de-DE,ar-SA,ja-JP
         </pre>
         <p className="ls-caveat">
-          <b>Not on npm yet.</b> That is the shape the CLI is built and packaged
-          for — a <code>bhashafix</code> binary, public access — but{" "}
-          <code>@bhashafix/cli</code>{" "}
-          has not been published to a registry, so
-          today it runs from a clone or from a tarball you pack yourself. Both
-          routes are below, and both are exercised by the repository&rsquo;s own
-          checks.
+          <b>Runs from the repository today.</b> Clone-and-run and packed-tarball
+          installation are both exercised by the release checks below; no
+          unpublished registry command is presented as usable.
         </p>
       </section>
 
@@ -115,7 +112,7 @@ export default function CliSetupPage() {
             <thead>
               <tr>
                 <th scope="col">Capability</th>
-                <th scope="col">Hosted HTTP preflight</th>
+                <th scope="col">Hosted browser quick scan</th>
                 <th scope="col">Local CLI</th>
               </tr>
             </thead>

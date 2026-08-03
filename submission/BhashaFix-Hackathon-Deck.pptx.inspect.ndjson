@@ -1,41 +1,59 @@
-{"kind":"slide","slide":1}
-{"kind":"textbox","slide":1,"text":"LOCALISATION RELEASE FIREWALL"}
-{"kind":"textbox","slide":1,"text":"Your app speaks every language.\nBhashaFix proves it still works."}
-{"kind":"textbox","slide":1,"text":"Local-first. Real browsers, real measurements, and a rerun that a model cannot talk its way past."}
-{"kind":"slide","slide":2}
-{"kind":"textbox","slide":2,"text":"THE PROBLEM"}
-{"kind":"textbox","slide":2,"text":"Translation is not release readiness."}
-{"kind":"textbox","slide":2,"text":"AI translates every string in minutes. Teams still ship:\n\n· clipped text\n· broken right-to-left layout\n· raw translation keys on screen\n· dropped placeholders\n· controls with no accessible name\n· wrong locale metadata\n\nNone of these are translation problems. They appear when the string meets the layout, in a browser."}
-{"kind":"slide","slide":3}
-{"kind":"textbox","slide":3,"text":"THE GAP"}
-{"kind":"textbox","slide":3,"text":"Three tools. No gate."}
-{"kind":"textbox","slide":3,"text":"Translation platforms manage the text.\nCoding agents modify the code.\nBrowser testing tools test the interface.\n\nNobody owns the localisation-specific release gate that connects them — the step that says this build is safe to ship in these twelve languages, and here is the evidence."}
-{"kind":"slide","slide":4}
-{"kind":"textbox","slide":4,"text":"REAL CHROMIUM SCAN · GENERATED THROUGH THE CLI"}
-{"kind":"textbox","slide":4,"text":"Evidence, not adjectives."}
-{"kind":"textbox","slide":4,"text":"BhashaFix production · 8 routes · 16 screenshots · 0 issues\nMDN Web Docs · 3 routes · 6 screenshots · 9 issues\nWikipedia · 2 routes · 4 screenshots · 16 issues\n\nEvery screenshot carries its SHA-256, so the image on screen is provably the image the scan captured."}
-{"kind":"slide","slide":5}
-{"kind":"textbox","slide":5,"text":"ONE FINDING"}
-{"kind":"textbox","slide":5,"text":"The number, and the predicate."}
-{"kind":"textbox","slide":5,"text":"BF-VIS-TEXT-OVERFLOW-X  de-DE\n\nplain      The German button label is cut off.\nmeasured   scrollWidth 245 · clientWidth 168\n           overflowPx 77 · overflow-x hidden\npredicate  scrollWidth <= clientWidth + 2"}
-{"kind":"slide","slide":6}
-{"kind":"textbox","slide":6,"text":"VERIFIED REPAIR"}
-{"kind":"textbox","slide":6,"text":"A model cannot mark its own answer."}
-{"kind":"textbox","slide":6,"text":"AtlasPay, recorded verified run:\n  10 blocking → 0 · source locale PASS\n\nReal Next.js source — .tsx, .css, translation JSON:\n  6 blocking → 0\n  source locale 0 → 0\n  new blockers 0\n  3 files, 10 lines\n  git apply --check exit 0"}
-{"kind":"slide","slide":7}
-{"kind":"textbox","slide":7,"text":"ARCHITECTURE"}
-{"kind":"textbox","slide":7,"text":"Local-first, by design."}
-{"kind":"textbox","slide":7,"text":"CLI · MCP · CI · local or remote browser worker      the engine\nWeb console                                          evidence and review\n\nThe hosted site does not run a browser. Browsers, source code and repair operations stay inside the developer's environment. A portable report can be shared, or opened in the console, without uploading a repository."}
-{"kind":"slide","slide":8}
-{"kind":"textbox","slide":8,"text":"FOR CODING AGENTS"}
-{"kind":"textbox","slide":8,"text":"A gate they cannot argue with."}
-{"kind":"textbox","slide":8,"text":"Coding agents can generate translations. BhashaFix gives them a release gate they cannot talk their way around.\n\nspawned STDIO process · packages/mcp/dist/bin.js\n18 tools · 4 resources · 5 prompts\n8 recorded calls published as evidence\n\ninspect → create scan → run → read issues → prepare repair → apply approved IDs → rerun predicates"}
-{"kind":"slide","slide":9}
-{"kind":"textbox","slide":9,"text":"MEASURED, NOT ASSERTED"}
-{"kind":"textbox","slide":9,"text":"Scored against ground truth."}
-{"kind":"textbox","slide":9,"text":"70 labelled defects · 12 rule families · 12 locales\n204 expected detections\n\nRecall 100.0%\nPrecision 100.0%\nFalse positives on the clean variant 0\n\nTwo real rule defects were found by scanning public sites and fixed in the rules, not worked around."}
-{"kind":"slide","slide":10}
-{"kind":"textbox","slide":10,"text":"OPEN IT"}
-{"kind":"textbox","slide":10,"text":"Run one command."}
-{"kind":"textbox","slide":10,"text":"npx @bhashafix/cli scan --url http://localhost:3000 \\\n  --locales en-GB,de-DE,ar-SA,ja-JP\n\nhttps://bhashafix.vercel.app\nhttps://github.com/vaibhav4046/bhashafix\n\nNot claimed: hosted browser rendering; arbitrary-repository repair; native-quality translation; Firefox or WebKit coverage."}
-{"kind":"textbox","slide":10,"text":"18 tools · Inspector + MCPC"}
+{"kind":"deck","id":"pr/wcqggv","name":"Deck"}
+{"kind":"layout","layoutId":"/ppt/slideMasters/slideMaster1.xml","name":"","type":"master"}
+{"kind":"layout","layoutId":"/ppt/slideLayouts/slideLayout1.xml","name":"DEFAULT"}
+{"kind":"slide","id":"sl/y90nupkv","slide":1,"title":"BHASHAFIX · LOCALISATION RELEASE FIREWALL","textShapes":3}
+{"kind":"textbox","id":"sh/547294r6","slide":1,"name":"Text 0","text":"BHASHAFIX · LOCALISATION RELEASE FIREWALL","textPreview":"BHASHAFIX · LOCALISATION RELEASE FIREWALL","textChars":41,"textLines":1,"bbox":[64,30,830,24]}
+{"kind":"textbox","id":"sh/k3yl0zql","slide":1,"name":"Text 1","text":"AI translated the product.\nWho proved it still works?","textPreview":"AI translated the product. | Who proved it still works?","textChars":53,"textLines":2,"bbox":[64,128,840,152]}
+{"kind":"textbox","id":"sh/7qp4be9c","slide":1,"name":"Text 2","text":"BhashaFix opens real browsers, measures locale failures, prepares bounded source repairs, and reruns the identical predicates before release.\n\nLIVE · CLI · CI · MCP · OPEN SOURCE","textPreview":"BhashaFix opens real browsers, measures locale failures, prepares bounded source repairs, and reruns the identical predicates before rele...","textChars":178,"textLines":3,"bbox":[64,342,820,146]}
+{"kind":"notes","id":"nt/y90nupkv","slide":1,"text":"[Sources]\nFirst-party product narrative; no external claim.\nLive product: https://bhashafix.vercel.app"}
+{"kind":"slide","id":"sl/hwbqtkby","slide":2,"title":"THE PRODUCTION GAP","textShapes":3}
+{"kind":"textbox","id":"sh/9072xkry","slide":2,"name":"Text 0","text":"THE PRODUCTION GAP","textPreview":"THE PRODUCTION GAP","textChars":18,"textLines":1,"bbox":[64,30,830,24]}
+{"kind":"textbox","id":"sh/ozy1ofad","slide":2,"name":"Text 1","text":"A translation can be correct.\nThe interface can still fail.","textPreview":"A translation can be correct. | The interface can still fail.","textChars":59,"textLines":2,"bbox":[64,70,840,135]}
+{"kind":"textbox","id":"sh/b29kza94","slide":2,"name":"Text 2","text":"DEUTSCH      CTA text clips by 77 px\nالعربية       page remains left-to-right\n日本語         raw key cta.primary reaches users\nFRANÇAIS      {amount} placeholder disappears\n\nThese failures appear when language meets layout, accessibility and runtime behaviour—not when a model returns a string.","textPreview":"DEUTSCH      CTA text clips by 77 px | العربية       page remains left-to-right | 日本語         raw key cta.primary reaches users | FRANÇAI...","textChars":291,"textLines":6,"bbox":[68,238,820,240]}
+{"kind":"notes","id":"nt/hwbqtkby","slide":2,"text":"[Sources]\nDefect classes are backed by artifacts/nextjs-repair-proof.json and submission/repair-proof.json."}
+{"kind":"slide","id":"sl/ofy9wn61","slide":3,"title":"THE CLOSED LOOP","textShapes":3}
+{"kind":"textbox","id":"sh/cza94vmx","slide":3,"name":"Text 0","text":"THE CLOSED LOOP","textPreview":"THE CLOSED LOOP","textChars":15,"textLines":1,"bbox":[64,30,830,24]}
+{"kind":"textbox","id":"sh/d0jax03i","slide":3,"name":"Text 1","text":"Evidence before repair.\nThe same evidence after.","textPreview":"Evidence before repair. | The same evidence after.","textChars":48,"textLines":2,"bbox":[64,78,840,132]}
+{"kind":"textbox","id":"sh/298ryl4v","slide":3,"name":"Text 2","text":"DISCOVER  →  RENDER  →  MEASURE  →  DIAGNOSE\n                                      ↓\nPROVE  ←  IDENTICAL RERUN  ←  ALLOWLISTED DIFF\n\nThe model may propose. Only the measured predicate can pass.","textPreview":"DISCOVER  →  RENDER  →  MEASURE  →  DIAGNOSE |                                       ↓ | PROVE  ←  IDENTICAL RERUN  ←  ALLOWLISTED DIFF |...","textChars":193,"textLines":5,"bbox":[68,258,820,196]}
+{"kind":"notes","id":"nt/ofy9wn61","slide":3,"text":"[Sources]\nWorkflow contract is implemented across packages/core, packages/browser, packages/repair-engine and packages/verifier."}
+{"kind":"slide","id":"sl/jyx0ra1s","slide":4,"title":"REAL PUBLIC SITES · REAL BROWSER ARTIFACTS","textShapes":3}
+{"kind":"textbox","id":"sh/1cj2d8b6","slide":4,"name":"Text 0","text":"REAL PUBLIC SITES · REAL BROWSER ARTIFACTS","textPreview":"REAL PUBLIC SITES · REAL BROWSER ARTIFACTS","textChars":42,"textLines":1,"bbox":[64,30,830,24]}
+{"kind":"textbox","id":"sh/0ba143al","slide":4,"name":"Text 1","text":"A URL becomes browser evidence.","textPreview":"A URL becomes browser evidence.","textChars":31,"textLines":1,"bbox":[64,72,830,82]}
+{"kind":"textbox","id":"sh/rm1k7yt4","slide":4,"name":"Text 2","text":"HOSTED QUICK SCAN\nReal Chromium in the Vercel function\nOne route · one viewport · up to 3 locales\nDOM measurements · axe · screenshots\nNothing persisted · 60-second ceiling\n\nLOCAL / CI\nFull route × locale × viewport matrix\n\nShown: actual Wikipedia browser artifact from the CLI path.","textPreview":"HOSTED QUICK SCAN | Real Chromium in the Vercel function | One route · one viewport · up to 3 locales | DOM measurements · axe · screensh...","textChars":283,"textLines":10,"bbox":[64,184,450,310]}
+{"kind":"image","id":"im/b2lc3q1s","slide":4,"name":"Image 0","geometry":"roundRect","alt":"Actual mobile Wikipedia browser artifact produced by BhashaFix","bbox":[588,154,280,350]}
+{"kind":"notes","id":"nt/jyx0ra1s","slide":4,"text":"[Sources]\npublic/evidence/index.json\npublic/evidence/scans/browser-707f6817-0e68-4236-a5e8-7e97b530a4f0/screenshots/626916722c9b.png\nHosted scan limitations are stated in README.md and the live UI."}
+{"kind":"slide","id":"sl/i107q5of","slide":5,"title":"ONE DETERMINISTIC FINDING · NEXT.JS FIXTURE","textShapes":3}
+{"kind":"textbox","id":"sh/dgbulwnm","slide":5,"name":"Text 0","text":"ONE DETERMINISTIC FINDING · NEXT.JS FIXTURE","textPreview":"ONE DETERMINISTIC FINDING · NEXT.JS FIXTURE","textChars":43,"textLines":1,"bbox":[64,30,830,24]}
+{"kind":"textbox","id":"sh/cf2tcr61","slide":5,"name":"Text 1","text":"Every issue is falsifiable.","textPreview":"Every issue is falsifiable.","textChars":27,"textLines":1,"bbox":[64,72,830,80]}
+{"kind":"textbox","id":"sh/z2tcnm5s","slide":5,"name":"Text 2","text":"BF-VIS-TEXT-OVERFLOW-X · de-DE\n\nTEXT       Kostenlos mit Meridian starten\nMEASURE    245 px scroll / 168 px client\nDELTA      +77 px · overflow hidden\nLOCATED    [data-testid=\"cta-primary\"]\nPREDICATE  scrollWidth ≤ clientWidth + 2","textPreview":"BF-VIS-TEXT-OVERFLOW-X · de-DE |  | TEXT       Kostenlos mit Meridian starten | MEASURE    245 px scroll / 168 px client | DELTA      +77...","textChars":230,"textLines":7,"bbox":[64,188,510,282]}
+{"kind":"image","id":"im/vm1cv6p0","slide":5,"name":"Image 0","geometry":"roundRect","alt":"German AtlasPay call-to-action visibly clipped before repair","bbox":[655,152,245,352]}
+{"kind":"notes","id":"nt/i107q5of","slide":5,"text":"[Sources]\nartifacts/nextjs-repair-proof.json\npublic/evidence/BF-VIS-DE-002.png"}
+{"kind":"slide","id":"sl/x8f69ofe","slide":6,"title":"BOUNDED SOURCE REPAIR · NEXT.JS FIXTURE","textShapes":3}
+{"kind":"textbox","id":"sh/yhg7epsj","slide":6,"name":"Text 0","text":"BOUNDED SOURCE REPAIR · NEXT.JS FIXTURE","textPreview":"BOUNDED SOURCE REPAIR · NEXT.JS FIXTURE","textChars":39,"textLines":1,"bbox":[64,30,830,24]}
+{"kind":"textbox","id":"sh/zi98nu94","slide":6,"name":"Text 1","text":"6 blockers. 3 files.\nIdentical rerun: 0.","textPreview":"6 blockers. 3 files. | Identical rerun: 0.","textChars":40,"textLines":2,"bbox":[78,70,560,130]}
+{"kind":"textbox","id":"sh/87ipkzal","slide":6,"name":"Text 2","text":"layout.tsx    lang + dir\nglobals.css   wrapping + width\nja-JP.json    missing key\n\n✓ git apply --check exited 0\n✓ source locale 0 → 0\n✓ new blockers 0\n✓ rollback snapshot restored","textPreview":"layout.tsx    lang + dir | globals.css   wrapping + width | ja-JP.json    missing key |  | ✓ git apply --check exited 0 | ✓ source locale...","textChars":179,"textLines":8,"bbox":[68,230,495,260]}
+{"kind":"image","id":"im/8jyl8rmd","slide":6,"name":"Image 0","geometry":"roundRect","alt":"German AtlasPay call-to-action wrapping correctly after repair","bbox":[655,150,245,354]}
+{"kind":"notes","id":"nt/x8f69ofe","slide":6,"text":"[Sources]\nartifacts/nextjs-repair-proof.json\nartifacts/nextjs-repair.diff\npublic/evidence/BF-VIS-DE-002-after.png"}
+{"kind":"slide","id":"sl/gnmp4jqx","slide":7,"title":"SAFE BY CONSTRUCTION","textShapes":3}
+{"kind":"textbox","id":"sh/cb2tkvap","slide":7,"name":"Text 0","text":"SAFE BY CONSTRUCTION","textPreview":"SAFE BY CONSTRUCTION","textChars":20,"textLines":1,"bbox":[64,30,830,24]}
+{"kind":"textbox","id":"sh/dcbud0ra","slide":7,"name":"Text 1","text":"The scanner may read URLs.\nThe repair may write code.\nBoth are fenced.","textPreview":"The scanner may read URLs. | The repair may write code. | Both are fenced.","textChars":70,"textLines":3,"bbox":[64,68,820,182]}
+{"kind":"textbox","id":"sh/ydkbm5sv","slide":7,"name":"Text 2","text":"URL BOUNDARY\nprotocol → DNS → redirects → every subrequest\nprivate networks blocked · 500-request cap\n\nREPAIR BOUNDARY\nexplicit scan ID + issue IDs · path allowlist\nsymlinks rejected · dry run · diff first · rollback\n\nOnly the identical predicate can return VERIFIED.","textPreview":"URL BOUNDARY | protocol → DNS → redirects → every subrequest | private networks blocked · 500-request cap |  | REPAIR BOUNDARY | explicit...","textChars":267,"textLines":9,"bbox":[68,282,820,212]}
+{"kind":"notes","id":"nt/gnmp4jqx","slide":7,"text":"[Sources]\npackages/browser/src/serverless.ts\npackages/crawler/src/url-policy.ts\npackages/repair-engine source path and allowlist enforcement."}
+{"kind":"slide","id":"sl/fu1gfa1s","slide":8,"title":"EFFECTIVE USE OF CODEX · MCP","textShapes":3}
+{"kind":"textbox","id":"sh/18byd4zy","slide":8,"name":"Text 0","text":"EFFECTIVE USE OF CODEX · MCP","textPreview":"EFFECTIVE USE OF CODEX · MCP","textChars":28,"textLines":1,"bbox":[64,30,830,24]}
+{"kind":"textbox","id":"sh/g72x4zyd","slide":8,"name":"Text 1","text":"Codex calls the gate.\nThe gate answers with proof.","textPreview":"Codex calls the gate. | The gate answers with proof.","textChars":50,"textLines":2,"bbox":[64,72,570,125]}
+{"kind":"textbox","id":"sh/ri9g7uhw","slide":8,"name":"Text 2","text":"spawned STDIO process · 18 strict tools\nInspector + MCPC independently invoked\n\ninspect → create scan → run → list issues\n→ prepare dry run → apply approved IDs\n→ rerun identical predicates\n\nFixture-scoped receipt: 10 blocking → 0\nsource locale PASS · status VERIFIED","textPreview":"spawned STDIO process · 18 strict tools | Inspector + MCPC independently invoked |  | inspect → create scan → run → list issues | → prepa...","textChars":267,"textLines":9,"bbox":[64,224,530,270]}
+{"kind":"image","id":"im/z2h036hs","slide":8,"name":"Image 0","geometry":"roundRect","alt":"Published BhashaFix MCP integration page with recorded tool session","bbox":[664,96,230,408]}
+{"kind":"notes","id":"nt/fu1gfa1s","slide":8,"text":"[Sources]\nartifacts/mcp-stdio-receipt.json\npublic/evidence/index.json#mcp\npublic/evidence/scans/browser-3f4cdf97-6c5c-4f84-b083-ea310ceee8a9/screenshots/9644643c4737.png"}
+{"kind":"slide","id":"sl/udsvah03","slide":9,"title":"SEEDED FIXTURE BENCHMARK · NOT A MARKET CLAIM","textShapes":3}
+{"kind":"textbox","id":"sh/1cfmhgne","slide":9,"name":"Text 0","text":"SEEDED FIXTURE BENCHMARK · NOT A MARKET CLAIM","textPreview":"SEEDED FIXTURE BENCHMARK · NOT A MARKET CLAIM","textChars":45,"textLines":1,"bbox":[64,30,830,24]}
+{"kind":"textbox","id":"sh/0b65obm9","slide":9,"name":"Text 1","text":"70 labelled defects.\n204 expected detections.","textPreview":"70 labelled defects. | 204 expected detections.","textChars":45,"textLines":2,"bbox":[64,70,600,125]}
+{"kind":"textbox","id":"sh/nex4jq5k","slide":9,"name":"Text 2","text":"12 rule families · 12 locales · 3 viewports\n288 Chromium renders\n\nFIXTURE RECALL             100%\nFIXTURE PRECISION          100%\nCLEAN VARIANT FINDINGS       0\n\nReal public-site scans exposed two rule defects;\nboth were fixed in the engine.","textPreview":"12 rule families · 12 locales · 3 viewports | 288 Chromium renders |  | FIXTURE RECALL             100% | FIXTURE PRECISION          100%...","textChars":241,"textLines":9,"bbox":[64,224,540,265]}
+{"kind":"image","id":"im/3qxkz2do","slide":9,"name":"Image 0","geometry":"roundRect","alt":"Generated benchmark fixture containing seeded localisation failures","bbox":[680,146,210,344]}
+{"kind":"notes","id":"nt/udsvah03","slide":9,"text":"[Sources]\nartifacts/benchmark.json\nartifacts/real-site-scans.json\nartifacts/fixtures/broken.png\nThe metrics are explicitly limited to the generated labelled fixture."}
+{"kind":"slide","id":"sl/m90b6t0r","slide":10,"title":"OPEN SOURCE · NO MODEL KEY REQUIRED","textShapes":3}
+{"kind":"textbox","id":"sh/xc3mho32","slide":10,"name":"Text 0","text":"OPEN SOURCE · NO MODEL KEY REQUIRED","textPreview":"OPEN SOURCE · NO MODEL KEY REQUIRED","textChars":35,"textLines":1,"bbox":[64,30,830,24]}
+{"kind":"textbox","id":"sh/cbu58j2h","slide":10,"name":"Text 1","text":"Scan now.\nProve before release.","textPreview":"Scan now. | Prove before release.","textChars":31,"textLines":2,"bbox":[64,70,560,130]}
+{"kind":"textbox","id":"sh/zelojyl8","slide":10,"name":"Text 2","text":"bhashafix.vercel.app\ngithub.com/vaibhav4046/bhashafix\n\ngit clone https://github.com/vaibhav4046/bhashafix\npnpm install\npnpm bhashafix scan --url https://example.com\n\nHosted: bounded one-route Chromium.\nLocal: full matrix, artifacts and repair.","textPreview":"bhashafix.vercel.app | github.com/vaibhav4046/bhashafix |  | git clone https://github.com/vaibhav4046/bhashafix | pnpm install | pnpm bha...","textChars":243,"textLines":9,"bbox":[64,220,550,276]}
+{"kind":"image","id":"im/7yps7al8","slide":10,"name":"Image 0","geometry":"roundRect","alt":"Live BhashaFix mobile homepage with real Chromium scan action","bbox":[670,132,230,365]}
+{"kind":"notes","id":"nt/m90b6t0r","slide":10,"text":"[Sources]\nLive product: https://bhashafix.vercel.app\nPublic repository: https://github.com/vaibhav4046/bhashafix\nsubmission/screenshots/03-landing-mobile.png"}

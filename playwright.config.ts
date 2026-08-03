@@ -2,6 +2,12 @@ import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
   testDir: "./tests/e2e",
+  // Keep the production Next server in the Playwright coordinator process.
+  // Playwright's webServer plugin launches commands through a shell; on
+  // Windows its forced process-tree teardown can leave the runner waiting even
+  // after every test has reported. The setup returns an explicit async
+  // teardown that closes HTTP connections and Next itself on every platform.
+  globalSetup: "./tests/e2e/global-setup.ts",
   fullyParallel: false,
   workers: 1,
   retries: process.env.CI ? 1 : 0,
@@ -23,10 +29,4 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"] },
     },
   ],
-  webServer: {
-    command: "pnpm start --hostname 127.0.0.1 --port 3100",
-    url: "http://127.0.0.1:3100",
-    reuseExistingServer: false,
-    timeout: 120_000,
-  },
 });

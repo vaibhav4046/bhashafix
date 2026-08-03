@@ -97,8 +97,11 @@ A model cannot mark its own answer correct. BhashaFix reruns the predicates.
 
 ## 1:05 – 1:15 · Run it yourself
 
-```
-npx @bhashafix/cli scan --url http://localhost:3000 --locales en-GB,de-DE,ar-SA,ja-JP
+```text
+git clone https://github.com/vaibhav4046/bhashafix
+cd bhashafix
+pnpm install
+pnpm bhashafix scan --url http://localhost:3000 --locales en-GB,de-DE,ar-SA,ja-JP
 ```
 
 Chromium opens, every locale renders, evidence lands in `.bhashafix/scans/<id>/`
@@ -116,7 +119,9 @@ From `artifacts/mcp-stdio-receipt.json` — an external client, spawned over
 STDIO against `packages/mcp/dist/bin.js`: 18 tools, 4 resources, 5 prompts.
 The recorded call sequence is on the site: inspect → create scan → run → read
 issues → prepare repair (dry run) → apply approved IDs → rerun predicates. The
-agent cannot finish until verification passes.
+agent cannot finish until verification passes. This 10→0 mutation sequence is
+explicitly the bundled AtlasPay fixture proof; it validates the guarded MCP
+transport and repair workflow, not arbitrary-project source repair.
 
 ---
 

@@ -45,10 +45,13 @@ if (releaseEvidence.status !== "PASS") {
   throw new Error("Submission requires a passing hostile release receipt.");
 }
 
-// The live public scan is produced by `pnpm scan:live:smoke`, which needs a
-// running server and outbound network and is deliberately not part of `verify`.
-// `artifacts/` is gitignored, so on a clean checkout this receipt is absent.
-// Record that honestly instead of crashing or implying a scan happened.
+// The static HTTP preflight receipt is produced by `pnpm scan:live:smoke`,
+// which needs a running server and outbound network and is deliberately not
+// part of `verify`. This is separate from the bounded hosted-Chromium path at
+// POST /api/scan/browser, which is exercised against production by
+// `pnpm production:smoke`. `artifacts/` is gitignored, so on a clean checkout
+// the preflight receipt is absent. Record that honestly instead of crashing or
+// implying either scan happened in this process.
 const livePublicScanRaw = await readFile(
   path.join(root, "artifacts/live-public-scan-receipt.json"),
   "utf8",
@@ -196,6 +199,12 @@ const mcpEvidence = `# MCP and MCPC evidence
 
 Generated: ${new Date().toISOString()}
 
+The 10-to-0 repair sequence below is explicitly scoped to the bundled AtlasPay
+fixture. It proves that external MCP clients can drive the guarded fixture
+workflow over the built STDIO server; it does not claim arbitrary-project
+source repair. Project inspection, schemas and transport checks exercise the
+general MCP surface separately.
+
 | Client | Transport | Tools | Baseline | Final | Result |
 | --- | --- | ---: | ---: | ---: | --- |
 | Official MCP Inspector | STDIO built package | ${releaseEvidence.mcp.inspector.tools} | ${releaseEvidence.mcp.inspector.baselineBlocking} | n/a | PASS |
@@ -211,7 +220,8 @@ pnpm mcpc:smoke
 
 The Inspector and MCPC receipts were produced by external clients against
 \`packages/mcp/dist/bin.js\`. The in-memory Vitest suite remains an
-additional schema and handler test, not the release proof by itself.
+additional schema and handler test, not the release proof by itself. Every
+baseline and final count in this table is AtlasPay fixture evidence.
 `;
 
 const evalResults = `# BhashaFix evaluation results
@@ -222,7 +232,8 @@ Generated: ${new Date().toISOString()}
 | --- | --- | --- |
 | Clean packed CLI and MCP install | PASS | ${releaseEvidence.packages.tarballs.join(", ")} |
 | Global locale registry | PASS | ${releaseEvidence.packages.localeRegistry} representative BCP 47 locales |
-| Live public-product scan | ${livePublicScan ? "PASS" : "NOT RUN"} | ${livePublicScan ? `${livePublicScan.routesChecked} real routes, ${livePublicScan.stringsExtracted} visible strings, ${livePublicScan.verifiedBlocking} blockers in checks run` : "no receipt in artifacts/; run `pnpm scan:live:smoke`"} |
+| Hosted Chromium quick-scan contract | BOUNDED | \`POST /api/scan/browser\`: one route, bounded locales, one viewport, real PNG screenshots, DOM measurement and axe; verify deployment with \`pnpm production:smoke\` |
+| Hosted static HTTP preflight | ${livePublicScan ? "PASS" : "NOT RUN"} | ${livePublicScan ? `${livePublicScan.routesChecked} real routes, ${livePublicScan.stringsExtracted} visible strings, ${livePublicScan.verifiedBlocking} blockers in checks run` : "no receipt in artifacts/; run `pnpm scan:live:smoke`"} |
 | Baseline deterministic defects | PASS | ${proof.baselineBlocking} |
 | Final blocking defects | PASS | ${proof.finalBlocking} |
 | Source-locale regression | PASS | ${proof.sourceLocaleRegression} |
@@ -234,13 +245,15 @@ Generated: ${new Date().toISOString()}
 | Detection precision | ${benchmark ? `${(benchmark.metrics.precision * 100).toFixed(1)}%` : "NOT RUN"} | ${benchmark ? `${benchmark.broken.unexpectedIssues.length} unlabelled detection(s) on the broken fixture` : "run `pnpm benchmark`"} |
 | Clean-fixture false positives | ${benchmark ? (benchmark.metrics.cleanFalsePositives === 0 ? "PASS" : "FAIL") : "NOT RUN"} | ${benchmark ? `${benchmark.metrics.cleanFalsePositives} issue(s) on the clean variant` : "run `pnpm benchmark`"} |
 | MCP Inspector | PASS | ${releaseEvidence.mcp.inspector.tools} tools |
-| MCP STDIO repair verification | PASS | ${releaseEvidence.mcp.stdio.baselineBlocking} to ${releaseEvidence.mcp.stdio.finalBlocking} |
+| MCP STDIO AtlasPay fixture repair verification | PASS | ${releaseEvidence.mcp.stdio.baselineBlocking} to ${releaseEvidence.mcp.stdio.finalBlocking} |
 | MCPC | PASS | ${releaseEvidence.mcp.mcpc.tools} tools |
 | PPTX container and screenshots | PASS | ${screenshots.length} screenshots |
 
-These are release-contract results for the bundled AtlasPay vertical slice.
-The live public scan is bounded static HTTP evidence, not a browser-render or
-universal translation-quality benchmark.
+The repair counts are release-contract results for the bundled AtlasPay
+vertical slice. The hosted product also runs a bounded real-Chromium quick
+scan; full route x locale x viewport matrices, persisted artifacts and source
+repair remain local. The separate HTTP preflight receipt is static evidence,
+not browser evidence or a universal translation-quality benchmark.
 `;
 
 const liveScanEvidence = `# Live public scan evidence
@@ -267,7 +280,22 @@ ${realSiteScans.limitations.map((entry) => `- ${entry}`).join("\n")}
 `
 }
 
-## Hosted HTTP preflight receipt
+## Hosted Chromium quick scan
+
+The production route \`POST /api/scan/browser\` launches real Chromium inside
+the Vercel function. It renders one public route for the selected BCP 47
+locales at one selected viewport, measures the rendered DOM, runs axe and
+returns real PNG screenshots in the response. Redirects and subrequests are
+revalidated by the hosted SSRF policy. The response is not persisted, and the
+function's 60-second ceiling is not presented as a full matrix. The production
+contract is exercised with:
+
+\`BHASHAFIX_PRODUCTION_URL=https://bhashafix.vercel.app pnpm production:smoke\`
+
+Full route x locale x viewport matrices, authenticated coverage, persisted
+artifacts and repository repair run through the local CLI.
+
+## Hosted static HTTP preflight receipt
 
 ${
   livePublicScan === null
@@ -292,10 +320,10 @@ ${livePublicScan.routes.map((route) => `- \`${route.route}\` — HTTP ${route.st
 - \`submission/screenshots/09-live-public-product.png\`
 - \`submission/screenshots/10-live-public-product-proof.png\`
 
-These screenshots show the BhashaFix result workspace, not screenshots of the
-target website. The Vercel-hosted scanner performs bounded static HTTP
-inspection; full target rendering and axe execution require the local CLI or a
-browser-capable worker.
+These two packaged screenshots show the static-preflight workspace, not the
+target screenshots returned by \`POST /api/scan/browser\`. The production smoke
+asserts that the hosted Chromium response contains two real screenshots. Full
+matrices and durable evidence remain local.
 `;
 
 await writeFile(
