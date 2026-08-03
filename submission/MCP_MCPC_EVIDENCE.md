@@ -1,6 +1,6 @@
 # MCP and MCPC evidence
 
-Generated: 2026-08-03T06:34:26.976Z
+Generated: 2026-08-03T06:38:15.403Z
 
 The 10-to-0 repair sequence below is explicitly scoped to the bundled AtlasPay
 fixture. It proves that external MCP clients can drive the guarded fixture

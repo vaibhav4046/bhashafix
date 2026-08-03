@@ -1,6 +1,6 @@
 # Live public scan evidence
 
-Generated: 2026-08-03T06:34:26.976Z
+Generated: 2026-08-03T06:38:15.403Z
 
 ## Browser-backed scans of real public sites
 
@@ -36,7 +36,7 @@ artifacts and repository repair run through the local CLI.
 
 | Field | Verified value |
 | --- | --- |
-| Scan ID | `hosted-09970aac-3f18-4e86-bc17-271469c7442f` |
+| Scan ID | `hosted-779f6413-352d-4482-95ca-d1accf0404cf` |
 | Origin | `LIVE_PUBLIC_BROWSER_SCAN` |
 | Target | `https://example.com/` |
 | Real routes checked | 1 |
