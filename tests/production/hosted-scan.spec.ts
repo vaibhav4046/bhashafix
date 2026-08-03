@@ -23,7 +23,7 @@ test("a visitor can scan a real site from the homepage", async ({ page }) => {
   await page.getByLabel("Page locale").fill("en-US");
   await page.getByLabel("Target locale").fill("ar-SA");
   await page.getByLabel("Viewport", { exact: true }).selectOption("mobile");
-  await page.getByRole("button", { name: /Render and measure/ }).click();
+  await page.getByRole("button", { name: /Check this page/ }).click();
 
   // Cold start plus two renders. Generous, but it must finish.
   const result = page.locator(".ls-browser-result");

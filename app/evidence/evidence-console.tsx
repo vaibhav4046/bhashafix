@@ -10,7 +10,7 @@ import type { EvidenceIssue, EvidenceScan } from "../lib/evidence";
  * Nothing here derives a rate, score or total that the run did not record.
  */
 
-const STAGES = ["Target", "Route", "Locale", "Viewport", "Issue", "Proof"] as const;
+const STAGES = ["Website", "Page", "Language", "Screen", "Problem", "Proof"] as const;
 
 function shortHash(value: string) {
   return `${value.slice(0, 12)}…${value.slice(-6)}`;
@@ -191,15 +191,14 @@ export function EvidenceConsole({
   return (
     <>
       <header className="ls-masthead">
-        <p className="ls-eyebrow">REAL CHROMIUM SCAN · Generated through the BhashaFix CLI</p>
+        <p className="ls-eyebrow">REAL WEBSITE CHECKS · REAL SCREENSHOTS</p>
         <h1>
-          <span className="ls-display-line">Three public sites.</span>{" "}
-          <span className="ls-display-line">One recorded run each.</span>
+          <span className="ls-display-line">See what the browser</span>{" "}
+          <span className="ls-display-line">really saw.</span>
         </h1>
         <p className="ls-standfirst">
-          These are the artifacts of a local CLI run, published byte for byte.
-          Open a scan to read the routes it fetched, the locales it rendered, the
-          screenshots it captured and the SHA-256 of every image.
+          Choose a public site to see the pages checked, languages tried,
+          screenshots captured, problems found, and file fingerprints recorded.
         </p>
         <dl className="ls-masthead-meta">
           <div>
@@ -207,7 +206,7 @@ export function EvidenceConsole({
             <dd>{clock(generatedAt)}</dd>
           </div>
           <div>
-            <dt>Scans</dt>
+            <dt>Website checks</dt>
             <dd>{scans.length}</dd>
           </div>
           <div>
@@ -217,7 +216,7 @@ export function EvidenceConsole({
             </dd>
           </div>
           <div>
-            <dt>Gating issues recorded</dt>
+            <dt>Problems recorded</dt>
             <dd>{scans.reduce((total, entry) => total + entry.issues.length, 0)}</dd>
           </div>
         </dl>
@@ -238,8 +237,8 @@ export function EvidenceConsole({
             <strong>{entry.name}</strong>
             <span>{entry.target}</span>
             <em>
-              {entry.routes.length} routes · {entry.locales.length} locales ·{" "}
-              {entry.renders.length} renders · {entry.issues.length} gating issues
+              {entry.routes.length} pages · {entry.locales.length} languages ·{" "}
+              {entry.renders.length} screenshots · {entry.issues.length} problems
             </em>
           </button>
         ))}
@@ -251,15 +250,15 @@ export function EvidenceConsole({
             <i aria-hidden="true" />
             <span>{stage}</span>
             <b>
-              {stage === "Target"
+              {stage === "Website"
                 ? new URL(scan.target).hostname
-                : stage === "Route"
+                : stage === "Page"
                   ? openIssue?.route ?? `${scan.routes.length} fetched`
-                  : stage === "Locale"
+                  : stage === "Language"
                     ? openIssue?.locale ?? scan.locales.join(" · ")
-                    : stage === "Viewport"
+                    : stage === "Screen"
                       ? `${captured.name} ${captured.width}×${captured.height}`
-                      : stage === "Issue"
+                      : stage === "Problem"
                         ? openIssue?.ruleId ?? "open one below"
                         : openIssue?.screenshotUrl
                           ? shortHash(

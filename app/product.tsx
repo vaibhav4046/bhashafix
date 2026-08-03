@@ -51,14 +51,14 @@ const localeSpecimens = [
 ] as const;
 
 const scanNav = [
-  ["Overview", "/overview"],
-  ["Routes", "/routes"],
-  ["Issues", "/issues"],
-  ["Linguistic", "/linguistic"],
-  ["Visual", "/visual"],
-  ["Accessibility", "/accessibility"],
-  ["Repairs", "/repairs"],
-  ["Report", "/report"],
+  ["Summary", "Overview", "/overview"],
+  ["Pages", "Routes", "/routes"],
+  ["Problems", "Issues", "/issues"],
+  ["Writing", "Linguistic", "/linguistic"],
+  ["Layout", "Visual", "/visual"],
+  ["Accessibility", "Accessibility", "/accessibility"],
+  ["Fixes", "Repairs", "/repairs"],
+  ["Proof", "Report", "/report"],
 ] as const;
 
 /**
@@ -121,7 +121,7 @@ export function Logo({ wordmark = true }: { wordmark?: boolean }) {
 function ThemeToggle() {
   useEffect(() => {
     const stored = window.localStorage.getItem("bhashafix-theme");
-    const initial = stored === "light" ? "light" : "dark";
+    const initial = stored === "dark" ? "dark" : "light";
     document.documentElement.dataset.theme = initial;
   }, []);
   const toggle = () => {
@@ -147,16 +147,16 @@ function Header() {
     <header className="global-header">
       <Logo />
       <nav aria-label="Primary">
-        <Link href="/scan">Scans</Link>
-        <Link href="/glossary">Glossary</Link>
-        <Link href="/memory">Memory</Link>
-        <Link href="/integrations">Integrations</Link>
-        <Link href="/docs">Docs</Link>
+        <Link href="/scan">Checks</Link>
+        <Link href="/glossary">Approved words</Link>
+        <Link href="/memory">Saved translations</Link>
+        <Link href="/integrations">Tools</Link>
+        <Link href="/docs">Help</Link>
       </nav>
       <div className="header-actions">
         <ThemeToggle />
         <Link className="button button-small" href="/scan/new">
-          New scan
+          Check a site
         </Link>
       </div>
     </header>
@@ -166,10 +166,9 @@ function Header() {
 function TrustClaim() {
   return (
     <p className="trust-claim">
-      BhashaFix supports Unicode content and user-selected BCP 47 locales
-      through a provider-independent localisation pipeline. Deterministic
-      engineering checks are authoritative. Linguistic judgements include
-      confidence levels and human-review gates.
+      BhashaFix works with Unicode text and standard language-and-region codes.
+      Browser measurements decide whether an engineering check passed. Writing
+      suggestions show confidence and can be sent to a person for review.
     </p>
   );
 }
@@ -181,32 +180,32 @@ function TrustClaim() {
  */
 const pipelineStages = [
   [
-    "Target",
-    "A public URL or a local repository, validated before anything is fetched.",
+    "Choose",
+    "Enter a public website or point BhashaFix at a project on your computer.",
   ],
   [
-    "Browser",
-    "Each selected locale rendered in a real browser at each declared viewport.",
+    "Open",
+    "Load every chosen language and screen size in a real browser.",
   ],
   [
-    "Routes",
-    "Same-origin route discovery inside the declared crawl and rate limits.",
+    "Find pages",
+    "Follow links on the same website without crossing the limits you set.",
   ],
   [
-    "Screenshots",
-    "A render captured per route, locale and viewport case.",
+    "Take pictures",
+    "Save what every page looked like in each language and screen size.",
   ],
   [
-    "Verified issues",
-    "Every finding stores the measured value and the predicate it failed.",
+    "Show problems",
+    "Explain what broke and keep the exact measurement that proved it.",
   ],
   [
-    "Repair",
-    "A reviewable diff confined to an explicit path allowlist.",
+    "Prepare a fix",
+    "Create a patch you can review, limited to files you approved.",
   ],
   [
-    "Proof",
-    "The identical checks rerun, then exported as JSON, HTML, SARIF, JUnit and CSV.",
+    "Check again",
+    "Run the same checks again and save the result in shareable files.",
   ],
 ] as const;
 
@@ -406,24 +405,24 @@ export function LandingPage() {
       <section className="language-hero" aria-labelledby="hero-heading">
         <div className="language-hero-art" aria-hidden="true" />
         <div className="language-hero-content">
-          <p className="language-kicker">OPEN SOURCE · REAL BROWSERS · BOUNDED REPAIR</p>
+          <p className="language-kicker">OPEN SOURCE · REAL BROWSERS · SAFE REPAIRS</p>
           <h1 id="hero-heading">
             <span>Every language.</span>
             <span>Every viewport.</span>
             <span>Evidence before release.</span>
           </h1>
           <p className="language-hero-lede">
-            BhashaFix is the verification harness between generated translations
-            and production software. It renders the product, measures what
-            failed, prepares a reviewable patch, and reruns the same predicates.
+            BhashaFix checks translated software in a real browser. It shows
+            what broke, prepares a patch you can review, and runs the same
+            checks again.
           </p>
           <ScriptTransition />
           <div className="language-hero-actions">
             <a className="language-primary-action" href="#live-scan">
-              Run a live browser scan
+              Check a live website
             </a>
             <Link className="language-secondary-action" href="/demo">
-              Inspect the 10 → 0 proof
+              See the saved 10 → 0 proof
             </Link>
           </div>
           <ul className="language-hero-trust" aria-label="Verified operating boundaries">
@@ -433,14 +432,14 @@ export function LandingPage() {
           </ul>
         </div>
         <aside className="language-hero-proof" aria-label="Recorded AtlasPay verification result">
-          <span>RECORDED · DETERMINISTIC</span>
+          <span>SAVED RUN · REAL FILES</span>
           <div>
             <b>{repairProof.baselineBlocking}</b>
             <i aria-hidden="true">→</i>
             <strong>{repairProof.finalBlocking}</strong>
           </div>
-          <p>blocking predicates</p>
-          <small>{replayConfig.sourceLocale} regression · {repairProof.sourceLocaleRegression}</small>
+          <p>release blockers</p>
+          <small>{replayConfig.sourceLocale} recheck · {repairProof.sourceLocaleRegression}</small>
         </aside>
       </section>
 
@@ -452,74 +451,73 @@ export function LandingPage() {
       >
         <div className="language-live-heading">
           <div>
-            <p className="language-kicker"><i aria-hidden="true" /> LIVE_PUBLIC_BROWSER_SCAN</p>
-            <h2 id="live-scan-heading">Put a real public page under Chromium.</h2>
+            <p className="language-kicker"><i aria-hidden="true" /> LIVE WEBSITE CHECK</p>
+            <h2 id="live-scan-heading">Put a real public page under Chrome.</h2>
           </div>
           <p>
-            One public route, two BCP 47 locales and one selected viewport.
-            The hosted path returns real screenshots, DOM measurements and axe
-            findings. Nothing is persisted.
+            One page, two languages, and one screen size. You get real
+            screenshots, measurements, and accessibility findings. Nothing is saved.
           </p>
         </div>
         <BrowserScanPanel />
       </section>
 
       <section className="language-proof-ribbon" aria-label="Published product evidence">
-        <div><b>{repairProof.baselineBlocking} → {repairProof.finalBlocking}</b><span>verified AtlasPay repair</span></div>
-        <div><b>{publishedScans.length}</b><span>external scan records</span></div>
+        <div><b>{repairProof.baselineBlocking} → {repairProof.finalBlocking}</b><span>saved AtlasPay repair</span></div>
+        <div><b>{publishedScans.length}</b><span>real website checks</span></div>
         <div><b>{publishedScreenshots}</b><span>published screenshots</span></div>
-        <div><b>{evidenceIndex.mcp.tools}</b><span>MCP tools exercised</span></div>
-        <div><b>{repairProof.sourceLocaleRegression}</b><span>source-locale regression</span></div>
+        <div><b>{evidenceIndex.mcp.tools}</b><span>agent actions tested</span></div>
+        <div><b>{repairProof.sourceLocaleRegression}</b><span>English recheck</span></div>
       </section>
 
       <section className="language-section language-public-evidence" aria-labelledby="public-evidence-heading">
         <div className="language-section-head">
-          <p className="language-kicker">REAL TARGETS · REAL PIXELS · HASHED ARTIFACTS</p>
+          <p className="language-kicker">REAL SITES · REAL SCREENSHOTS · FILE FINGERPRINTS</p>
           <h2 id="public-evidence-heading">Look at the run, not the promise.</h2>
           <p>
-            These screenshots came from actual bounded browser scans of public
-            pages. Their route lists, locales, findings, timestamps and SHA-256
-            digests are published with the repository.
+            These screenshots came from real browser checks of public pages.
+            The pages, languages, findings, times, and file fingerprints are
+            published with the repository.
           </p>
         </div>
         <PublicEvidenceAtlas />
         <p className="language-provenance">
-          Evidence index generated <time dateTime={evidenceIndex.generatedAt}>{evidenceIndex.generatedAt}</time>.
-          Public targets have no ground-truth labels, so BhashaFix publishes no
-          precision or recall claim for them.
+          Evidence list published <time dateTime={evidenceIndex.generatedAt}>{evidenceIndex.generatedAt}</time>.
+          Public sites have no perfect answer key, so BhashaFix does not publish
+          a misleading accuracy score for them.
         </p>
       </section>
 
       <section className="language-section language-repair-proof" aria-labelledby="repair-proof-heading">
         <div className="language-section-head language-section-head-light">
-          <p className="language-kicker">THE SAME PREDICATE, BEFORE AND AFTER</p>
-          <h2 id="repair-proof-heading">Repair is accepted by evidence—not by an AI saying “fixed.”</h2>
+          <p className="language-kicker">THE SAME CHECK, BEFORE AND AFTER</p>
+          <h2 id="repair-proof-heading">A repair counts only when the same check passes again.</h2>
           <p>
-            Select a seeded AtlasPay defect to inspect the browser frame before
-            repair and the frame produced after the allowlisted patch. The
-            recorded replay is genuine and clearly labelled as a fixture.
+            Choose an AtlasPay problem to compare the real browser view before
+            and after the approved patch. This is a saved demo run, clearly
+            labelled and backed by its original files.
           </p>
         </div>
         <RepairEvidenceExplorer />
         <div className="language-repair-summary">
-          <div><span>Baseline scan</span><code>{repairProof.baselineScanId}</code></div>
-          <div><span>Verification scan</span><code>{repairProof.verificationScanId}</code></div>
-          <div><span>Changed files</span><b>{replayConfig.allowlist.length} allowlisted</b></div>
-          <div><span>New blocking issues</span><b>{repairProof.finalBlocking} recorded</b></div>
+          <div><span>Before check</span><code>{repairProof.baselineScanId}</code></div>
+          <div><span>After check</span><code>{repairProof.verificationScanId}</code></div>
+          <div><span>Changed files</span><b>{replayConfig.allowlist.length} approved</b></div>
+          <div><span>New release blockers</span><b>{repairProof.finalBlocking} recorded</b></div>
         </div>
       </section>
 
       <section className="language-section language-surfaces" aria-labelledby="surfaces-heading">
         <div className="language-section-head">
-          <p className="language-kicker">ONE ENGINE · FOUR RELEASE SURFACES</p>
-          <h2 id="surfaces-heading">The harness meets teams where software ships.</h2>
+          <p className="language-kicker">ONE ENGINE · WEB, TERMINAL, AGENTS, CI</p>
+          <h2 id="surfaces-heading">Use the same checks wherever your team works.</h2>
         </div>
         <div className="language-surface-grid">
           {[
-            ["01", "WEB", "Render a public page, inspect browser evidence and replay verified repairs.", "/scan"],
-            ["02", "CLI", "Run the full local matrix with stable exit codes, JSON output and rollback.", "/integrations/cli"],
-            ["03", "MCP", `Give Codex ${evidenceIndex.mcp.tools} structured localisation tools instead of asking it to guess.`, "/integrations/mcp"],
-            ["04", "CI", "Upload evidence and fail only at the severity defined by release policy.", "/integrations/ci"],
+            ["01", "WEB", "Open a public page, inspect screenshots, and compare repairs.", "/scan"],
+            ["02", "TERMINAL", "Run deeper checks on your computer and keep every output file.", "/integrations/cli"],
+            ["03", "CODING AGENTS", `Give Codex ${evidenceIndex.mcp.tools} safe actions backed by real evidence.`, "/integrations/mcp"],
+            ["04", "PULL REQUESTS", "Save evidence and stop a release only when your chosen rule fails.", "/integrations/ci"],
           ].map(([index, name, detail, href]) => (
             <Link href={href} key={name}>
               <span>{index}</span>
@@ -535,12 +533,11 @@ export function LandingPage() {
 
       <section className="language-section language-specimens" aria-labelledby="specimens">
         <div className="language-section-head">
-          <p className="language-kicker">UNICODE · BCP 47 · SCRIPT-AWARE</p>
+          <p className="language-kicker">MANY SCRIPTS · STANDARD LANGUAGE CODES</p>
           <h2 id="specimens">One product surface. Many writing systems.</h2>
           <p>
-            Locale profiles are resolved through standards and platform
-            internationalisation APIs. The engine does not branch on a shortlist
-            of showcase languages.
+            Language rules come from web standards and the browser. The engine
+            is not limited to a short list of showcase languages.
           </p>
         </div>
         <ul className="language-specimen-grid">
@@ -584,9 +581,9 @@ export function LandingPage() {
           <p className="language-kicker">LOCAL-FIRST BY DESIGN</p>
           <h2 id="local-heading">Your source, credentials and repairs stay in your environment.</h2>
           <p>
-            The hosted scan is a bounded visual proof. Full route × locale ×
-            viewport matrices, authenticated sessions, source patches and repair
-            rollback run locally through the same core APIs.
+            The website gives you a quick visual check. Deeper page, language,
+            and screen coverage—including signed-in pages and source repairs—runs
+            on your computer with the same engine.
           </p>
           <div className="language-hero-actions">
             <Link className="language-primary-action" href="/integrations/cli">Run from source</Link>
@@ -606,11 +603,11 @@ function Footer() {
   return (
     <footer className="global-footer">
       <Logo />
-      <p>Test, repair and prove every language before production.</p>
+      <p>See what broke, repair it safely, and rerun the same checks.</p>
       <div>
-        <Link href="/docs">Documentation</Link>
-        <Link href="/trust">Trust centre</Link>
-        <Link href="/integrations">Open-source integrations</Link>
+        <Link href="/docs">Help</Link>
+        <Link href="/trust">Privacy and trust</Link>
+        <Link href="/integrations">Developer tools</Link>
       </div>
     </footer>
   );
@@ -624,7 +621,7 @@ export function AppShell({
   className?: string;
 }) {
   return (
-    <main className={className ? `app-page ${className}` : "app-page"}>
+    <main className={className ? `app-page language-app ${className}` : "app-page language-app"}>
       <Header />
       {children}
       <Footer />
@@ -648,12 +645,12 @@ export function ScanIndexPage() {
     <AppShell>
       <section className="page-heading">
         <div>
-          <span>RELEASE CONTROL</span>
-          <h1>Localisation scans</h1>
-          <p>Real deterministic runs and clearly labelled replay evidence.</p>
+          <span>YOUR CHECKS</span>
+          <h1>Is every language ready?</h1>
+          <p>See what passed, what failed, and the screenshots that prove it.</p>
         </div>
         <Link className="button" href="/scan/new">
-          New scan
+          Check a site
         </Link>
       </section>
       <section className="scan-list">
@@ -701,8 +698,8 @@ export function ScanIndexPage() {
         <Link href="/scan/atlaspay-replay" className="scan-row">
           <div className="scan-symbol verified">✓</div>
           <div>
-            <strong>AtlasPay global release gate</strong>
-            <span>RECORDED_REPLAY · genuine deterministic artifacts</span>
+            <strong>AtlasPay language release check</strong>
+            <span>SAVED DEMO PROOF · real files from a completed run</span>
           </div>
           <div>
             <small>ROUTES</small>
@@ -713,7 +710,7 @@ export function ScanIndexPage() {
             <b>{baselineScan.localesTested.length}</b>
           </div>
           <div>
-            <small>PROOF</small>
+            <small>RESULT</small>
             <b className="green">{repairProof.baselineBlocking} → {repairProof.finalBlocking}</b>
           </div>
           <time>29 Jul 2026</time>
@@ -722,10 +719,10 @@ export function ScanIndexPage() {
         <div className="empty-scan-row">
           <span>⌁</span>
           <div>
-            <strong>Run your own target next</strong>
-            <p>Public URLs use hosted SSRF controls. Localhost stays in the CLI.</p>
+            <strong>Check your own website</strong>
+            <p>Public sites work here. Private and local sites stay on your computer.</p>
           </div>
-          <Link href="/scan/new">Configure scan →</Link>
+          <Link href="/scan/new">Start a check →</Link>
         </div>
       </section>
     </AppShell>
@@ -1055,11 +1052,11 @@ export function NewScanPage() {
       <AppShell>
         <section className="simple-scan">
           <div className="simple-scan-heading">
-            <span>REAL BROWSER · REAL EVIDENCE</span>
-            <h1>Scan a public page in Chromium.</h1>
+            <span>LIVE WEBSITE CHECK</span>
+            <h1>See what breaks in another language.</h1>
             <p>
-              Render a real page in two locales, capture both screenshots and
-              inspect deterministic layout, locale and accessibility findings.
+              BhashaFix opens a real page in Chrome, tries two languages, takes
+              screenshots, and shows exactly what went wrong.
             </p>
           </div>
 
@@ -1067,18 +1064,18 @@ export function NewScanPage() {
 
           <div className="canonical-browser-scan">
             <div className="canonical-browser-heading">
-              <span><i aria-hidden="true" /> LIVE HOSTED CHROMIUM</span>
-              <p>One route and one viewport. Nothing is stored.</p>
+              <span><i aria-hidden="true" /> LIVE CHECK IN CHROME</span>
+              <p>One page. One screen size. Nothing is stored on our server.</p>
             </div>
             <BrowserScanPanel />
           </div>
 
           <div className="preflight-divider">
-            <span>SECONDARY · FAST METADATA CRAWL</span>
-            <h2>Check up to five linked routes without rendering them.</h2>
+            <span>QUICK LINK CHECK</span>
+            <h2>Check up to five linked pages without opening a browser.</h2>
             <p>
-              Useful for language metadata, raw keys and missing alt text. This
-              does not replace the browser evidence above.
+              This catches missing page language, raw translation keys, and
+              missing image descriptions. Use the live check above for layout.
             </p>
           </div>
 
@@ -1563,9 +1560,9 @@ function ScanModeSwitcher({
   return (
     <nav className="scan-mode-switcher" aria-label="Scan type">
       {[
-        ["public", "Public website", "Real hosted Chromium"],
-        ["local", "Local product", "Full browser + repair"],
-        ["demo", "Verified demo", `Recorded ${proofDelta} proof`],
+        ["public", "Public website", "Open the live page here"],
+        ["local", "Local product", "Run it on your computer"],
+        ["demo", "Verified demo", `See a saved ${proofDelta} run`],
       ].map(([value, label, detail]) => (
         <button
           key={value}
@@ -2338,11 +2335,11 @@ function ScanHeader({ section }: { section: string }) {
     <>
       <section className="scan-header">
         <div>
-          <Link href="/scan">← Scans</Link>
-          <span className="replay-badge">RECORDED_REPLAY · GENUINE ARTIFACTS</span>
-          <h1>AtlasPay global release gate</h1>
+          <Link href="/scan">← Checks</Link>
+          <span className="replay-badge">SAVED DEMO PROOF · REAL FILES</span>
+          <h1>AtlasPay language release check</h1>
           <p>
-            {baselineScan.scanId} · {baselineScan.routesDiscovered.length} routes · {baselineScan.localesTested.length} locales · deterministic mode
+            {baselineScan.scanId} · {baselineScan.routesDiscovered.length} pages · {baselineScan.localesTested.length} languages · browser rules only
           </p>
         </div>
         <div className="scan-status">
@@ -2352,16 +2349,16 @@ function ScanHeader({ section }: { section: string }) {
         </div>
       </section>
       <nav className="scan-tabs" aria-label="Scan views">
-        {scanNav.map(([label, suffix]) => (
+        {scanNav.map(([label, sectionName, suffix]) => (
           <Link
             className={
-              section.toLowerCase() === label.toLowerCase() ? "active" : ""
+              section.toLowerCase() === sectionName.toLowerCase() ? "active" : ""
             }
             href={`/scan/atlaspay-replay${suffix}`}
             key={label}
           >
             {label}
-            {label === "Issues" && <b>{baselineScan.issues.length}</b>}
+            {label === "Problems" && <b>{baselineScan.issues.length}</b>}
           </Link>
         ))}
       </nav>
@@ -2379,15 +2376,15 @@ function PipelineRail() {
     Boolean(issue.screenshotBefore),
   ).length;
   const stages: Array<[string, string]> = [
-    ["Target", `${replayConfig.routes.length} configured routes`],
+    ["Website", `${replayConfig.routes.length} pages chosen`],
     [
-      "Browser",
-      `${replayConfig.browsers.join(", ")} · ${replayConfig.viewports.length} viewports`,
+      "Screens",
+      `${replayConfig.browsers.join(", ")} · ${replayConfig.viewports.length} sizes`,
     ],
-    ["Routes", `${baselineScan.routesDiscovered.length} discovered`],
-    ["Screenshots", `${recordedScreenshots} before/after pairs bundled`],
-    ["Verified issues", `${baselineScan.issues.length} recorded`],
-    ["Repair", `${replayConfig.allowlist.length} allowlisted files`],
+    ["Pages", `${baselineScan.routesDiscovered.length} opened`],
+    ["Pictures", `${recordedScreenshots} before-and-after pairs saved`],
+    ["Problems", `${baselineScan.issues.length} recorded`],
+    ["Repair", `${replayConfig.allowlist.length} approved files`],
     [
       "Proof",
       `${proofDelta} · ${replayArtifacts.length} exports`,
@@ -2395,7 +2392,7 @@ function PipelineRail() {
   ];
   return (
     <aside className="pipeline-rail" aria-label="Recorded pipeline">
-      <span>RECORDED PIPELINE</span>
+      <span>SAVED RUN</span>
       <ol>
         {stages.map(([name, detail], index) => (
           <li key={name}>
@@ -2589,34 +2586,43 @@ function LiveStoredWorkspace({
       : section === "Accessibility"
         ? result.issues.filter((issue) => issue.category === "accessibility")
         : result.issues;
-  const navigation = scanNav.filter(([label]) => label !== "Repairs");
+  const navigation = scanNav.filter(([label]) => label !== "Fixes");
   return (
     <AppShell>
       <section className="scan-header">
         <div>
-          <Link href="/scan">← Scans</Link>
-          <span className="live-badge">{result.origin}</span>
+          <Link href="/scan">← Checks</Link>
+          <span className="live-badge">
+            {result.origin === "LIVE_PUBLIC_BROWSER_SCAN"
+              ? "LIVE BROWSER CHECK"
+              : "STATIC WEBSITE CHECK"}
+          </span>
+          {result.origin !== "LIVE_PUBLIC_BROWSER_SCAN" && (
+            <code className="scan-origin-code" title="Recorded scan method">
+              {result.origin}
+            </code>
+          )}
           <h1>{new URL(result.target).hostname}</h1>
           <p>
-            {result.scanId} · {result.summary.routesChecked} actual HTTP routes
+            {result.scanId} · {result.summary.routesChecked} pages checked
             · completed {new Date(result.completedAt).toLocaleString()}
           </p>
         </div>
         <div className="scan-status">
           <span>{result.status.replaceAll("_", " ")}</span>
-          <strong>{result.summary.verifiedBlocking} blocking</strong>
+          <strong>{result.summary.verifiedBlocking} release blockers</strong>
           <small>in the checks that ran</small>
         </div>
       </section>
       <nav className="scan-tabs" aria-label="Scan views">
-        {navigation.map(([label, suffix]) => (
+        {navigation.map(([label, sectionName, suffix]) => (
           <Link
-            className={section.toLowerCase() === label.toLowerCase() ? "active" : ""}
+            className={section.toLowerCase() === sectionName.toLowerCase() ? "active" : ""}
             href={`/scan/${result.scanId}${suffix}`}
             key={label}
           >
             {label}
-            {label === "Issues" && <b>{result.issues.length}</b>}
+            {label === "Problems" && <b>{result.issues.length}</b>}
           </Link>
         ))}
       </nav>
@@ -2913,9 +2919,9 @@ function ReplayRoutesView() {
     <section className="review-page">
       <div className="review-heading">
         <div>
-          <span>RECORDED_REPLAY · ROUTE COVERAGE</span>
-          <h2>Five routes. Ten locale predicates.</h2>
-          <p>These rows come from the generated AtlasPay baseline artifact.</p>
+          <span>SAVED DEMO · PAGES CHECKED</span>
+          <h2>Five pages. Ten language problems.</h2>
+          <p>These rows come directly from the AtlasPay before-check file.</p>
         </div>
         <span className="mode-badge">GUIDED DEMO</span>
       </div>
@@ -2940,7 +2946,7 @@ function AccessibilityView() {
     <section className="review-page">
       <div className="review-heading">
         <div>
-          <span>RECORDED_REPLAY · ACCESSIBILITY</span>
+          <span>SAVED DEMO · ACCESSIBILITY</span>
           <h2>One recorded result. Four values this replay never measured.</h2>
           <p>
             The replay artifact carries a source-locale regression result. Its
@@ -3005,8 +3011,8 @@ function IssuesView() {
     <section className="review-page">
       <div className="review-heading">
         <div>
-          <span>RECORDED_REPLAY · VERIFIED ISSUES</span>
-          <h2>Statement, measurement, predicate.</h2>
+          <span>SAVED DEMO · PROBLEMS FOUND</span>
+          <h2>What happened, what was measured, and why it failed.</h2>
           <p>
             Every entry below is one recorded deterministic failure. The
             measurement is the value the run stored; the predicate is the
@@ -3243,11 +3249,11 @@ function RepairsView() {
         <div>
           <strong>Recorded predicates passed; the release gate remains incomplete</strong>
           <p>
-            Original predicates pass · source locale{" "}
+            Original checks pass · English recheck{" "}
             {repairProof.sourceLocaleRegression} ·{" "}
-            {replayReport.verification.newBlockingIssues} new blocking issues ·
-            diff policy, accessibility regression and console delta were not
-            measured by this replay
+            {replayReport.verification.newBlockingIssues} new release blockers ·
+            accessibility, console, and patch-policy results were not saved by
+            this demo run
           </p>
         </div>
         <b>{repairProof.baselineBlocking} → {repairProof.finalBlocking}</b>
@@ -3278,42 +3284,41 @@ function ReportView() {
   return (
     <section className="report-page">
       <div className="report-score">
-        <span>VERIFIED GATE</span>
+        <span>SAVED RESULT</span>
         <strong>{proofDelta}</strong>
         <small>
-          blocking predicates, baseline → final, recorded in repair-proof.json
+          release blockers, before → after, read from the original proof file
         </small>
       </div>
       <div className="report-summary">
-        <span>FINAL VERDICT</span>
+        <span>WHAT THIS RUN PROVES</span>
         <h2>
           {releaseGateComplete
-            ? "Ready for engineering release."
-            : "Repair verified. Release gate incomplete."}
+            ? "All recorded release checks passed."
+            : "The repair worked. A few release checks were not recorded."}
         </h2>
         <p>
-          The replay proves all original blocking predicates pass after the
-          bounded repair. It does not record console-error delta, accessibility
-          regression or diff-policy verification, so this artifact alone is not
-          a release-readiness approval.
+          The same checks that first failed now pass after the approved repair.
+          This demo did not save accessibility, new console-error, or patch-policy
+          results, so this saved run alone cannot approve a release.
         </p>
         <div>
           {[
-            ["Blocking issues", String(repairProof.finalBlocking), repairProof.finalBlocking === 0 ? "PASS" : "FAIL"],
+            ["Release blockers", String(repairProof.finalBlocking), repairProof.finalBlocking === 0 ? "PASS" : "FAIL"],
             ["Warnings", String(finalIssues.filter((issue) => issue.severity === "warning").length), "PASS"],
-            ["Human review", String(finalIssues.filter((issue) => issue.humanReviewRequired).length), "CLEAR"],
-            ["Route coverage", `${replayReport.scan.routesDiscovered.length} / ${baselineScan.routesDiscovered.length}`, "100%"],
-            ["Locale coverage", `${replayReport.scan.localesTested.length} / ${baselineScan.localesTested.length}`, "100%"],
-            ["Source regression", repairProof.sourceLocaleRegression, "PASS"],
+            ["Needs a person", String(finalIssues.filter((issue) => issue.humanReviewRequired).length), "CLEAR"],
+            ["Pages checked", `${replayReport.scan.routesDiscovered.length} / ${baselineScan.routesDiscovered.length}`, "100%"],
+            ["Languages checked", `${replayReport.scan.localesTested.length} / ${baselineScan.localesTested.length}`, "100%"],
+            ["English recheck", repairProof.sourceLocaleRegression, "PASS"],
             [
-              "Accessibility regression",
+              "Accessibility recheck",
               recordedFlag(repairProof.accessibilityRegression),
-              repairProof.accessibilityRegression === null ? "NOT MEASURED" : "RECORDED",
+              repairProof.accessibilityRegression === null ? "NOT RECORDED" : "RECORDED",
             ],
             [
-              "Console error delta",
+              "New console errors",
               recordedFlag(repairProof.consoleErrorDelta),
-              repairProof.consoleErrorDelta === null ? "NOT MEASURED" : "RECORDED",
+              repairProof.consoleErrorDelta === null ? "NOT RECORDED" : "RECORDED",
             ],
           ].map(([label, value, status]) => (
             <article key={label}><span>{label}</span><strong>{value}</strong><b>{status}</b></article>
@@ -3321,7 +3326,7 @@ function ReportView() {
         </div>
       </div>
       <div className="download-centre">
-        <div><span>DOWNLOAD CENTRE</span><h2>Portable proof.</h2></div>
+        <div><span>DOWNLOADS</span><h2>Take the proof with you.</h2></div>
         <div>
           {downloads.map(([label, href]) => (
             <a href={href} download key={label}><span>↓</span>{label}<b>export</b></a>
@@ -3425,7 +3430,7 @@ export function GlossaryPage() {
   return (
     <AppShell>
       <section className="page-heading">
-        <div><span>TERMINOLOGY</span><h1>Project glossary</h1><p>Approved terms are deterministic constraints, not model preferences.</p></div>
+        <div><span>APPROVED WORDS</span><h1>Words your product must get right.</h1><p>Save the approved translation and flag wording your team never wants to ship.</p></div>
         <div className="data-actions">
           <button className="button button-secondary" onClick={exportEntries}>Export JSON</button>
           <label className="button button-secondary">Import JSON<input type="file" accept="application/json,.json" onChange={(event) => void importEntries(event.target.files?.[0])} /></label>
@@ -3530,7 +3535,7 @@ export function MemoryPage() {
   return (
     <AppShell>
       <section className="page-heading">
-        <div><span>PROJECT MEMORY</span><h1>Translation memory</h1><p>Exact, normalised and context matches with provenance.</p></div>
+        <div><span>SAVED TRANSLATIONS</span><h1>Reuse work your team already approved.</h1><p>Find earlier translations, see where they came from, and mark the ones a person checked.</p></div>
         <div className="data-actions"><button className="button button-secondary" onClick={exportMemory}>Export JSON</button><label className="button button-secondary">Import JSON<input type="file" accept="application/json,.json" onChange={(event) => void importMemory(event.target.files?.[0])} /></label></div>
       </section>
       <section className="data-toolbar">
@@ -3564,31 +3569,30 @@ export function IntegrationsPage() {
   return (
     <AppShell>
       <section className="page-heading">
-        <div><span>ONE ENGINE · EVERY WORKFLOW</span><h1>Integrations</h1><p>Use BhashaFix through CLI, local MCP and GitHub Actions.</p></div>
+        <div><span>USE IT WHERE YOU WORK</span><h1>Web, terminal, coding agents, and pull requests.</h1><p>The same checks power every surface, so the result does not change with the tool.</p></div>
       </section>
       <section className="integration-grid">
         <article id="cli">
           <i>›_</i><span>CLI</span><h2>@bhashafix/cli</h2>
-          <p>Human output, JSON, quiet and verbose modes, stable exit codes and no secret leakage.</p>
+          <p>Run checks from your terminal, read a clear summary, or save the full result as JSON.</p>
           <pre tabIndex={0}>{`pnpm bhashafix scan \\\n  --url http://localhost:3000 \\\n  --source-locale en-GB \\\n  --locales hi-IN,ar-SA,ja-JP,de-DE`}</pre>
         </article>
         <article>
           <i>◇</i><span>MCP · STDIO</span><h2>@bhashafix/mcp</h2>
           <p>
-            {evidenceIndex.mcp.tools} strict tools, {evidenceIndex.mcp.resources}{" "}
-            resources and {evidenceIndex.mcp.prompts} workflow prompts for coding
-            agents, as listed by the recorded <code>tools/list</code> response.
+            Give coding agents {evidenceIndex.mcp.tools} safe BhashaFix actions
+            so they can inspect real evidence instead of guessing.
           </p>
           <pre tabIndex={0}>{`{\n  "mcpServers": {\n    "bhashafix": {\n      "command": "node",\n      "args": ["${evidenceIndex.mcp.serverEntry}"]\n    }\n  }\n}`}</pre>
         </article>
         <article id="ci">
           <i>✓</i><span>GITHUB ACTIONS</span><h2>Release gate</h2>
-          <p>Installs Chromium, runs the identical checks, uploads proof, SARIF, JUnit and screenshots.</p>
+          <p>Check every pull request, keep the screenshots, and stop a release only when your chosen rule fails.</p>
           <pre tabIndex={0}>{`- run: pnpm install --frozen-lockfile\n- run: pnpm exec playwright install chromium\n- run: pnpm bhashafix ci --fail-on blocking`}</pre>
         </article>
         <article>
           <i>◎</i><span>PROVIDERS</span><h2>Optional linguistic review</h2>
-          <p>OpenAI, Anthropic, Groq and OpenAI-compatible adapters sit behind a common contract. No-model mode is first-class.</p>
+          <p>Writing review is optional. Browser, layout, accessibility, and formatting checks work without an AI key.</p>
           <div className="provider-status"><b>deterministic</b><span>available</span></div>
           <div className="provider-status"><b>model provider</b><span>not configured</span></div>
         </article>
@@ -3655,33 +3659,33 @@ export function DemoPage() {
   return (
     <AppShell className="ls-page">
       <header className="ls-masthead">
-        <p className="ls-eyebrow">RECORDED VERIFIED RUN · {repairProof.origin}</p>
+        <p className="ls-eyebrow">SAVED DEMO PROOF · REAL FILES</p>
         <h1>
-          <span className="ls-display-line">Ten blocking predicates.</span>{" "}
-          <span className="ls-display-line">One bounded patch. Zero left.</span>
+          <span className="ls-display-line">Ten release blockers found.</span>{" "}
+          <span className="ls-display-line">One safe patch. Nothing left.</span>
         </h1>
         <p className="ls-standfirst">
           AtlasPay is a bundled multilingual fixture, not a customer. The run
-          below happened locally, wrote its artifacts into{" "}
-          <code>/replay</code>, and is replayed here exactly as recorded. Opening
-          this page does not rerun anything.
+          below happened locally and saved its reports and screenshots. This
+          page shows those files exactly as recorded; opening it does not rerun
+          or invent a result.
         </p>
         <ol className="ls-proof-chain">
           <li>
             <b>{repairProof.baselineBlocking}</b>
-            <span>blocking predicates</span>
+            <span>release blockers</span>
           </li>
           <li>
             <b>{replayConfig.allowlist.length}</b>
-            <span>files patched, allowlisted</span>
+            <span>approved files changed</span>
           </li>
           <li>
-            <b>identical</b>
-            <span>predicates rerun</span>
+            <b>same</b>
+            <span>checks run again</span>
           </li>
           <li>
             <b>{repairProof.finalBlocking}</b>
-            <span>blocking predicates</span>
+            <span>release blockers left</span>
           </li>
           <li>
             <b>{repairProof.sourceLocaleRegression}</b>
@@ -3866,9 +3870,9 @@ export function TrustPage() {
           {["Scope", "Local data", "Providers", "Evidence", "Limitations"].map((item) => <a href={`#${item.toLowerCase().replace(" ", "-")}`} key={item}>{item}</a>)}
         </aside>
         <article>
-          <span>BHASHAFIX TRUST CENTRE</span>
-          <h1>Know what ran, what moved and what did not.</h1>
-          <p className="docs-lede">Every result carries an origin. Public scans never invent source locations or repairs.</p>
+          <span>PRIVACY AND TRUST</span>
+          <h1>Know what was checked and what stayed private.</h1>
+          <p className="docs-lede">Every result says where it came from. Website checks never invent file names or pretend a repair happened.</p>
           <section id="scope"><h2>Explicit scan origins</h2><pre tabIndex={0}>{`LIVE_PUBLIC_BROWSER_SCAN  public target rendered in a real browser\nHTTP_PREFLIGHT            static HTTP only, no browser rendering\nLOCAL_REPOSITORY_SCAN     local target rendered in a real browser\nGUIDED_DEMO\nRECORDED_REPLAY\nSYNTHETIC_LOCALISATION_PREVIEW`}</pre></section>
           <section id="local-data"><h2>What remains local</h2><p>Repository files, Playwright storage state, provider secrets and repair rollback data remain in the local CLI environment unless the user explicitly chooses another boundary.</p></section>
           <section id="providers"><h2>What reaches model providers</h2><p>Nothing in no-AI mode. When configured, only minimised translatable content and context are sent; credentials, hidden form values and detected secrets are excluded.</p></section>
@@ -3912,9 +3916,9 @@ export function DocsPage() {
           ))}
         </aside>
         <article>
-          <span>DOCUMENTATION</span>
-          <h1>Verification, not vibes.</h1>
-          <p className="docs-lede">BhashaFix is the verification harness between AI-generated translations and production software.</p>
+          <span>HELP</span>
+          <h1>Start here. See the proof.</h1>
+          <p className="docs-lede">BhashaFix checks translated software in a real browser, shows what failed, and reruns the same checks after a repair.</p>
           <section id="quick-start"><h2>Ten-minute quick start</h2><pre tabIndex={0}>{`pnpm install\npnpm bhashafix init\npnpm demo:reset\npnpm demo:scan\npnpm demo:repair\npnpm demo:prove`}</pre></section>
           <section id="website-scan"><h2>Website scan</h2><p>Hosted scans accept public HTTP and HTTPS targets, respect crawl limits and reject private, loopback and metadata destinations.</p><pre tabIndex={0}>{`pnpm bhashafix scan --url https://example.com \\\n  --source-locale en-GB --locales ar-SA,ja-JP`}</pre></section>
           <section id="repository-scan"><h2>Repository scan</h2><p>Local scans inspect framework, routes, locale assets and source hints. Unknown scripts are never executed without showing the command.</p></section>
@@ -3975,12 +3979,12 @@ export function PlaygroundPage() {
   return (
     <AppShell>
       <section className="page-heading">
-        <div><span>SYNTHETIC_LOCALISATION_PREVIEW</span><h1>Stress strings safely</h1><p>Protected tokens, tags, URLs, emails and project terms remain intact.</p></div>
+        <div><span>SAFE TEXT PREVIEW</span><h1>Try difficult text before customers do.</h1><p>Make text longer, taller, or right-to-left while keeping names, links, and placeholders safe.</p></div>
       </section>
       <section className="playground">
         <div>
           <label className="field">Source text<textarea value={source} onChange={(event) => setSource(event.target.value)} /></label>
-          <label className="field">Target BCP 47 locale<input value={targetLocale} onChange={(event) => setTargetLocale(event.target.value)} aria-invalid={!profile} /></label>
+          <label className="field">Language and region code<input aria-label="Target BCP 47 locale" value={targetLocale} onChange={(event) => setTargetLocale(event.target.value)} aria-invalid={!profile} /></label>
           {!profile && <p role="alert">Enter a valid BCP 47 locale such as ar-SA or bn-BD.</p>}
           <div className="mode-grid">
             {["expanded-latin", "extreme-expansion", "rtl-mirrored", "accented", "cjk-density", "no-space", "tall-glyph", "emoji-symbol", "long-compound"].map((item) => (

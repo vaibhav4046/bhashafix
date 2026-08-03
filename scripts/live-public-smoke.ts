@@ -45,7 +45,7 @@ try {
       response.request().method() === "POST",
     { timeout: 90_000 },
   );
-  await browserScan.getByRole("button", { name: "Render and measure →" }).click();
+  await browserScan.getByRole("button", { name: "Check this page →" }).click();
   const scanResponse = await scanResponsePromise;
   const payload = await scanResponse.json();
   if (!scanResponse.ok()) {

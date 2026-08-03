@@ -13,6 +13,26 @@ function collectConsoleErrors(page: Page) {
   return errors;
 }
 
+const productRoutes = [
+  "/scan",
+  "/scan/new",
+  "/glossary",
+  "/memory",
+  "/integrations",
+  "/integrations/cli",
+  "/integrations/mcp",
+  "/integrations/ci",
+  "/docs",
+  "/trust",
+  "/playground",
+  "/evidence",
+  "/import",
+  "/demo",
+  "/motion-lab",
+  "/scan/atlaspay-replay/overview",
+  "/scan/atlaspay-replay/report",
+] as const;
+
 test("landing page is responsive, themeable and accessible", async ({ page }) => {
   const consoleErrors = collectConsoleErrors(page);
   await page.setViewportSize({ width: 1440, height: 900 });
@@ -44,7 +64,7 @@ test("landing page is responsive, themeable and accessible", async ({ page }) =>
   });
 
   await page.getByRole("button", { name: "Toggle color theme" }).click();
-  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await page.screenshot({
     path: path.join(screenshotDir, "02-landing-light.png"),
     fullPage: false,
@@ -83,6 +103,72 @@ test("mobile and reduced-motion layouts remain usable", async ({ page }) => {
     path: path.join(screenshotDir, "03-landing-mobile.png"),
     fullPage: false,
   });
+  expect(consoleErrors).toEqual([]);
+});
+
+test("every product page uses the Living Language shell without accessibility or viewport breakage", async ({
+  page,
+}) => {
+  test.setTimeout(180_000);
+  const consoleErrors = collectConsoleErrors(page);
+  const accessibilityFailures: Array<{ route: string; rules: string[] }> = [];
+
+  await page.setViewportSize({ width: 1440, height: 900 });
+  for (const route of productRoutes) {
+    await page.goto(route);
+    await expect(page.locator("main.language-app")).toBeVisible();
+    await expect(page.locator(".global-header")).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      ),
+      `${route} must not scroll sideways on desktop`,
+    ).toBe(0);
+    expect(
+      await page.locator(".global-header").evaluate((element) =>
+        Number.parseFloat(getComputedStyle(element).borderTopLeftRadius),
+      ),
+      `${route} must retain the shared pill navigation`,
+    ).toBeGreaterThan(20);
+    expect(
+      await page.getByRole("heading", { level: 1 }).evaluate((element) =>
+        getComputedStyle(element).fontFamily,
+      ),
+      `${route} must retain the shared editorial heading`,
+    ).toContain("Georgia");
+
+    const accessibility = await new AxeBuilder({ page }).analyze();
+    const serious = accessibility.violations.filter(
+      (violation) =>
+        violation.impact === "critical" || violation.impact === "serious",
+    );
+    if (serious.length > 0) {
+      accessibilityFailures.push({
+        route,
+        rules: serious.flatMap((violation) =>
+          violation.nodes.map(
+            (node) =>
+              `${violation.id}: ${node.target.join(" ")} — ${node.failureSummary ?? "failed"}`,
+          ),
+        ),
+      });
+    }
+  }
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  for (const route of productRoutes) {
+    await page.goto(route);
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      ),
+      `${route} must not scroll sideways on a phone`,
+    ).toBe(0);
+  }
+
+  expect(accessibilityFailures).toEqual([]);
   expect(consoleErrors).toEqual([]);
 });
 
@@ -220,7 +306,7 @@ test("real public scan UI shows exact routes, evidence and honest coverage", asy
 
   await page.goto("/scan/new");
   await expect(
-    page.getByRole("heading", { name: "Scan a public page in Chromium." }),
+    page.getByRole("heading", { name: "See what breaks in another language." }),
   ).toBeVisible();
   await page.locator(".locale-followup summary").click();
   await page.getByLabel("Custom BCP 47 target locale").fill("pt-br");
@@ -234,7 +320,9 @@ test("real public scan UI shows exact routes, evidence and honest coverage", asy
   await expect(page.getByText("HTTP_PREFLIGHT · REAL HTTP RESPONSES · NO BROWSER")).toBeVisible();
   await expect(page.getByText("Routes actually fetched")).toBeVisible();
   await expect(page.getByRole("cell", { name: "/pricing" })).toBeVisible();
-  await expect(page.getByText("missing page lang")).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "missing page lang", exact: true }),
+  ).toBeVisible();
   await expect(page.getByText("JavaScript browser rendering")).toBeVisible();
   await expect(
     page.getByText("No blockers found — not a release guarantee"),
@@ -329,7 +417,7 @@ test("replay workspace presents genuine 10-to-0 evidence and toggles the real fi
   await page.goto("/scan/atlaspay-replay");
 
   await expect(
-    page.getByRole("heading", { level: 1, name: "AtlasPay global release gate" }),
+    page.getByRole("heading", { level: 1, name: "AtlasPay language release check" }),
   ).toBeVisible();
   await expect(page.getByText("10 → 0", { exact: true })).toBeVisible();
   await expect(page.locator("iframe")).toHaveAttribute(
@@ -365,10 +453,10 @@ test("proof report exposes verified release evidence and portable exports", asyn
   await page.goto("/scan/atlaspay-replay/report");
 
   await expect(
-    page.getByRole("heading", { name: "Repair verified. Release gate incomplete." }),
+    page.getByRole("heading", { name: "The repair worked. A few release checks were not recorded." }),
   ).toBeVisible();
-  await expect(page.getByText("this artifact alone is not a release-readiness approval")).toBeVisible();
-  const sourceRegression = page.locator("article").filter({ hasText: "Source regression" });
+  await expect(page.getByText("this saved run alone cannot approve a release")).toBeVisible();
+  const sourceRegression = page.locator("article").filter({ hasText: "English recheck" });
   await expect(sourceRegression).toContainText("PASS");
   const downloads = page.locator("a[download]");
   await expect(downloads).toHaveCount(8);

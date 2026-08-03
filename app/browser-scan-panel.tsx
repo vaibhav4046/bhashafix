@@ -147,9 +147,10 @@ export function BrowserScanPanel() {
           />
         </div>
         <div className="ls-scan-field">
-          <label htmlFor="browser-scan-source">Page locale</label>
+          <label htmlFor="browser-scan-source">Current language</label>
           <input
             id="browser-scan-source"
+            aria-label="Page locale"
             list="browser-scan-locales"
             required
             maxLength={64}
@@ -159,9 +160,10 @@ export function BrowserScanPanel() {
           />
         </div>
         <div className="ls-scan-field">
-          <label htmlFor="browser-scan-locale">Target locale</label>
+          <label htmlFor="browser-scan-locale">Try this language</label>
           <input
             id="browser-scan-locale"
+            aria-label="Target locale"
             list="browser-scan-locales"
             required
             maxLength={64}
@@ -178,9 +180,10 @@ export function BrowserScanPanel() {
           ))}
         </datalist>
         <div className="ls-scan-field">
-          <label htmlFor="browser-scan-viewport">Viewport</label>
+          <label htmlFor="browser-scan-viewport">Screen size</label>
           <select
             id="browser-scan-viewport"
+            aria-label="Viewport"
             value={viewport}
             onChange={(event) => setViewport(event.target.value as ViewportName)}
           >
@@ -192,15 +195,15 @@ export function BrowserScanPanel() {
           </select>
         </div>
         <button type="submit" disabled={running}>
-          {running ? "Rendering in Chromium…" : "Render and measure →"}
+          {running ? "Opening the page…" : "Check this page →"}
         </button>
       </form>
 
       {running ? (
         <div className="ls-scan-pending">
           <p className="ls-caveat" role="status">
-            Chromium is starting in the function and rendering {sourceLocale} and {locale}
-            at {VIEWPORT_LABELS[viewport]}. A cold start takes a few seconds.
+            BhashaFix is opening {sourceLocale} and {locale} at{" "}
+            {VIEWPORT_LABELS[viewport]}. A first check can take a few seconds.
           </p>
           {/* A waiting texture at the screenshot aspect — not a progress
               claim. The status line above is the only statement of state. */}

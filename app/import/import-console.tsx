@@ -482,10 +482,9 @@ export function ImportConsole() {
           <span className="ls-display-line">Review it here.</span>
         </h1>
         <p className="ls-standfirst">
-          BhashaFix writes its report, its screenshots and its proof capsule into
-          your project. Open them in this console to read them, then hand the
-          same files to a reviewer. The files are parsed by this page in your
-          browser; they never leave it.
+          BhashaFix saves a report and screenshots inside your project. Open
+          those files here, review them, and share the same evidence with your
+          team. The files stay in this browser and are never uploaded.
         </p>
       </header>
 
