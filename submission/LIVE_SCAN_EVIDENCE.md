@@ -1,6 +1,6 @@
 # Live public scan evidence
 
-Generated: 2026-08-03T00:10:39.458Z
+Generated: 2026-08-03T00:16:04.163Z
 
 ## Browser-backed scans of real public sites
 
@@ -32,32 +32,26 @@ contract is exercised with:
 Full route x locale x viewport matrices, authenticated coverage, persisted
 artifacts and repository repair run through the local CLI.
 
-## Hosted static HTTP preflight receipt
+## Production hosted Chromium receipt
 
 | Field | Verified value |
 | --- | --- |
-| Scan ID | `web-cf3f08be-2b34-4fb9-9b2f-387fd05a29db` |
-| Origin | `LIVE_PUBLIC_SCAN` |
-| Target | `https://www.mozilla.org/en-US/` |
-| Real routes checked | 5 |
-| Visible strings extracted | 778 |
-| Blocking findings in checks run | 0 |
-| Browser rendering | Not run in hosted static mode |
-
-## Discovered responses
-
-- `/en-US/` — HTTP 200; 219 strings
-- `/en-US/privacy/websites/cookie-settings/` — HTTP 200; 143 strings
-- `/en-US/products/` — HTTP 200; 166 strings
-- `/en-US/products/vpn/` — HTTP 200; 172 strings
-- `/en-US/products/monitor/` — HTTP 200; 78 strings
+| Scan ID | `hosted-09970aac-3f18-4e86-bc17-271469c7442f` |
+| Origin | `LIVE_PUBLIC_BROWSER_SCAN` |
+| Target | `https://example.com/` |
+| Real routes checked | 1 |
+| Locales rendered | 2 |
+| Real Chromium renders | 2 |
+| DOM elements measured | 6 |
+| Blocking findings in checks run | 2 |
+| Browser rendering | PASS |
+| axe execution | PASS |
 
 ## Actual screenshots
 
 - `submission/screenshots/09-live-public-product.png`
 - `submission/screenshots/10-live-public-product-proof.png`
 
-These two packaged screenshots show the static-preflight workspace, not the
-target screenshots returned by `POST /api/scan/browser`. The production smoke
-asserts that the hosted Chromium response contains two real screenshots. Full
-matrices and durable evidence remain local.
+These two packaged screenshots show the deployed browser-scan workspace and
+the target screenshots returned by `POST /api/scan/browser`. Full matrices,
+durable artifacts and repository repair remain local.

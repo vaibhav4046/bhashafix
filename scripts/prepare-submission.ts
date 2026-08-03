@@ -45,13 +45,11 @@ if (releaseEvidence.status !== "PASS") {
   throw new Error("Submission requires a passing hostile release receipt.");
 }
 
-// The static HTTP preflight receipt is produced by `pnpm scan:live:smoke`,
-// which needs a running server and outbound network and is deliberately not
-// part of `verify`. This is separate from the bounded hosted-Chromium path at
-// POST /api/scan/browser, which is exercised against production by
-// `pnpm production:smoke`. `artifacts/` is gitignored, so on a clean checkout
-// the preflight receipt is absent. Record that honestly instead of crashing or
-// implying either scan happened in this process.
+// The production Chromium receipt is produced by `pnpm scan:live:smoke`,
+// which needs a deployed/running server and outbound network and is therefore
+// deliberately not part of local `verify`. `artifacts/` is gitignored, so on a
+// clean checkout the receipt is absent. Record that honestly instead of
+// implying a hosted scan happened in this process.
 const livePublicScanRaw = await readFile(
   path.join(root, "artifacts/live-public-scan-receipt.json"),
   "utf8",
@@ -64,19 +62,25 @@ const livePublicScan = (livePublicScanRaw === null
   scanId: string;
   origin: string;
   target: string;
-  routes: Array<{ route: string; status: number; strings: number }>;
   routesChecked: number;
-  stringsExtracted: number;
+  localesRendered: number;
+  renders: number;
+  measuredElements: number;
   verifiedBlocking: number;
-  staticHttpOnly: boolean;
+  browserRendered: boolean;
+  axeExecuted: boolean;
   viewportOverflow: number;
   consoleErrors: string[];
 };
 if (
   livePublicScan !== null &&
   (livePublicScan.status !== "PASS" ||
-    livePublicScan.routesChecked < 2 ||
-    livePublicScan.stringsExtracted < 1 ||
+    livePublicScan.routesChecked !== 1 ||
+    livePublicScan.localesRendered < 2 ||
+    livePublicScan.renders < 2 ||
+    livePublicScan.measuredElements < 1 ||
+    livePublicScan.browserRendered !== true ||
+    livePublicScan.axeExecuted !== true ||
     livePublicScan.viewportOverflow !== 0 ||
     livePublicScan.consoleErrors.length !== 0)
 ) {
@@ -84,7 +88,7 @@ if (
 }
 if (livePublicScan === null) {
   console.warn(
-    "prepare-submission: no live public-scan receipt in artifacts/; recording it as not produced in this run. Run `pnpm scan:live:smoke` to generate one.",
+    "prepare-submission: no production Chromium receipt in artifacts/; recording it as not produced in this run. Run `pnpm scan:live:smoke` to generate one.",
   );
 }
 
@@ -233,7 +237,8 @@ Generated: ${new Date().toISOString()}
 | Clean packed CLI and MCP install | PASS | ${releaseEvidence.packages.tarballs.join(", ")} |
 | Global locale registry | PASS | ${releaseEvidence.packages.localeRegistry} representative BCP 47 locales |
 | Hosted Chromium quick-scan contract | BOUNDED | \`POST /api/scan/browser\`: one route, bounded locales, one viewport, real PNG screenshots, DOM measurement and axe; verify deployment with \`pnpm production:smoke\` |
-| Hosted static HTTP preflight | ${livePublicScan ? "PASS" : "NOT RUN"} | ${livePublicScan ? `${livePublicScan.routesChecked} real routes, ${livePublicScan.stringsExtracted} visible strings, ${livePublicScan.verifiedBlocking} blockers in checks run` : "no receipt in artifacts/; run `pnpm scan:live:smoke`"} |
+| Production Chromium receipt | ${livePublicScan ? "PASS" : "NOT RUN"} | ${livePublicScan ? `${livePublicScan.renders} real renders, ${livePublicScan.measuredElements} measured elements, ${livePublicScan.verifiedBlocking} blockers in checks run` : "no receipt in artifacts/; run `pnpm scan:live:smoke`"} |
+| Hosted static HTTP preflight | AVAILABLE | Secondary metadata crawl at \`POST /api/scan\`; explicitly not browser evidence |
 | Baseline deterministic defects | PASS | ${proof.baselineBlocking} |
 | Final blocking defects | PASS | ${proof.finalBlocking} |
 | Source-locale regression | PASS | ${proof.sourceLocaleRegression} |
@@ -252,8 +257,8 @@ Generated: ${new Date().toISOString()}
 The repair counts are release-contract results for the bundled AtlasPay
 vertical slice. The hosted product also runs a bounded real-Chromium quick
 scan; full route x locale x viewport matrices, persisted artifacts and source
-repair remain local. The separate HTTP preflight receipt is static evidence,
-not browser evidence or a universal translation-quality benchmark.
+repair remain local. The separate HTTP preflight remains a secondary metadata
+crawl, not browser evidence or a universal translation-quality benchmark.
 `;
 
 const liveScanEvidence = `# Live public scan evidence
@@ -295,24 +300,23 @@ contract is exercised with:
 Full route x locale x viewport matrices, authenticated coverage, persisted
 artifacts and repository repair run through the local CLI.
 
-## Hosted static HTTP preflight receipt
+## Production hosted Chromium receipt
 
 ${
   livePublicScan === null
-    ? "No hosted HTTP preflight receipt ran in this build. `pnpm scan:live:smoke` needs a running server and outbound network, so it is not part of `pnpm verify`, and no receipt was found in `artifacts/`. Nothing about it is claimed here."
+    ? "No production Chromium receipt ran in this build. `pnpm scan:live:smoke` needs a deployed/running server and outbound network, so it is not part of local `pnpm verify`, and no receipt was found in `artifacts/`. Nothing about it is claimed here."
     : `| Field | Verified value |
 | --- | --- |
 | Scan ID | \`${livePublicScan.scanId}\` |
 | Origin | \`${livePublicScan.origin}\` |
 | Target | \`${livePublicScan.target}\` |
 | Real routes checked | ${livePublicScan.routesChecked} |
-| Visible strings extracted | ${livePublicScan.stringsExtracted} |
+| Locales rendered | ${livePublicScan.localesRendered} |
+| Real Chromium renders | ${livePublicScan.renders} |
+| DOM elements measured | ${livePublicScan.measuredElements} |
 | Blocking findings in checks run | ${livePublicScan.verifiedBlocking} |
-| Browser rendering | Not run in hosted static mode |
-
-## Discovered responses
-
-${livePublicScan.routes.map((route) => `- \`${route.route}\` — HTTP ${route.status}; ${route.strings} strings`).join("\n")}`
+| Browser rendering | PASS |
+| axe execution | PASS |`
 }
 
 ## Actual screenshots
@@ -320,10 +324,9 @@ ${livePublicScan.routes.map((route) => `- \`${route.route}\` — HTTP ${route.st
 - \`submission/screenshots/09-live-public-product.png\`
 - \`submission/screenshots/10-live-public-product-proof.png\`
 
-These two packaged screenshots show the static-preflight workspace, not the
-target screenshots returned by \`POST /api/scan/browser\`. The production smoke
-asserts that the hosted Chromium response contains two real screenshots. Full
-matrices and durable evidence remain local.
+These two packaged screenshots show the deployed browser-scan workspace and
+the target screenshots returned by \`POST /api/scan/browser\`. Full matrices,
+durable artifacts and repository repair remain local.
 `;
 
 await writeFile(
