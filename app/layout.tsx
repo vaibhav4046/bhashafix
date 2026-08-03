@@ -24,11 +24,20 @@ export const metadata: Metadata = {
     description:
       "Test, repair and prove every language before it reaches production.",
     type: "website",
+    images: [
+      {
+        url: "/og-language-v2.png",
+        width: 1680,
+        height: 945,
+        alt: "BhashaFix — Every language. Every viewport. Evidence before release.",
+      },
+    ],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "BhashaFix — Global localisation engineering",
     description: `Recorded AtlasPay replay: ${repairProof.baselineBlocking} verified failures → ${repairProof.finalBlocking} blocking failures · source locale ${repairProof.sourceLocaleRegression}`,
+    images: ["/og-language-v2.png"],
   },
 };
 
