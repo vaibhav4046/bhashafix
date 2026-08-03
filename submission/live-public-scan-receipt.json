@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-08-03T06:38:01.676Z",
-  "scanId": "hosted-779f6413-352d-4482-95ca-d1accf0404cf",
+  "generatedAt": "2026-08-03T08:17:15.830Z",
+  "scanId": "hosted-fcabdeb1-b2de-46f9-94cc-9f0794345488",
   "origin": "LIVE_PUBLIC_BROWSER_SCAN",
-  "baseUrl": "https://bhashafix.vercel.app",
+  "baseUrl": "http://127.0.0.1:3000",
   "target": "https://example.com/",
   "mode": "bounded hosted Chromium scan",
   "engine": "chromium",

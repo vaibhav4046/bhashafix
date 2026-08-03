@@ -1,6 +1,6 @@
 # BhashaFix evaluation results
 
-Generated: 2026-08-03T06:38:15.403Z
+Generated: 2026-08-03T08:34:58.498Z
 
 | Release gate | Result | Evidence |
 | --- | --- | --- |
@@ -12,7 +12,7 @@ Generated: 2026-08-03T06:38:15.403Z
 | Baseline deterministic defects | PASS | 10 |
 | Final blocking defects | PASS | 0 |
 | Source-locale regression | PASS | PASS |
-| Browser E2E | PASS | 12 expected, 0 unexpected |
+| Browser E2E | PASS | 13 expected, 0 unexpected |
 | Dark and light themes | PASS | Playwright production suite |
 | Reduced motion | PASS | Playwright production suite |
 | 390 x 844 and 1440 x 900 | PASS | Playwright production suite |
